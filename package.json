@@ -1,0 +1,26 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "Advanced todo list with authentication, reminders and push notifications. Great for manage our tasks and list of tasks",
+  "main": "app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rafael-er-byte/Todo-List.git"
+  },
+  "keywords": [
+    "todo",
+    "list"
+  ],
+  "author": "Rafael Guzman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Rafael-er-byte/Todo-List/issues"
+  },
+  "homepage": "https://github.com/Rafael-er-byte/Todo-List#readme"
+}
