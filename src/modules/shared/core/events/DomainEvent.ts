@@ -5,15 +5,16 @@ import type IdEntity from '../objects/IdEntity';
 import type EventProjectInfo from './EventProjectInfo';
 
 export default class DomainEvent {
-  private actor!: iActor;
+  private eventId!: ID;
   private eventDate!: DateTime;
-  private event!: string;
-  private id!: ID;
-  private idEntity!: IdEntity;
+  private actor!: iActor;
   private projectInfo!: EventProjectInfo;
+  private event!: string;
+  private idEntity!: IdEntity;
   private info?: unknown;
 
   constructor(
+    eventId: ID,
     eventDate: DateTime,
     actor: iActor,
     projectInfo: EventProjectInfo,
@@ -25,7 +26,7 @@ export default class DomainEvent {
     this.event = event;
     this.eventDate = eventDate;
     if (info) this.info = info;
-    this.id = ID.generateId();
+    this.eventId = eventId;
     this.idEntity = idEntity;
     this.projectInfo = projectInfo;
   } 
@@ -47,7 +48,7 @@ export default class DomainEvent {
   }
 
   public getId(): ID {
-    return this.id;
+    return this.eventId;
   }
 
   public getIdEntity(): IdEntity {
