@@ -19,4 +19,4 @@ export default class MemberActor implements iActor{
     getImage(): string | None {
         return this.memberInfo.getUrlProfileImage();
     }
-};
+}
