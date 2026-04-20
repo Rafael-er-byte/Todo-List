@@ -1,3 +1,4 @@
+import InvalidParameters from "../errors/InvalidParameters";
 import IntNumber from "./IntNumber";
 
 export default class Version {
@@ -5,6 +6,9 @@ export default class Version {
 
     constructor(version: number) {
         this.version = new IntNumber(version);
+        if(this.version.getValue() < 0) {
+            throw new InvalidParameters('Version number cannot be negative');
+        }
     }
 
     increment(): Version {
