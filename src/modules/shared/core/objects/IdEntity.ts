@@ -4,7 +4,7 @@ export default class IdEntity {
   private id!: ID;
 
   constructor(id: string) {
-    this.id = new ID(id);
+    this.id = ID.fromString(id);
   }
 
   public getID(): string {

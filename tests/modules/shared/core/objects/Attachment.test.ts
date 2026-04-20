@@ -15,7 +15,7 @@ describe('Attachment object tests', () => {
     });
 
     it('Should throw if the attachment is not valid', () => {
-        expect(() => new Attachment(validUrl, 'img', new Text('MyDoc'), new IntNumber(44444))).toThrow(InvalidParameters);
-        expect(() => new Attachment(validUrl, 'img', new IntNumber(44444))).toThrow(InvalidParameters);
+        expect(() => new Attachment(validUrl, 'img' as AllowedAttachents, new Text('MyDoc'), new IntNumber(44444))).toThrow(InvalidParameters);
+        expect(() => new Attachment(validUrl, 'another' as AllowedAttachents, new Text('MyDoc'), new IntNumber(2222))).toThrow(InvalidParameters);
     });
 });
