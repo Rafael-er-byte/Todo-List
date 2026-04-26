@@ -1,3 +1,4 @@
+import ResourceNotFound from '../errors/ResourceNotFound';
 import type DomainEvent from '../events/DomainEvent';
 import DateTime from '../objects/DateTime';
 import DeletedAt from '../objects/DeletedAt';
@@ -10,7 +11,7 @@ export default abstract class Entity {
   private lastUpdate!: DateTime;
   private version!: Version;
   private deletedAt!: DeletedAt;
-  private idEntity!: IdEntity;
+  private readonly idEntity!: IdEntity;
 
   constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity) {
     this.version = version;
@@ -19,8 +20,12 @@ export default abstract class Entity {
   }
 
   protected addEvent(event: DomainEvent): void {
+    if(!this.deletedAt.exists()){
+      throw new ResourceNotFound("Cannot add event to a deleted entity", {idEntity: this.idEntity.getID()});
+    }
+
     this.tmpHistory.push(event);
-    this.lastUpdate = DateTime.now();
+    this.lastUpdate = event.getDate();
     this.version = this.version.increment();
   }
 
@@ -55,10 +60,11 @@ export default abstract class Entity {
   }
 
   protected entityPrimitives(): EntityPrimitives{
+    const deletedAtValue = this.deletedAt.getDeletedTime();
     return {
       idEntity: this.idEntity.getID(),  
       version: this.version.valueOf(),
-      deletedAt: this.deletedAt.exists() ? this.deletedAt.getDeletedTime() as Date: null
+      deletedAt: deletedAtValue instanceof DateTime ? deletedAtValue.getDate() as Date: null
     }
   }
 

@@ -12,8 +12,8 @@ export default class DeletedAt{
         return this.deletedAt instanceof None;
     }
 
-    public getDeletedTime(): Date | None {
-        return this.deletedAt instanceof DateTime ? this.deletedAt.getDate() : new None();
+    public getDeletedTime(): DateTime | None {
+        return this.deletedAt;
     }
 
     public static delete(): DeletedAt {
