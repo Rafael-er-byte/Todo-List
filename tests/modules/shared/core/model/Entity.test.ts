@@ -3,10 +3,8 @@ import DeletedAt from "../../../../../src/modules/shared/core/objects/DeletedAt"
 import Entity from "../../../../../src/modules/shared/core/model/Entity";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 import type EntityPrimitives from "../../../../../src/modules/shared/core/model/contracts/EntityPrimitives";
-import None from "../../../../../src/modules/shared/core/objects/None";
 import ID from "../../../../../src/modules/shared/core/objects/ID";
 import DateTime from "../../../../../src/modules/shared/core/objects/DateTime";
-import ProjectInfo from "../../../../../src/modules/shared/core/events/ProjectInfo";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
@@ -68,12 +66,12 @@ describe('Entity abstract class', () => {
     }
 
     function createDomainEvent(): DomainEvent {
-        const projectInfo = new ProjectInfo(ID.generateId().getId(), "ProjectExample");
+        const projectInfo = new IdEntity(ID.generateId().getId());
         return new DomainEvent
                     (
                         ID.generateId(), 
                         DateTime.now(), 
-                        {name: "testActor", id: "actorId"}, 
+                        new IdEntity(ID.generateId().getId()), 
                         projectInfo, new IdEntity(ID.generateId().getId()), 
                         "TEST_EVENT"
                     );
