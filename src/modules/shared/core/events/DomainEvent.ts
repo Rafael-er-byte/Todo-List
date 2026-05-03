@@ -1,14 +1,12 @@
-import type Actor from '../model/contracts/Actor';
 import type DateTime from '../objects/DateTime';
 import ID from '../objects/ID';
 import type IdEntity from '../objects/IdEntity';
-import type ProjectInfo from './ProjectInfo';
 
 export default class DomainEvent {
   private eventId!: ID;
   private eventDate!: DateTime;
-  private actor!: Actor;
-  private projectInfo!: ProjectInfo;
+  private actor!: IdEntity;
+  private projectId!: IdEntity;
   private event!: string;
   private idEntity!: IdEntity;
   private info?: unknown;
@@ -16,8 +14,8 @@ export default class DomainEvent {
   constructor(
     eventId: ID,
     eventDate: DateTime,
-    actor: Actor,
-    projectInfo: ProjectInfo,
+    actor: IdEntity,
+    projectId: IdEntity,
     idEntity: IdEntity,
     event: string,
     info?: unknown,
@@ -28,10 +26,10 @@ export default class DomainEvent {
     if (info) this.info = info;
     this.eventId = eventId;
     this.idEntity = idEntity;
-    this.projectInfo = projectInfo;
+    this.projectId = projectId;
   } 
  
-  public getActor(): Actor {
+  public getActor(): IdEntity {
     return this.actor;
   }
 
@@ -55,7 +53,7 @@ export default class DomainEvent {
     return this.idEntity;
   }
 
-  public getprojectInfo(): ProjectInfo {
-    return this.projectInfo;
+  public getprojectInfo(): IdEntity {
+    return this.projectId;
   }
 }  
