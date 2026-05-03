@@ -13,13 +13,15 @@ export default abstract class Entity {
   private version!: Version;
   private deletedAt!: DeletedAt;
   private readonly idEntity!: IdEntity;
-  private readonly internalId!: InternalId;
+  private readonly internalId?: InternalId;
 
-  constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId: InternalId) {
+  constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId?: InternalId ) {
     this.version = version;
     this.deletedAt = deletedAt;
     this.idEntity = idEntity;
-    this.internalId = internalId;
+    if(internalId){
+      this.internalId = internalId;
+    }
   }
 
   protected addEvent(event: DomainEvent): void {
@@ -42,7 +44,7 @@ export default abstract class Entity {
     return this.lastUpdate;
   }
 
-  protected getInternalId(): InternalId {
+  protected getInternalId(): InternalId | undefined {
     return this.internalId;
   }
 

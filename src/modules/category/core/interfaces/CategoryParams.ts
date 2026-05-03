@@ -1,9 +1,6 @@
 export default interface CategoryParams {
   id: string;
-  projectInfo: {
-    idProject: string;
-    name: string;
-  };
+  idProject: string;
   name: string;
   color: string;
   version: number;
