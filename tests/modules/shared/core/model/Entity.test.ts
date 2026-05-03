@@ -61,7 +61,7 @@ describe('Entity abstract class', () => {
 
     function createTestEntity(): testEntity {
         const version = new Version(1);
-        const deletedAt = new DeletedAt(new None());
+        const deletedAt = DeletedAt.createActive();
         const idEntity = new IdEntity(ID.generateId().getId());
         const internalId = new InternalId(12);
         return new testEntity(version, deletedAt, idEntity, internalId);
@@ -126,7 +126,7 @@ describe('Entity abstract class', () => {
 
     it("Should create a deleted instance of the entity", () => {
         const version = new Version(1);
-        const deletedAt = DeletedAt.delete();
+        const deletedAt = DeletedAt.createDeleted(DateTime.now());
         const idEntity = new IdEntity(ID.generateId().getId());
         const internalId = new InternalId(12);
         const entity = new testEntity(version, deletedAt, idEntity, internalId);
@@ -179,7 +179,7 @@ describe('Entity abstract class', () => {
 
     it("Should return undefined for internalId if not provided", () => {
         const version = new Version(1);
-        const deletedAt = new DeletedAt(new None());
+        const deletedAt = DeletedAt.createActive();
         const idEntity = new IdEntity(ID.generateId().getId());
         const entity = new testEntity(version, deletedAt, idEntity);
         expect(entity.getInternalId()).toBeUndefined(); 
