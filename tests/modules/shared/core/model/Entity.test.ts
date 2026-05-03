@@ -9,11 +9,12 @@ import DateTime from "../../../../../src/modules/shared/core/objects/DateTime";
 import ProjectInfo from "../../../../../src/modules/shared/core/events/ProjectInfo";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
+import InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
 
 describe('Entity abstract class', () => {
     class testEntity extends Entity{
-        constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity){
-            super(version, deletedAt, idEntity);
+        constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId: InternalId){
+            super(version, deletedAt, idEntity, internalId);
         }
 
         addEvent(event: DomainEvent): void{
@@ -30,7 +31,8 @@ describe('Entity abstract class', () => {
         const version = new Version(1);
         const deletedAt = new DeletedAt(new None());
         const idEntity = new IdEntity(ID.generateId().getId());
-        return new testEntity(version, deletedAt, idEntity);
+        const internalId = new InternalId(12);
+        return new testEntity(version, deletedAt, idEntity, internalId);
     }
 
     function createDomainEvent(): DomainEvent {
@@ -94,7 +96,8 @@ describe('Entity abstract class', () => {
         const version = new Version(1);
         const deletedAt = DeletedAt.delete();
         const idEntity = new IdEntity(ID.generateId().getId());
-        const entity = new testEntity(version, deletedAt, idEntity);    
+        const internalId = new InternalId(12);
+        const entity = new testEntity(version, deletedAt, idEntity, internalId);
         expect(entity.exists()).toBe(false);
     });
 
@@ -110,7 +113,8 @@ describe('Entity abstract class', () => {
         const version = new Version(1);
         const deletedAt = DeletedAt.delete();
         const idEntity = new IdEntity(ID.generateId().getId());
-        const entity = new testEntity(version, deletedAt, idEntity);    
+        const internalId = new InternalId(12);
+        const entity = new testEntity(version, deletedAt, idEntity, internalId);
         const primitives = entity.toPrimitives();
         expect(primitives.idEntity).toBe(entity.getID().getID());
         expect(primitives.version).toBe(entity.getVersion().valueOf());
@@ -133,7 +137,8 @@ describe('Entity abstract class', () => {
         const version = new Version(1);
         const deletedAt = DeletedAt.delete();
         const idEntity = new IdEntity(ID.generateId().getId());
-        const entity = new testEntity(version, deletedAt, idEntity);    
+        const internalId = new InternalId(12);
+        const entity = new testEntity(version, deletedAt, idEntity, internalId);
         const primitives = entity.toPrimitives();
         expect(primitives.deletedAt).toBeInstanceOf(Date);
         const deletedAtDateTime = deletedAt.getDeletedTime() as DateTime;

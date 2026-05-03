@@ -8,4 +8,11 @@ module.exports = {
   transform: {
     ...tsJestTransformCfg,
   },
+  transform: {
+    '^.+\\.(t|j)s$': 'ts-jest'
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!(uuid)/)'
+  ],
+  moduleFileExtensions: ['js', 'json', 'ts'],
 };
