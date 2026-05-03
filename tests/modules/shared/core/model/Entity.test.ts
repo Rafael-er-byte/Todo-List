@@ -13,13 +13,45 @@ import InternalId from "../../../../../src/modules/shared/core/objects/InternalI
 
 describe('Entity abstract class', () => {
     class testEntity extends Entity{
-        constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId: InternalId){
+        constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId?: InternalId){
             super(version, deletedAt, idEntity, internalId);
         }
 
         addEvent(event: DomainEvent): void{
             console.log("Adding event: ", event);
             super.addEvent(event);
+        }
+
+        pullEvents(): DomainEvent[] {
+            return super.pullEvents();
+        }
+
+        getLastUpdate(): DateTime {
+            return super.getLastUpdate();
+        }
+
+        getVersion(): Version {
+            return super.getVersion();
+        }
+
+        getDeletedAt(): DeletedAt {
+            return super.getDeletedAt();
+        }
+
+        exists(): boolean {
+            return super.exists();
+        }
+
+        delete(): void {
+            super.delete();
+        }
+
+        getID(): IdEntity {
+            return super.getID();
+        }
+
+        getInternalId(): InternalId | undefined {
+            return super.getInternalId();
         }
 
         toPrimitives(): EntityPrimitives{
@@ -143,5 +175,13 @@ describe('Entity abstract class', () => {
         expect(primitives.deletedAt).toBeInstanceOf(Date);
         const deletedAtDateTime = deletedAt.getDeletedTime() as DateTime;
         expect(primitives.deletedAt).toEqual(deletedAtDateTime.getDate());
+    });
+
+    it("Should return undefined for internalId if not provided", () => {
+        const version = new Version(1);
+        const deletedAt = new DeletedAt(new None());
+        const idEntity = new IdEntity(ID.generateId().getId());
+        const entity = new testEntity(version, deletedAt, idEntity);
+        expect(entity.getInternalId()).toBeUndefined(); 
     });
 });        

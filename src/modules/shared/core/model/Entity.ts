@@ -13,13 +13,15 @@ export default abstract class Entity {
   private version!: Version;
   private deletedAt!: DeletedAt;
   private readonly idEntity!: IdEntity;
-  private readonly internalId!: InternalId;
+  private readonly internalId?: InternalId;
 
-  constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId: InternalId) {
+  constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId?: InternalId ) {
     this.version = version;
     this.deletedAt = deletedAt;
     this.idEntity = idEntity;
-    this.internalId = internalId;
+    if(internalId){
+      this.internalId = internalId;
+    }
   }
 
   protected addEvent(event: DomainEvent): void {
@@ -32,37 +34,37 @@ export default abstract class Entity {
     this.version = this.version.increment();
   }
 
-  public pullEvents(): DomainEvent[] {
+  protected pullEvents(): DomainEvent[] {
     const events = this.tmpHistory;
     this.tmpHistory = [];
     return events;
   }
 
-  public getLastUpdate(): DateTime {
+  protected getLastUpdate(): DateTime {
     return this.lastUpdate;
   }
 
-  public getInternalId(): InternalId {
+  protected getInternalId(): InternalId | undefined {
     return this.internalId;
   }
 
-  public delete(): void {
+  protected delete(): void {
     this.deletedAt = DeletedAt.delete();
   }
 
-  public getVersion(): Version{
+  protected getVersion(): Version{
     return this.version;  
   }
 
-  public getDeletedAt(): DeletedAt {
+  protected getDeletedAt(): DeletedAt {
     return this.deletedAt;
   }
 
-  public exists(): boolean {
+  protected exists(): boolean {
     return this.deletedAt.exists();
   }
 
-  public getID(): IdEntity{
+  protected getID(): IdEntity{
     return this.idEntity;
   }
 
