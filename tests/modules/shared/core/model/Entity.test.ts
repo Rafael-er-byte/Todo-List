@@ -22,6 +22,34 @@ describe('Entity abstract class', () => {
             super.addEvent(event);
         }
 
+        pullEvents(): DomainEvent[] {
+            return super.pullEvents();
+        }
+
+        getLastUpdate(): DateTime {
+            return super.getLastUpdate();
+        }
+
+        getVersion(): Version {
+            return super.getVersion();
+        }
+
+        getDeletedAt(): DeletedAt {
+            return super.getDeletedAt();
+        }
+
+        exists(): boolean {
+            return super.exists();
+        }
+
+        delete(): void {
+            super.delete();
+        }
+
+        getID(): IdEntity {
+            return super.getID();
+        }
+
         toPrimitives(): EntityPrimitives{
             return this.entityPrimitives();
         }
