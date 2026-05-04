@@ -1,117 +1,96 @@
 import Category from "../../../../../src/modules/category/core/model/Category";
 import CategoryColor from "../../../../../src/modules/category/core/objects/CategoryColor";
 import CategoryName from "../../../../../src/modules/category/core/objects/CategoryName";
-import { AllowedCategoryStatus } from "../../../../../src/modules/category/core/types/AllowedCategoryStatus";
 import { AllowedColors } from "../../../../../src/modules/category/core/types/AllowedColors";
-import Member from "../../../../../src/modules/member/core/model/Member";
-import MemberInfo from "../../../../../src/modules/member/core/objects/MemberInfo";
-import { AllowedMemberRoles } from "../../../../../src/modules/member/core/types/AllowedMemberRoles";
-import { AllowedMemberStatus } from "../../../../../src/modules/member/core/types/AllowedMemberStatus";
-import Attachment from "../../../../../src/modules/shared/core/objects/Attachment";
-import IntNumber from "../../../../../src/modules/shared/core/objects/IntNumber";
-import Text from "../../../../../src/modules/shared/core/objects/Text";
-import Url from "../../../../../src/modules/shared/core/objects/URL";
-import { AllowedAttachents } from "../../../../../src/modules/shared/core/types/AllowedAttachment.types";
+import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
+import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 
-const validUrl = new Url('http://localhost.com');
-const validAttachment = new Attachment(validUrl, AllowedAttachents.image, new Text('myImage'), new IntNumber(220));
+import type IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
+import type InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
 
-const createMemberInfo = () => 
-    new MemberInfo(
-    "John Doe",
-    validAttachment
-  );
+const DEFAULT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";
 
-const createMemberParams = (overrides?: Partial<{
-  id: string;
-  idProject: string;
-  status: AllowedMemberStatus;
-  role: AllowedMemberRoles;
-  memberInfo: MemberInfo;
-}>) => ({
-  id: "member-1",
-  idProject: "project-1",
-  status: AllowedMemberStatus.active,
-  role: AllowedMemberRoles.owner,
-  memberInfo: createMemberInfo(),
-  ...overrides
-});
-
-const createModifier = () =>
-  Member.fromPrimitives(createMemberParams());
-
-const createCategoryParams = (overrides?: Partial<{
-  id: string;
-  idProject: string;
-  name: string;
-  color: AllowedColors;
-  isActive: AllowedCategoryStatus;
-}>) => ({
-  id: "category-1",
-  idProject: "project-1",
+const createCategoryParams = (
+  overrides?: Partial<{
+    id: string;
+    idProject: string;
+    name: string;
+    color: AllowedColors;
+    version: number;
+    deletedAt: Date | null;
+    idActor: string;
+    internalId: InternalId;
+  }>
+) => ({
+  id: DEFAULT_ID,
+  idProject: DEFAULT_ID,
   name: "Backlog",
   color: AllowedColors.BLACK,
-  isActive: AllowedCategoryStatus.active,
+  version: 1,
+  deletedAt: null,
+  idActor: DEFAULT_ID,
+  internalId: 1,
   ...overrides
 });
+
+const buildCategory = (overrides?: Parameters<typeof createCategoryParams>[0]) => {
+  const params = createCategoryParams(overrides);
+
+  return Category.create(
+    params.id,
+    params.name,
+    params.color,
+    params.version,
+    params.deletedAt,
+    params.idActor,
+    params.idProject
+  );
+};
+
+const IDMock = {
+  getID: jest.fn().mockReturnValue(DEFAULT_ID)
+} as unknown as jest.Mocked<IdEntity>;
 
 describe("Category Entity", () => {
 
   describe("Creation", () => {
-
     it("should create a valid category", () => {
-      const modifier = createModifier();
-      const params = createCategoryParams();
+      const category = buildCategory();
 
-      const category = Category.create(
-        params.id,
-        params.name,
-        params.color,
-        params.idProject,
-        params.isActive,
-        modifier
-      );
-
-      expect(category.getId()).toBe("category-1");
+      expect(category.getId()).toBe(DEFAULT_ID);
       expect(category.exists()).toBe(true);
     });
-
   });
 
   describe("Updates", () => {
 
     it("should update name", () => {
-      const modifier = createModifier();
-      const params = createCategoryParams();
-      const category = Category.create(
-        params.id,
-        params.name,
-        params.color,
-        params.idProject,
-        params.isActive,
-        modifier
-      );
+      const category = buildCategory();
 
-      category.updateName(new CategoryName("In Progress"), modifier);
+      category.pullEvents();
+
+      category.updateName(new CategoryName("In Progress"), IDMock);
 
       expect(category.toPrimitives().name).toBe("In Progress");
+
+      const events = category.pullEvents();
+      events.forEach((event) => {
+        expect(event).toBeInstanceOf(DomainEvent);
+        expect(event.getEvent()).toBe("CATEGORY_NAME_CHANGED");
+      });
     });
 
     it("should update color", () => {
-      const modifier = createModifier();
-      const params = createCategoryParams();
-      const category = Category.create(
-        params.id,
-        params.name,
-        params.color,
-        params.idProject,
-        params.isActive,
-        modifier
-      );
+      const category = buildCategory();
 
-      category.updateColor(new CategoryColor(AllowedColors.BLUE), modifier);
+      category.pullEvents();
+
+      category.updateColor(new CategoryColor(AllowedColors.BLUE), IDMock);
 
       expect(category.toPrimitives().color).toBe(AllowedColors.BLUE);
+
+      const [event] = category.pullEvents();
+      expect(event!.getEvent()).toBe("CATEGORY_COLOR_CHANGED");
     });
 
   });
@@ -120,31 +99,29 @@ describe("Category Entity", () => {
 
     it("should return false when status is deleted", () => {
       const category = Category.fromPrimitives(
-        createCategoryParams({ isActive: AllowedCategoryStatus.deleted })
+        createCategoryParams({ deletedAt: new Date() })
       );
 
       expect(category.exists()).toBe(false);
     });
 
-  });
+    it("should delete a category", () => {
+      const category = buildCategory({ deletedAt: null });
 
-  describe("Serialization", () => {
+      category.pullEvents();
 
-    it("should return correct primitives", () => {
-      const modifier = createModifier();
-      const params = createCategoryParams();
-      const category = Category.create(
-        params.id,
-        params.name,
-        params.color,
-        params.idProject,
-        params.isActive,
-        modifier
-      );
+      expect(category.exists()).toBe(true);
 
-      const primitives = category.toPrimitives();
+      category.delete(IDMock);
 
-      expect(primitives).toEqual(createCategoryParams());
+      expect(category.exists()).toBe(false);
+
+      const [event] = category.pullEvents();
+      expect(event!.getEvent()).toBe("CATEGORY_DELETED");
+
+      expect(() =>
+        category.updateName(new CategoryName("New Name"), IDMock)
+      ).toThrow(ResourceNotFound);
     });
 
   });

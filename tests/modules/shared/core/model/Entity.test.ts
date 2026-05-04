@@ -16,7 +16,6 @@ describe('Entity abstract class', () => {
         }
 
         addEvent(event: DomainEvent): void{
-            console.log("Adding event: ", event);
             super.addEvent(event);
         }
 
@@ -41,7 +40,7 @@ describe('Entity abstract class', () => {
         }
 
         delete(): void {
-            super.delete();
+            super.softDelete();
         }
 
         getID(): IdEntity {
@@ -128,6 +127,13 @@ describe('Entity abstract class', () => {
         const idEntity = new IdEntity(ID.generateId().getId());
         const internalId = new InternalId(12);
         const entity = new testEntity(version, deletedAt, idEntity, internalId);
+        expect(entity.exists()).toBe(false);
+    });
+
+    it("Should delete an active entity", () => {
+        const entity = createTestEntity();
+        expect(entity.exists()).toBe(true);
+        entity.delete();
         expect(entity.exists()).toBe(false);
     });
 

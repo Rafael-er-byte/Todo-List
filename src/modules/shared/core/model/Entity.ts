@@ -48,7 +48,7 @@ export default abstract class Entity {
     return this.internalId;
   }
 
-  protected delete(): void {
+  protected softDelete(): void {
     this.deletedAt = DeletedAt.delete();
   }
 
