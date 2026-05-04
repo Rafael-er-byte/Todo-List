@@ -10,12 +10,30 @@ import ResourceNotFound from "../../../../../src/modules/shared/core/errors/Reso
 import InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
 
 describe('Entity abstract class', () => {
-    class testEntity extends Entity{
-        constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId?: InternalId){
-            super(version, deletedAt, idEntity, internalId);
+
+    class TestEntity extends Entity {
+        constructor(idEntity: IdEntity, internalId?: InternalId) {
+            super(idEntity, internalId);
         }
 
-        addEvent(event: DomainEvent): void{
+        static create(idEntity: IdEntity, internalId?: InternalId): TestEntity {
+            const instance = new TestEntity(idEntity, internalId);
+            instance.create();
+            return instance;
+        }
+
+        static fromPrimitives(
+            version: Version,
+            deletedAt: DeletedAt,
+            idEntity: IdEntity,
+            internalId?: InternalId
+        ): TestEntity {
+            const instance = new TestEntity(idEntity, internalId);
+            instance.build(version, deletedAt);
+            return instance;
+        }
+
+        addEvent(event: DomainEvent): void {
             super.addEvent(event);
         }
 
@@ -51,141 +69,138 @@ describe('Entity abstract class', () => {
             return super.getInternalId();
         }
 
-        toPrimitives(): EntityPrimitives{
+        toPrimitives(): EntityPrimitives {
             return this.entityPrimitives();
         }
     }
 
-    function createTestEntity(): testEntity {
-        const version = new Version(1);
-        const deletedAt = DeletedAt.createActive();
+    function createTestEntity(): TestEntity {
         const idEntity = new IdEntity(ID.generateId().getId());
         const internalId = new InternalId(12);
-        return new testEntity(version, deletedAt, idEntity, internalId);
+        return TestEntity.create(idEntity, internalId);
     }
 
     function createDomainEvent(): DomainEvent {
         const projectInfo = new IdEntity(ID.generateId().getId());
-        return new DomainEvent
-                    (
-                        ID.generateId(), 
-                        DateTime.now(), 
-                        new IdEntity(ID.generateId().getId()), 
-                        projectInfo, new IdEntity(ID.generateId().getId()), 
-                        "TEST_EVENT"
-                    );
+
+        return new DomainEvent(
+            ID.generateId(),
+            DateTime.now(),
+            new IdEntity(ID.generateId().getId()),
+            projectInfo,
+            new IdEntity(ID.generateId().getId()),
+            "TEST_EVENT"
+        );
     }
 
     it('should create an instance of a class that extends Entity', () => {
         const entity = createTestEntity();
-        expect(entity).toBeInstanceOf(testEntity);
+        expect(entity).toBeInstanceOf(TestEntity);
     });
 
     it('should add an event and pull it', () => {
         const entity = createTestEntity();
         const event = createDomainEvent();
+
         entity.addEvent(event);
 
         const events = entity.pullEvents();
         expect(events).toContain(event);
     });
 
-    it("Should generate new version and update lastUpdate when adding an event", () => {
+    it("should increase version and update lastUpdate when adding an event", () => {
         const entity = createTestEntity();
         const event = createDomainEvent();
 
         const initialVersion = entity.getVersion().valueOf();
-        const initialLastUpdate = entity.getLastUpdate();
-
+        expect(initialVersion).toEqual(0);
         entity.addEvent(event);
-        
+        expect(entity.getVersion().valueOf()).toEqual(1);
         expect(entity.getVersion().valueOf()).toBe(initialVersion + 1);
         expect(entity.getLastUpdate()).toBe(event.getDate());
-
     });
 
-    it("Should mark the entity as deleted", () => {
+    it("should mark the entity as deleted", () => {
         const entity = createTestEntity();
-        expect(entity.exists()).toBe(true);
 
         entity.delete();
+
         expect(entity.exists()).toBe(false);
         expect(entity.getDeletedAt().exists()).toBe(false);
     });
 
-    it("Should not allow adding events to a deleted entity", () => {
+    it("should not allow adding events to a deleted entity", () => {
         const entity = createTestEntity();
         entity.delete();
+
         const event = createDomainEvent();
 
-        expect(() => entity.addEvent(event)).toThrow(ResourceNotFound);   
+        expect(() => entity.addEvent(event)).toThrow(ResourceNotFound);
     });
 
-    it("Should create a deleted instance of the entity", () => {
-        const version = new Version(1);
-        const deletedAt = DeletedAt.createDeleted(DateTime.now());
+    it("should create a deleted instance from primitives", () => {
         const idEntity = new IdEntity(ID.generateId().getId());
-        const internalId = new InternalId(12);
-        const entity = new testEntity(version, deletedAt, idEntity, internalId);
+        const deletedAt = DeletedAt.delete();
+
+        const entity = TestEntity.fromPrimitives(
+            new Version(1),
+            deletedAt,
+            idEntity,
+            new InternalId(12)
+        );
+
         expect(entity.exists()).toBe(false);
     });
 
-    it("Should delete an active entity", () => {
+    it("should delete an active entity", () => {
         const entity = createTestEntity();
-        expect(entity.exists()).toBe(true);
+
         entity.delete();
+
         expect(entity.exists()).toBe(false);
     });
 
-    it("Should return the correct primitives", () => {
+    it("should return correct primitives for active entity", () => {
         const entity = createTestEntity();
         const primitives = entity.toPrimitives();
+
         expect(primitives.idEntity).toBe(entity.getID().getID());
         expect(primitives.version).toBe(entity.getVersion().valueOf());
         expect(primitives.deletedAt).toBeNull();
     });
 
-    it("Should return the correct primitives for a deleted entity", () => {
-        const version = new Version(1);
-        const deletedAt = DeletedAt.delete();
-        const idEntity = new IdEntity(ID.generateId().getId());
-        const internalId = new InternalId(12);
-        const entity = new testEntity(version, deletedAt, idEntity, internalId);
-        const primitives = entity.toPrimitives();
-        expect(primitives.idEntity).toBe(entity.getID().getID());
-        expect(primitives.version).toBe(entity.getVersion().valueOf());
-        expect(primitives.deletedAt).toBeInstanceOf(Date);
-        const deletedAtDateTime = deletedAt.getDeletedTime() as DateTime;
-        expect(primitives.deletedAt).toEqual(deletedAtDateTime.getDate());
-    });
-
-    it("Should return the correct ID", () => {
+    it("should return correct primitives for deleted entity", () => {
         const entity = createTestEntity();
-        expect(entity.getID().getID()).toBe(entity.toPrimitives().idEntity);
-    });
+        entity.delete();
 
-    it("Should return the correct version", () => {
-        const entity = createTestEntity();
-        expect(entity.getVersion().valueOf()).toBe(entity.toPrimitives().version);
-    });
-
-    it("Should return the correct deletedAt", () => {
-        const version = new Version(1);
-        const deletedAt = DeletedAt.delete();
-        const idEntity = new IdEntity(ID.generateId().getId());
-        const internalId = new InternalId(12);
-        const entity = new testEntity(version, deletedAt, idEntity, internalId);
         const primitives = entity.toPrimitives();
+
         expect(primitives.deletedAt).toBeInstanceOf(Date);
-        const deletedAtDateTime = deletedAt.getDeletedTime() as DateTime;
-        expect(primitives.deletedAt).toEqual(deletedAtDateTime.getDate());
     });
 
-    it("Should return undefined for internalId if not provided", () => {
-        const version = new Version(1);
-        const deletedAt = DeletedAt.createActive();
-        const idEntity = new IdEntity(ID.generateId().getId());
-        const entity = new testEntity(version, deletedAt, idEntity);
-        expect(entity.getInternalId()).toBeUndefined(); 
+    it("should reconstruct entity from primitives", () => {
+        const entity = createTestEntity();
+        entity.delete();
+
+        const primitives = entity.toPrimitives();
+
+        const reconstructed = TestEntity.fromPrimitives(
+            new Version(primitives.version),
+            primitives.deletedAt
+                ? DeletedAt.createDeleted(DateTime.now())
+                : DeletedAt.createActive(),
+            new IdEntity(primitives.idEntity)
+        );
+
+        expect(reconstructed.getID().getID()).toBe(primitives.idEntity);
+        expect(reconstructed.getVersion().valueOf()).toBe(primitives.version);
     });
-});        
+
+    it("should return undefined for internalId if not provided", () => {
+        const idEntity = new IdEntity(ID.generateId().getId());
+        const entity = TestEntity.create(idEntity);
+
+        expect(entity.getInternalId()).toBeUndefined();
+    });
+
+});

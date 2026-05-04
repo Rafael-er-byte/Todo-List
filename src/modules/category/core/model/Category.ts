@@ -26,13 +26,10 @@ export default class Category extends Entity {
     name: CategoryName,
     color: CategoryColor,
     idProject: IdProject,
-    version: Version,
-    deletedAt: DeletedAt,
     idEntity: IdCategory,
     internalId?: InternalId,
   ) {
-    super(version, deletedAt, idEntity, internalId);
-
+    super(idEntity, internalId);
     this.name = name;
     this.color = color;
     this.idProject = idProject;
@@ -42,39 +39,40 @@ export default class Category extends Entity {
     id: string,
     name: string,
     color: string,
-    version: number,
-    deletedAt: Date | null,
     actorId: string,
     projectID: string,
   ) {
     const idCategory = new IdCategory(id);
     const projectId = new IdEntity(projectID);
-    const categoryVersion = new Version(version);
     const actor = new IdEntity(actorId);
-    const categoryDeletedAt = deletedAt? DeletedAt.createDeleted(DateTime.create(deletedAt)) : DeletedAt.createActive();
     
     const category = new Category(
       new CategoryName(name),
       new CategoryColor(color as AllowedColors),
       projectId,
-      categoryVersion,
-      categoryDeletedAt,
       idCategory,
     );
+
+    category.create();
     category.addEvent(new CategoryCreated(DateTime.now(), actor, projectId, idCategory));
     return category;
   }
 
   public static fromPrimitives(params: CategoryParams) {
-    return new Category(
+    const category = new Category(
         new CategoryName(params.name),
         new CategoryColor(params.color as AllowedColors),
         new IdProject(params.idProject),
-        new Version(params.version),
-        params.deletedAt ? DeletedAt.createDeleted(DateTime.create(params.deletedAt as Date)) : DeletedAt.createActive(),
         new IdCategory(params.id),
         new InternalId(params.internalId as number),
       );
+
+      category.build(
+        new Version(params.version), 
+        params.deletedAt ? DeletedAt.createDeleted(DateTime.create(params.deletedAt as Date)) : DeletedAt.createActive()
+      );
+
+      return category;
   }
 
   public updateName(name: CategoryName, actor: IdEntity): void {

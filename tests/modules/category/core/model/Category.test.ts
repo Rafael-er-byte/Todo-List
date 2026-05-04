@@ -6,7 +6,6 @@ import ResourceNotFound from "../../../../../src/modules/shared/core/errors/Reso
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 
 import type IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
-import type InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
 
 const DEFAULT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";
 
@@ -17,9 +16,9 @@ const createCategoryParams = (
     name: string;
     color: AllowedColors;
     version: number;
-    deletedAt: Date | null;
+    deletedAt: Date | undefined;
     idActor: string;
-    internalId: InternalId;
+    internalId: unknown;
   }>
 ) => ({
   id: DEFAULT_ID,
@@ -27,9 +26,8 @@ const createCategoryParams = (
   name: "Backlog",
   color: AllowedColors.BLACK,
   version: 1,
-  deletedAt: null,
-  idActor: DEFAULT_ID,
-  internalId: 1,
+  deletedAt: undefined,
+  internalId: undefined,
   ...overrides
 });
 
@@ -40,9 +38,7 @@ const buildCategory = (overrides?: Parameters<typeof createCategoryParams>[0]) =
     params.id,
     params.name,
     params.color,
-    params.version,
-    params.deletedAt,
-    params.idActor,
+    DEFAULT_ID,
     params.idProject
   );
 };
@@ -99,14 +95,16 @@ describe("Category Entity", () => {
 
     it("should return false when status is deleted", () => {
       const category = Category.fromPrimitives(
-        createCategoryParams({ deletedAt: new Date() })
+        createCategoryParams({ deletedAt: new Date(), internalId: 1 })
       );
 
       expect(category.exists()).toBe(false);
     });
 
     it("should delete a category", () => {
-      const category = buildCategory({ deletedAt: null });
+      const category = Category.fromPrimitives(
+        createCategoryParams({ deletedAt: undefined, internalId: 1 })
+      );
 
       category.pullEvents();
 
@@ -122,6 +120,49 @@ describe("Category Entity", () => {
       expect(() =>
         category.updateName(new CategoryName("New Name"), IDMock)
       ).toThrow(ResourceNotFound);
+    });
+
+  });
+
+  describe("Serialization", () => {
+
+    it("should serialize a category correctly", () => {
+      const params = createCategoryParams();
+      const category = buildCategory();
+
+      const primitives = category.toPrimitives();
+
+      expect(primitives).toEqual({
+        id: params.id,
+        idProject: params.idProject,
+        name: params.name,
+        color: params.color,
+        version: params.version,
+        deletedAt: params.deletedAt,
+        internalId: params.internalId
+      });
+    });
+
+    it("should reflect updated values in serialization", () => {
+      const category = buildCategory();
+
+      category.updateName(new CategoryName("Done"), IDMock);
+      category.updateColor(new CategoryColor(AllowedColors.BLUE), IDMock);
+
+      const primitives = category.toPrimitives();
+
+      expect(primitives.name).toBe("Done");
+      expect(primitives.color).toBe(AllowedColors.BLUE);
+    });
+
+    it("should include deletedAt when category is deleted", () => {
+      const category = buildCategory();
+
+      category.delete(IDMock);
+
+      const primitives = category.toPrimitives();
+
+      expect(primitives.deletedAt).not.toBeNull();
     });
 
   });

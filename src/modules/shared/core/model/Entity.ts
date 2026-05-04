@@ -4,7 +4,7 @@ import DateTime from '../objects/DateTime';
 import DeletedAt from '../objects/DeletedAt';
 import type IdEntity from '../objects/IdEntity';
 import type InternalId from '../objects/InternalId';
-import type Version from '../objects/Version';
+import Version from '../objects/Version';
 import type EntityPrimitives from './contracts/EntityPrimitives';
 
 export default abstract class Entity {
@@ -15,9 +15,7 @@ export default abstract class Entity {
   private readonly idEntity!: IdEntity;
   private readonly internalId?: InternalId;
 
-  constructor(version: Version, deletedAt: DeletedAt, idEntity: IdEntity, internalId?: InternalId ) {
-    this.version = version;
-    this.deletedAt = deletedAt;
+  protected constructor(idEntity: IdEntity, internalId?: InternalId) {
     this.idEntity = idEntity;
     if(internalId){
       this.internalId = internalId;
@@ -32,6 +30,16 @@ export default abstract class Entity {
     this.tmpHistory.push(event);
     this.lastUpdate = event.getDate();
     this.version = this.version.increment();
+  }
+
+  protected create(): void {
+    this.version = new Version(0);
+    this.deletedAt = DeletedAt.createActive();
+  }
+
+  protected build(version: Version, deletedAt: DeletedAt): void {
+    this.version = version;
+    this.deletedAt = deletedAt;
   }
 
   protected pullEvents(): DomainEvent[] {
