@@ -1,11 +1,12 @@
 import Category from "../../../../../src/modules/category/core/model/Category";
 import CategoryColor from "../../../../../src/modules/category/core/objects/CategoryColor";
 import CategoryName from "../../../../../src/modules/category/core/objects/CategoryName";
+import IdCategory from "../../../../../src/modules/category/core/objects/IdCategory";
 import { AllowedColors } from "../../../../../src/modules/category/core/types/AllowedColors";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 
-import type IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
+import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 
 const DEFAULT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";
 
@@ -35,11 +36,11 @@ const buildCategory = (overrides?: Parameters<typeof createCategoryParams>[0]) =
   const params = createCategoryParams(overrides);
 
   return Category.create(
-    params.id,
-    params.name,
-    params.color,
-    DEFAULT_ID,
-    params.idProject
+    new IdCategory(params.id),
+    new CategoryName(params.name),
+    new CategoryColor(params.color),
+    new IdEntity(DEFAULT_ID),
+    new IdEntity(params.idProject)
   );
 };
 

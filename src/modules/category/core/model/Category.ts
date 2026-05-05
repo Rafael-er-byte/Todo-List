@@ -36,25 +36,21 @@ export default class Category extends Entity {
   }
 
   public static create(
-    id: string,
-    name: string,
-    color: string,
-    actorId: string,
-    projectID: string,
+    id: IdCategory,
+    name: CategoryName,
+    color: CategoryColor,
+    actorId: IdEntity,
+    projectID: IdProject,
   ) {
-    const idCategory = new IdCategory(id);
-    const projectId = new IdEntity(projectID);
-    const actor = new IdEntity(actorId);
-    
     const category = new Category(
-      new CategoryName(name),
-      new CategoryColor(color as AllowedColors),
-      projectId,
-      idCategory,
+      name,
+      color,
+      projectID,
+      id,
     );
 
     category.create();
-    category.addEvent(new CategoryCreated(DateTime.now(), actor, projectId, idCategory));
+    category.addEvent(new CategoryCreated(DateTime.now(), actorId, projectID, id));
     return category;
   }
 

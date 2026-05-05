@@ -2,34 +2,39 @@ import Version from "../../../../../src/modules/shared/core/objects/Version";
 import DeletedAt from "../../../../../src/modules/shared/core/objects/DeletedAt";
 import Entity from "../../../../../src/modules/shared/core/model/Entity";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
-import type EntityPrimitives from "../../../../../src/modules/shared/core/model/contracts/EntityPrimitives";
 import ID from "../../../../../src/modules/shared/core/objects/ID";
 import DateTime from "../../../../../src/modules/shared/core/objects/DateTime";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
+import None from "../../../../../src/modules/shared/core/objects/None";
+import isNone from "../../../../../src/modules/shared/helpers/isNone";
 
 describe('Entity abstract class', () => {
 
+    interface TestParams{
+        idEntity: string,
+        version: number,
+        internalId: number | null,
+        deletedAt: Date | null  
+    }
+
     class TestEntity extends Entity {
-        constructor(idEntity: IdEntity, internalId?: InternalId) {
+        constructor(idEntity: IdEntity, internalId: InternalId | None) {
             super(idEntity, internalId);
         }
 
-        static create(idEntity: IdEntity, internalId?: InternalId): TestEntity {
+        static create(idEntity: IdEntity, internalId: InternalId | None): TestEntity {
             const instance = new TestEntity(idEntity, internalId);
             instance.create();
             return instance;
         }
 
         static fromPrimitives(
-            version: Version,
-            deletedAt: DeletedAt,
-            idEntity: IdEntity,
-            internalId?: InternalId
+            params: TestParams
         ): TestEntity {
-            const instance = new TestEntity(idEntity, internalId);
-            instance.build(version, deletedAt);
+            const instance = new TestEntity(new IdEntity(params.idEntity), params.internalId? new InternalId(params.internalId): new None());
+            instance.build(new Version(params.version), params.deletedAt? DeletedAt.createDeleted(DateTime.create(params.deletedAt)): DeletedAt.createActive());
             return instance;
         }
 
@@ -65,12 +70,17 @@ describe('Entity abstract class', () => {
             return super.getID();
         }
 
-        getInternalId(): InternalId | undefined {
+        getInternalId(): InternalId | None {
             return super.getInternalId();
         }
 
-        toPrimitives(): EntityPrimitives {
-            return this.entityPrimitives();
+        toPrimitives(): TestParams {
+            return {
+                idEntity: super.getID().getID(),
+                version: super.getVersion().valueOf(),
+                internalId: isNone(super.getInternalId())? null: (super.getInternalId() as InternalId).getId(),
+                deletedAt: super.getDeletedAt().exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date 
+            };
         }
     }
 
@@ -143,10 +153,12 @@ describe('Entity abstract class', () => {
         const deletedAt = DeletedAt.delete();
 
         const entity = TestEntity.fromPrimitives(
-            new Version(1),
-            deletedAt,
-            idEntity,
-            new InternalId(12)
+            {
+                idEntity: idEntity.getID(),
+                version: 5,
+                internalId: 10,
+                deletedAt: (deletedAt.getDeletedTime() as DateTime).getDate() as Date
+            }
         );
 
         expect(entity.exists()).toBe(false);
@@ -185,22 +197,22 @@ describe('Entity abstract class', () => {
         const primitives = entity.toPrimitives();
 
         const reconstructed = TestEntity.fromPrimitives(
-            new Version(primitives.version),
-            primitives.deletedAt
-                ? DeletedAt.createDeleted(DateTime.now())
-                : DeletedAt.createActive(),
-            new IdEntity(primitives.idEntity)
+            {
+                idEntity: primitives.idEntity,
+                version: primitives.version,
+                internalId: primitives.internalId,
+                deletedAt: primitives.deletedAt
+            }
         );
 
         expect(reconstructed.getID().getID()).toBe(primitives.idEntity);
         expect(reconstructed.getVersion().valueOf()).toBe(primitives.version);
     });
 
-    it("should return undefined for internalId if not provided", () => {
+    it("should return None objectfor internalId if not provided", () => {
         const idEntity = new IdEntity(ID.generateId().getId());
-        const entity = TestEntity.create(idEntity);
+        const entity = TestEntity.create(idEntity, new None());
 
-        expect(entity.getInternalId()).toBeUndefined();
+        expect(entity.getInternalId()).toBeInstanceOf(None);
     });
-
 });
