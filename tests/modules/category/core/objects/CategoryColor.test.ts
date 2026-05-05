@@ -10,8 +10,8 @@ describe('Category color tests', () => {
     });
 
     it('Should thorw if the color is not valid', () => {
-        expect(() => new CategoryColor('not valid')).toThrow(CategoryColorNotSupported);
-        expect(() => new CategoryColor('red')).toThrow(CategoryColorNotSupported);
-        expect(() => new CategoryColor('')).toThrow(CategoryColorNotSupported);
+        expect(() => new CategoryColor('not valid' as any)).toThrow(CategoryColorNotSupported);
+        expect(() => new CategoryColor('red' as any)).toThrow(CategoryColorNotSupported);
+        expect(() => new CategoryColor('' as any)).toThrow(CategoryColorNotSupported);
     });
 });
