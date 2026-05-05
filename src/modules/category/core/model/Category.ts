@@ -13,9 +13,10 @@ import InternalId from '../../../shared/core/objects/InternalId';
 import type CategoryParams from '../interfaces/CategoryParams';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import type DomainEvent from '../../../shared/core/events/DomainEvent';
-import type None from '../../../shared/core/objects/None';
+import None from '../../../shared/core/objects/None';
 import CategoryDeleted from '../events/CategoryDeleted';
 import type { AllowedColors } from '../types/AllowedColors';
+import isNone from '../../../shared/helpers/isNone';
 
 export default class Category extends Entity {
   private name!: CategoryName;
@@ -27,7 +28,7 @@ export default class Category extends Entity {
     color: CategoryColor,
     idProject: IdProject,
     idEntity: IdCategory,
-    internalId?: InternalId,
+    internalId: InternalId | None,
   ) {
     super(idEntity, internalId);
     this.name = name;
@@ -47,6 +48,7 @@ export default class Category extends Entity {
       color,
       projectID,
       id,
+      new None()
     );
 
     category.create();
@@ -85,8 +87,8 @@ export default class Category extends Entity {
     );
   }
 
-  public getId(): string {
-    return super.getID().getID();
+  public getId(): IdCategory {
+    return super.getID();
   }
 
   public exists(): boolean {
@@ -117,16 +119,14 @@ export default class Category extends Entity {
   }
 
   public toPrimitives(): CategoryParams {
-    const deletedTime = super.exists()? undefined: super.getDeletedAt().getDeletedTime() as DateTime;
-
     return {
       id: super.getID().getID(),
       idProject: this.idProject.getID(),
       name: this.name.getName(),
       color: this.color.getColor(),
       version: super.getVersion().valueOf(),
-      deletedAt: deletedTime? deletedTime.getDate() as Date: undefined,
-      internalId: super.getInternalId()?.getId()
+      deletedAt: super.exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date,
+      internalId: isNone(super.getInternalId()) ? null : (super.getInternalId() as InternalId).getId()
     };
   }
 }

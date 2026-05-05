@@ -17,9 +17,9 @@ const createCategoryParams = (
     name: string;
     color: AllowedColors;
     version: number;
-    deletedAt: Date | undefined;
+    deletedAt: Date | null;
     idActor: string;
-    internalId: unknown;
+    internalId: number | null;
   }>
 ) => ({
   id: DEFAULT_ID,
@@ -27,8 +27,8 @@ const createCategoryParams = (
   name: "Backlog",
   color: AllowedColors.BLACK,
   version: 1,
-  deletedAt: undefined,
-  internalId: undefined,
+  deletedAt: null,
+  internalId: null,
   ...overrides
 });
 
@@ -54,7 +54,7 @@ describe("Category Entity", () => {
     it("should create a valid category", () => {
       const category = buildCategory();
 
-      expect(category.getId()).toBe(DEFAULT_ID);
+      expect(category.getId().getID()).toBe(DEFAULT_ID);
       expect(category.exists()).toBe(true);
     });
   });
@@ -104,7 +104,7 @@ describe("Category Entity", () => {
 
     it("should delete a category", () => {
       const category = Category.fromPrimitives(
-        createCategoryParams({ deletedAt: undefined, internalId: 1 })
+        createCategoryParams({ deletedAt: null, internalId: 1 })
       );
 
       category.pullEvents();

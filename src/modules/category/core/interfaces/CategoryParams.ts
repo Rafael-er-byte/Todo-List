@@ -4,6 +4,6 @@ export default interface CategoryParams {
   name: string;
   color: string;
   version: number;
-  deletedAt?: unknown;
-  internalId?: unknown;
+  deletedAt?: Date | null;
+  internalId?: number | null;
 }
