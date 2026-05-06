@@ -23,10 +23,6 @@ export default class MemberStatus extends ValueObject {
     return new MemberStatus(AllowedMemberStatus.active);
   }
 
-  public static deleted(): MemberStatus {
-    return new MemberStatus(AllowedMemberStatus.deleted);
-  }
-
   public getStatus(): AllowedMemberStatus {
     return this.status;
   }
@@ -34,8 +30,5 @@ export default class MemberStatus extends ValueObject {
   public isBlocked(): boolean {
     return this.status === ALLOWED_MEMBER_STATUS[0];
   }
-
-  public isDeleted(): boolean {
-    return this.status === ALLOWED_MEMBER_STATUS[2];
-  }
+  
 }

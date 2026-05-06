@@ -14,36 +14,5 @@ export default class MemberRole extends ValueObject {
   public getRole(): AllowedMemberRoles {
     return this.role;
   }
-
-  public canManageProject(): boolean {
-    return this.role === AllowedMemberRoles.owner;
-  }
-
-  public canManageMembers(): boolean {
-    return this.canManageProject() || this.role === AllowedMemberRoles.manager;
-  }
-
-  public canManageCategories(): boolean {
-    return this.canManageProject() || this.role === AllowedMemberRoles.manager;
-  }
-
-  public canManageLists(): boolean {
-    return this.canManageProject() || this.role === AllowedMemberRoles.manager;
-  }
-
-  public canManageTasks(): boolean {
-    return (
-      this.canManageProject() ||
-      this.role === AllowedMemberRoles.manager ||
-      this.role === AllowedMemberRoles.contributor
-    );
-  }
-
-  public canUpdateTasks(): boolean {
-    return (
-      this.canManageProject() ||
-      this.canManageTasks() ||
-      this.role === AllowedMemberRoles.colaborator
-    );
-  }
+  
 }

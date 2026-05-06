@@ -1,11 +1,11 @@
-import type MemberInfo from '../objects/MemberInfo';
+import type { Image } from '../../../shared/core/types/ImageTypes';
 import type { AllowedMemberRoles } from '../types/AllowedMemberRoles';
 import type { AllowedMemberStatus } from '../types/AllowedMemberStatus';
 
-export default interface iMemberParams {
+export default interface MemberParams {
   id: string;
   idProject: string;
   status: AllowedMemberStatus;
   role: AllowedMemberRoles;
-  memberInfo: MemberInfo;
+  urlProfileImage: Image | null;
 }

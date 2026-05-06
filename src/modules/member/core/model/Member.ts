@@ -2,7 +2,7 @@ import IdMember from '../objects/IdMember';
 import MemberStatus from '../objects/MemberStatus';
 import MemberRole from '../objects/MemberRole';
 import Entity from '../../../shared/core/model/Entity';
-import type iMemberParams from '../interfaces/iMemberParams';
+import type iMemberParams from '../interfaces/MemberParams';
 import MemberInfo from '../objects/MemberInfo';
 import type { AllowedMemberRoles } from '../types/AllowedMemberRoles';
 import type { AllowedMemberStatus } from '../types/AllowedMemberStatus';

@@ -7,7 +7,7 @@ export default class ProfileImageUrl extends ValueObject{
 
     constructor(attach: Attachment){
         super();
-        if(!Attachment.isImage(attach))throw new InvalidParameters('Profile image must be an image');
+        if(!Attachment.isImage(attach))throw new InvalidParameters('Profile image must be a valid image');
         this.attachment = attach;
     }
 
