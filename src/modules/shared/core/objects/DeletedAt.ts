@@ -8,6 +8,11 @@ export default class DeletedAt{
         this.deletedAt = deletedAt;
     }
 
+    static createFromPrimitive(date: Date | null): DeletedAt{
+        if(date instanceof Date) return DeletedAt.createDeleted(DateTime.create(date));
+        return DeletedAt.createActive();
+    }
+
     static createDeleted(date: DateTime): DeletedAt{
         return new DeletedAt(date);
     }
@@ -26,5 +31,9 @@ export default class DeletedAt{
 
     public static delete(): DeletedAt {
         return new DeletedAt(DateTime.now());
+    }
+
+    public toPrimitive(): Date | null{
+        return this.exists()? null: (this.getDeletedTime() as DateTime).getDate() as Date
     }
 }

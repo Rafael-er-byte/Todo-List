@@ -83,7 +83,7 @@ export default class Member extends Entity {
       new ProjectMetadata()  
     );
 
-    member.build(new Version(params.version as number), (params.deletedAt instanceof Date)? DeletedAt.createDeleted(DateTime.create(params.deletedAt)): DeletedAt.createActive());
+    member.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
     return member;
   }
 

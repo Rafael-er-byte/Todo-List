@@ -1,3 +1,4 @@
+import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 import ValueObject from '../../../shared/core/objects/ValueObject';
 import MemberStatusNotSupported from '../error/MemberStatusNotSupported';
 import { ALLOWED_MEMBER_STATUS, AllowedMemberStatus } from '../types/AllowedMemberStatus';
@@ -16,6 +17,7 @@ export default class MemberStatus extends ValueObject {
   }
 
   public static createFromPrimitive(status: string): MemberStatus{
+    if(!ALLOWED_MEMBER_STATUS.includes(status as AllowedMemberStatus))throw new InvalidParameters('The status is not supported');
     if(status !== AllowedMemberStatus.active) return MemberStatus.blocked();
     return MemberStatus.active();
   }

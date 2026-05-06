@@ -68,7 +68,7 @@ export default class Category extends Entity {
 
       category.build(
         new Version(params.version), 
-        params.deletedAt ? DeletedAt.createDeleted(DateTime.create(params.deletedAt as Date)) : DeletedAt.createActive()
+        DeletedAt.createFromPrimitive(params.deletedAt)
       );
 
       return category;
@@ -126,7 +126,7 @@ export default class Category extends Entity {
       name: this.name.getName(),
       color: this.color.getColor(),
       version: super.getVersion().valueOf(),
-      deletedAt: super.exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date,
+      deletedAt: super.getDeletedAt().toPrimitive(),
       internalId: isNone(super.getInternalId()) ? null : (super.getInternalId() as InternalId).getId()
     };
   }
