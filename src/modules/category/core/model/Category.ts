@@ -37,6 +37,7 @@ export default class Category extends Entity {
   }
 
   public static create(
+    key: string,
     id: IdCategory,
     name: CategoryName,
     color: CategoryColor,
@@ -52,7 +53,7 @@ export default class Category extends Entity {
     );
 
     category.create();
-    category.addEvent(new CategoryCreated(DateTime.now(), actorId, projectID, id));
+    category.addEvent(new CategoryCreated(key, DateTime.now(), actorId, projectID, id));
     return category;
   }
 
@@ -73,17 +74,17 @@ export default class Category extends Entity {
       return category;
   }
 
-  public updateName(name: CategoryName, actor: IdEntity): void {
+  public updateName(key: string, name: CategoryName, actor: IdEntity): void {
     this.name = name;
     this.addEvent(
-      new CategoryNameChanged(DateTime.now(), actor, this.idProject, super.getID(), name)
+      new CategoryNameChanged(key, DateTime.now(), actor, this.idProject, super.getID(), name)
     );
   }
 
-  public updateColor(color: CategoryColor, actor: IdEntity): void {
+  public updateColor(key: string, color: CategoryColor, actor: IdEntity): void {
     this.color = color;
     this.addEvent(
-      new CategoryColorChanged(DateTime.now(), actor, this.idProject, super.getID(), color),
+      new CategoryColorChanged(key, DateTime.now(), actor, this.idProject, super.getID(), color),
     );
   }
 
@@ -111,9 +112,9 @@ export default class Category extends Entity {
     return super.pullEvents();
   }
 
-  public delete(actor: IdEntity): void{
+  public delete(key: string, actor: IdEntity): void{
     super.addEvent(
-      new CategoryDeleted(DateTime.now(), actor, this.idProject, super.getID())
+      new CategoryDeleted(key, DateTime.now(), actor, this.idProject, super.getID())
     );
     super.softDelete();
   }

@@ -3,7 +3,6 @@ import MemberStatus from '../objects/MemberStatus';
 import MemberRole from '../objects/MemberRole';
 import Entity from '../../../shared/core/model/Entity';
 import type iMemberParams from '../interfaces/MemberParams';
-import MemberInfo from '../objects/MemberInfo';
 import type { AllowedMemberRoles } from '../types/AllowedMemberRoles';
 import type { AllowedMemberStatus } from '../types/AllowedMemberStatus';
 import MemberAddedToProject from '../events/MemberAddedToProject';
@@ -13,59 +12,79 @@ import MemberActived from '../events/MemberActived';
 import MemberChangedRole from '../events/MemberRoleChanged';
 import MemberDeleted from '../events/MemberDeleted';
 import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
-import IdProject from '../../../shared/core/objects/IdProject'; 
+import None from '../../../shared/core/objects/None';
+import ProjectMetadata from '../objects/ProjectMetadata';
+import IdEntity from '../../../shared/core/objects/IdEntity';
+import type MemberParams from '../interfaces/MemberParams';
+import Version from '../../../shared/core/objects/Version';
+import DeletedAt from '../../../shared/core/objects/DeletedAt';
+import InternalId from '../../../shared/core/objects/InternalId';
 
 export default class Member extends Entity {
-  private id!: IdMember;
-  private idProject!: IdProject;
+  private idProject!: IdEntity;
   private status!: MemberStatus;
   private role!: MemberRole;
-  private memberInfo!: MemberInfo;
+  private idAccount!: IdEntity;
+  private projectMetadata!: ProjectMetadata;
 
   private constructor(
     id: IdMember,
-    idProject: IdProject,
+    internalID: InternalId | None,
+    idProject: IdEntity,
+    idAccount: IdEntity,
     status: MemberStatus,
     role: MemberRole,
-    memberInfo: MemberInfo,
+    projectMetadata: ProjectMetadata
   ) {
-    super();
-    this.id = id;
+    super(id, internalID);
+    this.idAccount = idAccount;
     this.idProject = idProject;
     this.status = status;
     this.role = role;
-    if (!(memberInfo instanceof MemberInfo))
-      throw new InvalidParameters('Member Info is not valid');
-    this.memberInfo = memberInfo;
+    this.projectMetadata = projectMetadata;
   }
 
-  public static create(params: iMemberParams, modifier: Member): Member {
-    const idMember = new IdMember(params.id);
-    const projectId = new IdProject(params.idProject);
-    const memberRole = new MemberRole(params.role as AllowedMemberRoles);
+  public static create(
+    idMember:IdMember,
+    idProject: IdEntity,
+    idAccount: IdEntity,
+    role: MemberRole,
+    status: MemberStatus,
+    modifier: IdEntity,
+    key: string
 
+  ): Member {
+  
     const member = new Member(
       idMember,
-      projectId,
-      MemberStatus.create(params.status as AllowedMemberStatus),
-      memberRole,
-      params.memberInfo,
+      new None(),
+      idProject,
+      idAccount,
+      status,
+      role,
+      new ProjectMetadata(false, false)
     );
 
+    member.create();
     member.addEvent(
-      new MemberAddedToProject(DateTime.now(), modifier, projectId, idMember, params),
+      new MemberAddedToProject(key, DateTime.now(), modifier, idProject, idMember, member.toPrimitives()),
     );
     return member;
   }
 
-  public static fromPrimitives(params: iMemberParams): Member {
-    return new Member(
+  public static fromPrimitives(params: MemberParams): Member {
+    const member = new Member(
       new IdMember(params.id),
-      new IdProject(params.idProject),
-      MemberStatus.create(params.status as AllowedMemberStatus),
-      new MemberRole(params.role as AllowedMemberRoles),
-      params.memberInfo,
+      new InternalId(params.idInternal as number),
+      new IdEntity(params.idProject),
+      new IdEntity(params.idAccount),
+      MemberStatus.createFromPrimitive(params.status),
+      new MemberRole(params.role),
+      new ProjectMetadata()  
     );
+
+    member.build(new Version(params.version as number), (params.deletedAt instanceof Date)? DeletedAt.createDeleted(DateTime.create(params.deletedAt)): DeletedAt.createActive());
+    return member;
   }
 
   public block(modifier: Member): void {

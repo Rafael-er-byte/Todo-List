@@ -15,6 +15,11 @@ export default class MemberStatus extends ValueObject {
     return new MemberStatus(status);
   }
 
+  public static createFromPrimitive(status: string): MemberStatus{
+    if(status !== AllowedMemberStatus.active) return MemberStatus.blocked();
+    return MemberStatus.active();
+  }
+
   public static blocked(): MemberStatus {
     return new MemberStatus(AllowedMemberStatus.blocked);
   }
@@ -30,5 +35,5 @@ export default class MemberStatus extends ValueObject {
   public isBlocked(): boolean {
     return this.status === ALLOWED_MEMBER_STATUS[0];
   }
-  
+
 }
