@@ -1,15 +1,11 @@
 export const ALLOWED_MEMBER_ROLES = [
-  'OWNER',
-  'MANAGER',
-  'COLABORATOR',
-  'CONTRIBUTOR',
+  'ADMIN',
+  'MEMBER',
   'AUDITOR',
 ] as const;
 
 export enum AllowedMemberRoles {
-  owner = 'OWNER',
-  manager = 'MANAGER',
-  colaborator = 'COLABORATOR',
-  contributor = 'CONTRIBUTOR',
+  admin = 'ADMIN',
+  member = 'MEMBER',
   auditor = 'AUDITOR',
 }
