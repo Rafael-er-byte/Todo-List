@@ -1,11 +1,10 @@
 import DomainEvent from '../../../shared/core/events/DomainEvent';
 import type DateTime from '../../../shared/core/objects/DateTime';
 import type IdEntity from '../../../shared/core/objects/IdEntity';
-import type Member from '../model/Member';
-import type IdMember from '../objects/IdMember';
+import ID from '../../../shared/core/objects/ID';
 
 export default class MemberActived extends DomainEvent {
-  constructor(date: DateTime, modifier: Member, idProject: IdEntity, idEntity: IdMember) {
-    super(date, modifier, idProject, idEntity, 'MEMBER_ACTIVED');
+  constructor(date: DateTime, actor: IdEntity, idProject: IdEntity, idEntity: IdEntity) {
+    super(ID.generateId(), date, actor, idProject, idEntity, 'MEMBER_ACTIVED');
   }
 }

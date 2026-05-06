@@ -2,17 +2,16 @@ import DomainEvent from '../../../shared/core/events/DomainEvent';
 import type DateTime from '../../../shared/core/objects/DateTime';
 import type IdEntity from '../../../shared/core/objects/IdEntity';
 import type iMemberParams from '../interfaces/MemberParams';
-import type Member from '../model/Member';
-import type IdMember from '../objects/IdMember';
+import ID from '../../../shared/core/objects/ID';
 
 export default class MemberAddedToProject extends DomainEvent {
   constructor(
     date: DateTime,
-    modifier: Member,
+    actor: IdEntity,
     idProject: IdEntity,
-    idEntity: IdMember,
+    idEntity: IdEntity,
     params: iMemberParams,
   ) {
-    super(date, modifier, idProject, idEntity, 'MEMBER_ADDED_TO_PROJECT', params);
+    super(ID.generateId(), date, actor, idProject, idEntity, 'MEMBER_ADDED_TO_PROJECT', params);
   }
 }

@@ -1,18 +1,17 @@
 import DomainEvent from '../../../shared/core/events/DomainEvent';
 import type DateTime from '../../../shared/core/objects/DateTime';
 import type IdEntity from '../../../shared/core/objects/IdEntity';
-import type Member from '../model/Member';
-import type IdMember from '../objects/IdMember';
 import type MemberRole from '../objects/MemberRole';
+import ID from '../../../shared/core/objects/ID';
 
 export default class MemberChangedRole extends DomainEvent {
   constructor(
     date: DateTime,
-    modifier: Member,
+    actor: IdEntity,
     idProject: IdEntity,
-    idEntity: IdMember,
+    idEntity: IdEntity,
     newRole: MemberRole,
   ) {
-    super(date, modifier, idProject, idEntity, 'MEMBER_CHANGED_ROLE', newRole);
+    super(ID.generateId(), date, actor, idProject, idEntity, 'MEMBER_CHANGED_ROLE', newRole);
   }
 }
