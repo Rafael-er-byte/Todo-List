@@ -1,5 +1,5 @@
 export default class MemberRules {
-  private static MAX_NAME_SIZE: number = 150;
+  private static MAX_NAME_SIZE: number = 255;
   private static ATTACHMENT_TYPE: string = 'IMAGE';
   private static MAX_ATTACHMENT_MB_SIZE: number = 250;
 
