@@ -12,11 +12,10 @@ import Version from '../../../shared/core/objects/Version';
 import InternalId from '../../../shared/core/objects/InternalId';
 import type CategoryParams from '../interfaces/CategoryParams';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import type DomainEvent from '../../../shared/core/events/DomainEvent';
 import None from '../../../shared/core/objects/None';
 import CategoryDeleted from '../events/CategoryDeleted';
 import type { AllowedColors } from '../types/AllowedColors';
-import isNone from '../../../shared/helpers/isNone';
+import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
 
 export default class Category extends Entity {
   private name!: CategoryName;
@@ -88,30 +87,6 @@ export default class Category extends Entity {
     );
   }
 
-  public getId(): IdCategory {
-    return super.getID();
-  }
-
-  public exists(): boolean {
-    return super.exists();
-  }
-
-  public getVersion(): Version {
-    return super.getVersion();
-  }
-
-  public getDeletedTime(): DateTime | None {
-    return super.getDeletedAt().getDeletedTime();
-  }
-
-  public getLastUpdate(): DateTime {
-    return super.getLastUpdate();
-  }
-
-  public pullEvents(): DomainEvent[]{
-    return super.pullEvents();
-  }
-
   public delete(key: string, actor: IdEntity): void{
     super.addEvent(
       new CategoryDeleted(key, DateTime.now(), actor, this.idProject, super.getID())
@@ -127,7 +102,7 @@ export default class Category extends Entity {
       color: this.color.getColor(),
       version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
-      internalId: isNone(super.getInternalId()) ? null : (super.getInternalId() as InternalId).getId()
+      internalId: internalIdToPrimitive(super.getInternalId()),
     };
   }
 }

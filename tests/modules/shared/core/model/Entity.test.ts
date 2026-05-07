@@ -42,36 +42,8 @@ describe('Entity abstract class', () => {
             super.addEvent(event);
         }
 
-        pullEvents(): DomainEvent[] {
-            return super.pullEvents();
-        }
-
-        getLastUpdate(): DateTime {
-            return super.getLastUpdate();
-        }
-
-        getVersion(): Version {
-            return super.getVersion();
-        }
-
-        getDeletedAt(): DeletedAt {
-            return super.getDeletedAt();
-        }
-
-        exists(): boolean {
-            return super.exists();
-        }
-
         delete(): void {
             super.softDelete();
-        }
-
-        getID(): IdEntity {
-            return super.getID();
-        }
-
-        getInternalId(): InternalId | None {
-            return super.getInternalId();
         }
 
         toPrimitives(): TestParams {
@@ -94,7 +66,7 @@ describe('Entity abstract class', () => {
         const projectInfo = new IdEntity(ID.generateId().getId());
 
         return new DomainEvent(
-            ID.generateId(),
+            ID.generateId().getId(),
             DateTime.now(),
             new IdEntity(ID.generateId().getId()),
             projectInfo,

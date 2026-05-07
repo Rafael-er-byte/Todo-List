@@ -42,37 +42,37 @@ export default abstract class Entity {
     this.deletedAt = deletedAt;
   }
 
-  protected pullEvents(): DomainEvent[] {
+  protected softDelete(): void {
+    this.deletedAt = DeletedAt.delete();
+  }
+
+  public pullEvents(): DomainEvent[] {
     const events = this.tmpHistory;
     this.tmpHistory = [];
     return events;
   }
 
-  protected getLastUpdate(): DateTime {
+  public getLastUpdate(): DateTime {
     return this.lastUpdate;
   }
 
-  protected getInternalId(): InternalId | None {
+  public getInternalId(): InternalId | None {
     return this.internalId;
   }
 
-  protected softDelete(): void {
-    this.deletedAt = DeletedAt.delete();
-  }
-
-  protected getVersion(): Version{
+  public getVersion(): Version{
     return this.version;  
   }
 
-  protected getDeletedAt(): DeletedAt {
+  public getDeletedAt(): DeletedAt {
     return this.deletedAt;
   }
 
-  protected exists(): boolean {
+  public exists(): boolean {
     return this.deletedAt.exists();
   }
 
-  protected getID(): IdEntity{
+  public getID(): IdEntity{
     return this.idEntity;
   }
 

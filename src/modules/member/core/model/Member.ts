@@ -3,15 +3,12 @@ import MemberStatus from '../objects/MemberStatus';
 import MemberRole from '../objects/MemberRole';
 import Entity from '../../../shared/core/model/Entity';
 import type iMemberParams from '../interfaces/MemberParams';
-import type { AllowedMemberRoles } from '../types/AllowedMemberRoles';
-import type { AllowedMemberStatus } from '../types/AllowedMemberStatus';
 import MemberAddedToProject from '../events/MemberAddedToProject';
 import DateTime from '../../../shared/core/objects/DateTime';
 import MemberBlocked from '../events/MemberBlocked';
 import MemberActived from '../events/MemberActived';
 import MemberChangedRole from '../events/MemberRoleChanged';
 import MemberDeleted from '../events/MemberDeleted';
-import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 import None from '../../../shared/core/objects/None';
 import ProjectMetadata from '../objects/ProjectMetadata';
 import IdEntity from '../../../shared/core/objects/IdEntity';
@@ -19,6 +16,7 @@ import type MemberParams from '../interfaces/MemberParams';
 import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import InternalId from '../../../shared/core/objects/InternalId';
+import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
 
 export default class Member extends Entity {
   private idProject!: IdEntity;
@@ -87,69 +85,40 @@ export default class Member extends Entity {
     return member;
   }
 
-  public block(modifier: Member): void {
+  public block(key: string, actor: IdEntity): void {
     this.status = MemberStatus.blocked();
-    this.addEvent(new MemberBlocked(DateTime.now(), modifier, this.idProject, this.id));
+    this.addEvent(new MemberBlocked(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
-  public unBlock(modifier: Member): void {
+  public unBlock(key: string, actor: IdEntity): void {
     this.status = MemberStatus.active();
-    this.addEvent(new MemberActived(DateTime.now(), modifier, this.idProject, this.id));
+    this.addEvent(new MemberActived(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
-  public changeRole(role: MemberRole, modifier: Member): void {
+  public changeRole(key: string, actor: IdEntity, role: MemberRole): void {
     this.role = role;
-    this.addEvent(new MemberChangedRole(DateTime.now(), modifier, this.idProject, this.id, role));
+    this.addEvent(new MemberChangedRole(key, DateTime.now(), actor, this.idProject, super.getID(), role));
   }
 
-  public delete(modifier: Member): void {
-    this.status = MemberStatus.deleted();
-    this.addEvent(new MemberDeleted(DateTime.now(), modifier, this.idProject, this.id));
+  public delete(key: string, actor: IdEntity): void {
+    super.softDelete();
+    this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
   public isBlocked(): boolean {
     return this.status.isBlocked();
   }
 
-  public exists(): boolean {
-    return !this.status.isDeleted();
-  }
-
-  public canManageProject(): boolean {
-    return this.role.canManageProject();
-  }
-
-  public canManageMembers(): boolean {
-    return this.role.canManageMembers();
-  }
-
-  public canManageCategories(): boolean {
-    return this.role.canManageCategories();
-  }
-
-  public canManageLists(): boolean {
-    return this.role.canManageLists();
-  }
-
-  public canManageTasks(): boolean {
-    return this.role.canManageTasks();
-  }
-
-  public canUpdateTasks(): boolean {
-    return this.role.canUpdateTasks();
-  }
-
-  public getId(): string {
-    return this.id.getID();
-  }
-
-  public toPrimitives(): iMemberParams {
+  public toPrimitives(): MemberParams {
     return {
-      id: this.id.getID(),
+      id: super.getID().getID(),
       idProject: this.idProject.getID(),
+      idAccount: this.idAccount.getID(),
       status: this.status.getStatus(),
       role: this.role.getRole(),
-      memberInfo: this.memberInfo,
+      idInternal: internalIdToPrimitive(super.getInternalId()),
+      version: super.getVersion().valueOf(),
+      deletedAt: super.getDeletedAt().toPrimitive()
     };
   }
 }
