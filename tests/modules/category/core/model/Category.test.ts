@@ -20,6 +20,7 @@ const createCategoryParams = (
     deletedAt: Date | null;
     idActor: string;
     internalId: number | null;
+    key: string;
   }>
 ) => ({
   id: DEFAULT_ID,
@@ -29,6 +30,7 @@ const createCategoryParams = (
   version: 1,
   deletedAt: null,
   internalId: null,
+  key: "test-key",
   ...overrides
 });
 
@@ -36,6 +38,7 @@ const buildCategory = (overrides?: Parameters<typeof createCategoryParams>[0]) =
   const params = createCategoryParams(overrides);
 
   return Category.create(
+    params.key,
     new IdCategory(params.id),
     new CategoryName(params.name),
     new CategoryColor(params.color),
@@ -54,7 +57,7 @@ describe("Category Entity", () => {
     it("should create a valid category", () => {
       const category = buildCategory();
 
-      expect(category.getId().getID()).toBe(DEFAULT_ID);
+      expect(category.getID().getID()).toBe(DEFAULT_ID);
       expect(category.exists()).toBe(true);
     });
   });
@@ -66,7 +69,7 @@ describe("Category Entity", () => {
 
       category.pullEvents();
 
-      category.updateName(new CategoryName("In Progress"), IDMock);
+      category.updateName("test-key-2", new CategoryName("In Progress"), IDMock);
 
       expect(category.toPrimitives().name).toBe("In Progress");
 
@@ -82,7 +85,7 @@ describe("Category Entity", () => {
 
       category.pullEvents();
 
-      category.updateColor(new CategoryColor(AllowedColors.BLUE), IDMock);
+      category.updateColor("test-key-3", new CategoryColor(AllowedColors.BLUE), IDMock);
 
       expect(category.toPrimitives().color).toBe(AllowedColors.BLUE);
 
@@ -111,7 +114,7 @@ describe("Category Entity", () => {
 
       expect(category.exists()).toBe(true);
 
-      category.delete(IDMock);
+      category.delete("test-key-4", IDMock);
 
       expect(category.exists()).toBe(false);
 
@@ -119,7 +122,7 @@ describe("Category Entity", () => {
       expect(event!.getEvent()).toBe("CATEGORY_DELETED");
 
       expect(() =>
-        category.updateName(new CategoryName("New Name"), IDMock)
+        category.updateName("test-key-5", new CategoryName("New Name"), IDMock)
       ).toThrow(ResourceNotFound);
     });
 
@@ -147,8 +150,8 @@ describe("Category Entity", () => {
     it("should reflect updated values in serialization", () => {
       const category = buildCategory();
 
-      category.updateName(new CategoryName("Done"), IDMock);
-      category.updateColor(new CategoryColor(AllowedColors.BLUE), IDMock);
+      category.updateName("test-key-6", new CategoryName("Done"), IDMock);
+      category.updateColor("test-key-7", new CategoryColor(AllowedColors.BLUE), IDMock);
 
       const primitives = category.toPrimitives();
 
@@ -159,7 +162,7 @@ describe("Category Entity", () => {
     it("should include deletedAt when category is deleted", () => {
       const category = buildCategory();
 
-      category.delete(IDMock);
+      category.delete("test-key-8", IDMock);
 
       const primitives = category.toPrimitives();
 

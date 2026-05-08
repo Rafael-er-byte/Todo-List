@@ -1,9 +1,35 @@
-export const ALLOWED_ATTACHMENTS = ['IMAGE', 'PDF', 'DOC', 'SPREADSHEET', 'VIDEO', 'LINK'] as const;
-export enum AllowedAttachents {
-  image = 'IMAGE',
-  pdf = 'PDF',
-  doc = 'DOC',
-  spreadsheet = 'SPREADSHEET',
-  video = 'VIDEO',
-  link = 'LINK',
+export const ALLOWED_ATTACHMENTS = [
+  '.pdf',
+  '.doc',
+  '.docx',
+  '.txt',
+  '.rtf',
+  '.xls',
+  '.xlsx',
+  '.csv',
+  '.ppt',
+  '.pptx',
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+] as const;
+
+export enum AllowedAttachments {
+  pdf = '.pdf',
+  doc = '.doc',
+  docx = '.docx',
+  txt = '.txt',
+  rtf = '.rtf',
+  xls = '.xls',
+  xlsx = '.xlsx',
+  csv = '.csv',
+  ppt = '.ppt',
+  pptx = '.pptx',
+  jpg = '.jpg',
+  jpeg = '.jpeg',
+  png = '.png',
+  gif = '.gif',
+  webp = '.webp',
 }

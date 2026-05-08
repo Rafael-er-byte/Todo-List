@@ -1,9 +1,8 @@
 import type DateTime from '../objects/DateTime';
-import ID from '../objects/ID';
 import type IdEntity from '../objects/IdEntity';
 
 export default class DomainEvent {
-  private eventId!: ID;
+  private eventId!: string;
   private eventDate!: DateTime;
   private actor!: IdEntity;
   private projectId!: IdEntity;
@@ -12,7 +11,7 @@ export default class DomainEvent {
   private info?: unknown;
 
   constructor(
-    eventId: ID,
+    eventId: string,
     eventDate: DateTime,
     actor: IdEntity,
     projectId: IdEntity,
@@ -45,7 +44,7 @@ export default class DomainEvent {
     return this.info;
   }
 
-  public getId(): ID {
+  public getId(): string {
     return this.eventId;
   }
 

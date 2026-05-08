@@ -1,3 +1,4 @@
+import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 import ValueObject from '../../../shared/core/objects/ValueObject';
 import MemberStatusNotSupported from '../error/MemberStatusNotSupported';
 import { ALLOWED_MEMBER_STATUS, AllowedMemberStatus } from '../types/AllowedMemberStatus';
@@ -23,10 +24,6 @@ export default class MemberStatus extends ValueObject {
     return new MemberStatus(AllowedMemberStatus.active);
   }
 
-  public static deleted(): MemberStatus {
-    return new MemberStatus(AllowedMemberStatus.deleted);
-  }
-
   public getStatus(): AllowedMemberStatus {
     return this.status;
   }
@@ -35,7 +32,4 @@ export default class MemberStatus extends ValueObject {
     return this.status === ALLOWED_MEMBER_STATUS[0];
   }
 
-  public isDeleted(): boolean {
-    return this.status === ALLOWED_MEMBER_STATUS[2];
-  }
 }

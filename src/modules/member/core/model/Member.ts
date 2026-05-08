@@ -2,135 +2,139 @@ import IdMember from '../objects/IdMember';
 import MemberStatus from '../objects/MemberStatus';
 import MemberRole from '../objects/MemberRole';
 import Entity from '../../../shared/core/model/Entity';
-import type iMemberParams from '../interfaces/iMemberParams';
-import MemberInfo from '../objects/MemberInfo';
-import type { AllowedMemberRoles } from '../types/AllowedMemberRoles';
-import type { AllowedMemberStatus } from '../types/AllowedMemberStatus';
 import MemberAddedToProject from '../events/MemberAddedToProject';
 import DateTime from '../../../shared/core/objects/DateTime';
 import MemberBlocked from '../events/MemberBlocked';
 import MemberActived from '../events/MemberActived';
 import MemberChangedRole from '../events/MemberRoleChanged';
 import MemberDeleted from '../events/MemberDeleted';
-import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
-import IdProject from '../../../shared/core/objects/IdProject'; 
+import None from '../../../shared/core/objects/None';
+import ProjectMetadata from '../objects/ProjectMetadata';
+import IdEntity from '../../../shared/core/objects/IdEntity';
+import type MemberParams from '../interfaces/MemberParams';
+import Version from '../../../shared/core/objects/Version';
+import DeletedAt from '../../../shared/core/objects/DeletedAt';
+import InternalId from '../../../shared/core/objects/InternalId';
+import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
+import MemberRoleChanged from '../events/MemberRoleChanged';
 
 export default class Member extends Entity {
-  private id!: IdMember;
-  private idProject!: IdProject;
+  private idProject!: IdEntity;
   private status!: MemberStatus;
   private role!: MemberRole;
-  private memberInfo!: MemberInfo;
+  private idAccount!: IdEntity;
+  private projectMetadata!: ProjectMetadata;
 
   private constructor(
     id: IdMember,
-    idProject: IdProject,
+    internalID: InternalId | None,
+    idProject: IdEntity,
+    idAccount: IdEntity,
     status: MemberStatus,
     role: MemberRole,
-    memberInfo: MemberInfo,
+    projectMetadata: ProjectMetadata
   ) {
-    super();
-    this.id = id;
+    super(id, internalID);
+    this.idAccount = idAccount;
     this.idProject = idProject;
     this.status = status;
     this.role = role;
-    if (!(memberInfo instanceof MemberInfo))
-      throw new InvalidParameters('Member Info is not valid');
-    this.memberInfo = memberInfo;
+    this.projectMetadata = projectMetadata;
   }
 
-  public static create(params: iMemberParams, modifier: Member): Member {
-    const idMember = new IdMember(params.id);
-    const projectId = new IdProject(params.idProject);
-    const memberRole = new MemberRole(params.role as AllowedMemberRoles);
+  public static create(
+    idMember:IdMember,
+    idProject: IdEntity,
+    idAccount: IdEntity,
+    role: MemberRole,
+    status: MemberStatus,
+    modifier: IdEntity,
+    key: string
 
+  ): Member {
+  
     const member = new Member(
       idMember,
-      projectId,
-      MemberStatus.create(params.status as AllowedMemberStatus),
-      memberRole,
-      params.memberInfo,
+      new None(),
+      idProject,
+      idAccount,
+      status,
+      role,
+      new ProjectMetadata(false, false)
     );
 
+    member.create();
     member.addEvent(
-      new MemberAddedToProject(DateTime.now(), modifier, projectId, idMember, params),
+      new MemberAddedToProject(key, DateTime.now(), modifier, idProject, idMember, member.toPrimitives()),
     );
     return member;
   }
 
-  public static fromPrimitives(params: iMemberParams): Member {
-    return new Member(
+  public static fromPrimitives(params: MemberParams): Member {
+    const member = new Member(
       new IdMember(params.id),
-      new IdProject(params.idProject),
-      MemberStatus.create(params.status as AllowedMemberStatus),
-      new MemberRole(params.role as AllowedMemberRoles),
-      params.memberInfo,
+      new InternalId(params.idInternal as number),
+      new IdEntity(params.idProject),
+      new IdEntity(params.idAccount),
+      MemberStatus.create(params.status),
+      new MemberRole(params.role),
+      new ProjectMetadata()  
     );
+
+    member.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
+    return member;
   }
 
-  public block(modifier: Member): void {
+  public block(key: string, actor: IdEntity): void {
     this.status = MemberStatus.blocked();
-    this.addEvent(new MemberBlocked(DateTime.now(), modifier, this.idProject, this.id));
+    this.addEvent(new MemberBlocked(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
-  public unBlock(modifier: Member): void {
+  public unBlock(key: string, actor: IdEntity): void {
     this.status = MemberStatus.active();
-    this.addEvent(new MemberActived(DateTime.now(), modifier, this.idProject, this.id));
+    this.addEvent(new MemberActived(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
-  public changeRole(role: MemberRole, modifier: Member): void {
+  public changeRole(key: string, actor: IdEntity, role: MemberRole): void {
     this.role = role;
-    this.addEvent(new MemberChangedRole(DateTime.now(), modifier, this.idProject, this.id, role));
+    this.addEvent(new MemberRoleChanged(key, DateTime.now(), actor, this.idProject, super.getID(), role));
   }
 
-  public delete(modifier: Member): void {
-    this.status = MemberStatus.deleted();
-    this.addEvent(new MemberDeleted(DateTime.now(), modifier, this.idProject, this.id));
+  public delete(key: string, actor: IdEntity): void {
+    this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.idProject, super.getID()));
+    super.softDelete();
   }
 
   public isBlocked(): boolean {
     return this.status.isBlocked();
   }
 
-  public exists(): boolean {
-    return !this.status.isDeleted();
+  public watchProject(): void {
+    this.projectMetadata = this.projectMetadata.watchProject();
   }
 
-  public canManageProject(): boolean {
-    return this.role.canManageProject();
+  public unWatchProject(): void {
+    this.projectMetadata = this.projectMetadata.unwatchProject();
   }
 
-  public canManageMembers(): boolean {
-    return this.role.canManageMembers();
+  public markAsFavorite(): void {
+    this.projectMetadata = this.projectMetadata.markAsFavorite();
   }
 
-  public canManageCategories(): boolean {
-    return this.role.canManageCategories();
+  public unMarkAsFavorite(): void {
+    this.projectMetadata = this.projectMetadata.unmarkAsFavorite();
   }
 
-  public canManageLists(): boolean {
-    return this.role.canManageLists();
-  }
-
-  public canManageTasks(): boolean {
-    return this.role.canManageTasks();
-  }
-
-  public canUpdateTasks(): boolean {
-    return this.role.canUpdateTasks();
-  }
-
-  public getId(): string {
-    return this.id.getID();
-  }
-
-  public toPrimitives(): iMemberParams {
+  public toPrimitives(): MemberParams {
     return {
-      id: this.id.getID(),
+      id: super.getID().getID(),
       idProject: this.idProject.getID(),
+      idAccount: this.idAccount.getID(),
       status: this.status.getStatus(),
       role: this.role.getRole(),
-      memberInfo: this.memberInfo,
+      idInternal: internalIdToPrimitive(super.getInternalId()),
+      version: super.getVersion().valueOf(),
+      deletedAt: super.getDeletedAt().toPrimitive()
     };
   }
 }

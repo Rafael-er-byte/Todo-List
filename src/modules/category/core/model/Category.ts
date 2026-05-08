@@ -12,11 +12,10 @@ import Version from '../../../shared/core/objects/Version';
 import InternalId from '../../../shared/core/objects/InternalId';
 import type CategoryParams from '../interfaces/CategoryParams';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import type DomainEvent from '../../../shared/core/events/DomainEvent';
 import None from '../../../shared/core/objects/None';
 import CategoryDeleted from '../events/CategoryDeleted';
 import type { AllowedColors } from '../types/AllowedColors';
-import isNone from '../../../shared/helpers/isNone';
+import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
 
 export default class Category extends Entity {
   private name!: CategoryName;
@@ -37,6 +36,7 @@ export default class Category extends Entity {
   }
 
   public static create(
+    key: string,
     id: IdCategory,
     name: CategoryName,
     color: CategoryColor,
@@ -52,7 +52,7 @@ export default class Category extends Entity {
     );
 
     category.create();
-    category.addEvent(new CategoryCreated(DateTime.now(), actorId, projectID, id));
+    category.addEvent(new CategoryCreated(key, DateTime.now(), actorId, projectID, id));
     return category;
   }
 
@@ -67,53 +67,29 @@ export default class Category extends Entity {
 
       category.build(
         new Version(params.version), 
-        params.deletedAt ? DeletedAt.createDeleted(DateTime.create(params.deletedAt as Date)) : DeletedAt.createActive()
+        DeletedAt.createFromPrimitive(params.deletedAt)
       );
 
       return category;
   }
 
-  public updateName(name: CategoryName, actor: IdEntity): void {
+  public updateName(key: string, name: CategoryName, actor: IdEntity): void {
     this.name = name;
     this.addEvent(
-      new CategoryNameChanged(DateTime.now(), actor, this.idProject, super.getID(), name)
+      new CategoryNameChanged(key, DateTime.now(), actor, this.idProject, super.getID(), name)
     );
   }
 
-  public updateColor(color: CategoryColor, actor: IdEntity): void {
+  public updateColor(key: string, color: CategoryColor, actor: IdEntity): void {
     this.color = color;
     this.addEvent(
-      new CategoryColorChanged(DateTime.now(), actor, this.idProject, super.getID(), color),
+      new CategoryColorChanged(key, DateTime.now(), actor, this.idProject, super.getID(), color),
     );
   }
 
-  public getId(): IdCategory {
-    return super.getID();
-  }
-
-  public exists(): boolean {
-    return super.exists();
-  }
-
-  public getVersion(): Version {
-    return super.getVersion();
-  }
-
-  public getDeletedTime(): DateTime | None {
-    return super.getDeletedAt().getDeletedTime();
-  }
-
-  public getLastUpdate(): DateTime {
-    return super.getLastUpdate();
-  }
-
-  public pullEvents(): DomainEvent[]{
-    return super.pullEvents();
-  }
-
-  public delete(actor: IdEntity): void{
+  public delete(key: string, actor: IdEntity): void{
     super.addEvent(
-      new CategoryDeleted(DateTime.now(), actor, this.idProject, super.getID())
+      new CategoryDeleted(key, DateTime.now(), actor, this.idProject, super.getID())
     );
     super.softDelete();
   }
@@ -125,8 +101,8 @@ export default class Category extends Entity {
       name: this.name.getName(),
       color: this.color.getColor(),
       version: super.getVersion().valueOf(),
-      deletedAt: super.exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date,
-      internalId: isNone(super.getInternalId()) ? null : (super.getInternalId() as InternalId).getId()
+      deletedAt: super.getDeletedAt().toPrimitive(),
+      internalId: internalIdToPrimitive(super.getInternalId()),
     };
   }
 }
