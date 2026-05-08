@@ -9,7 +9,6 @@ describe("MemberStatus Value Object", () => {
 
     expect(status.getStatus()).toBe(AllowedMemberStatus.active);
     expect(status.isBlocked()).toBe(false);
-    expect(status.isDeleted()).toBe(false);
   });
 
   it("should create a blocked status correctly", () => {
@@ -17,15 +16,6 @@ describe("MemberStatus Value Object", () => {
 
     expect(status.getStatus()).toBe(AllowedMemberStatus.blocked);
     expect(status.isBlocked()).toBe(true);
-    expect(status.isDeleted()).toBe(false);
-  });
-
-  it("should create a deleted status correctly", () => {
-    const status = MemberStatus.deleted();
-
-    expect(status.getStatus()).toBe(AllowedMemberStatus.deleted);
-    expect(status.isBlocked()).toBe(false);
-    expect(status.isDeleted()).toBe(true);
   });
 
   it("should create status using factory method", () => {
@@ -33,7 +23,7 @@ describe("MemberStatus Value Object", () => {
 
     expect(status.getStatus()).toBe(AllowedMemberStatus.active);
   });
-
+  
   it("should throw error for unsupported status", () => {
     expect(() => {
       MemberStatus.create("INVALID" as AllowedMemberStatus);

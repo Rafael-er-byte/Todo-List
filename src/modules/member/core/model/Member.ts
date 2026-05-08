@@ -2,7 +2,6 @@ import IdMember from '../objects/IdMember';
 import MemberStatus from '../objects/MemberStatus';
 import MemberRole from '../objects/MemberRole';
 import Entity from '../../../shared/core/model/Entity';
-import type iMemberParams from '../interfaces/MemberParams';
 import MemberAddedToProject from '../events/MemberAddedToProject';
 import DateTime from '../../../shared/core/objects/DateTime';
 import MemberBlocked from '../events/MemberBlocked';
@@ -17,6 +16,7 @@ import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import InternalId from '../../../shared/core/objects/InternalId';
 import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
+import MemberRoleChanged from '../events/MemberRoleChanged';
 
 export default class Member extends Entity {
   private idProject!: IdEntity;
@@ -76,7 +76,7 @@ export default class Member extends Entity {
       new InternalId(params.idInternal as number),
       new IdEntity(params.idProject),
       new IdEntity(params.idAccount),
-      MemberStatus.createFromPrimitive(params.status),
+      MemberStatus.create(params.status),
       new MemberRole(params.role),
       new ProjectMetadata()  
     );
@@ -97,16 +97,32 @@ export default class Member extends Entity {
 
   public changeRole(key: string, actor: IdEntity, role: MemberRole): void {
     this.role = role;
-    this.addEvent(new MemberChangedRole(key, DateTime.now(), actor, this.idProject, super.getID(), role));
+    this.addEvent(new MemberRoleChanged(key, DateTime.now(), actor, this.idProject, super.getID(), role));
   }
 
   public delete(key: string, actor: IdEntity): void {
-    super.softDelete();
     this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.idProject, super.getID()));
+    super.softDelete();
   }
 
   public isBlocked(): boolean {
     return this.status.isBlocked();
+  }
+
+  public watchProject(): void {
+    this.projectMetadata = this.projectMetadata.watchProject();
+  }
+
+  public unWatchProject(): void {
+    this.projectMetadata = this.projectMetadata.unwatchProject();
+  }
+
+  public markAsFavorite(): void {
+    this.projectMetadata = this.projectMetadata.markAsFavorite();
+  }
+
+  public unMarkAsFavorite(): void {
+    this.projectMetadata = this.projectMetadata.unmarkAsFavorite();
   }
 
   public toPrimitives(): MemberParams {

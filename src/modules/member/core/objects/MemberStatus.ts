@@ -16,12 +16,6 @@ export default class MemberStatus extends ValueObject {
     return new MemberStatus(status);
   }
 
-  public static createFromPrimitive(status: string): MemberStatus{
-    if(!ALLOWED_MEMBER_STATUS.includes(status as AllowedMemberStatus))throw new InvalidParameters('The status is not supported');
-    if(status !== AllowedMemberStatus.active) return MemberStatus.blocked();
-    return MemberStatus.active();
-  }
-
   public static blocked(): MemberStatus {
     return new MemberStatus(AllowedMemberStatus.blocked);
   }
