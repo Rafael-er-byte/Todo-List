@@ -1,5 +1,7 @@
+import LimitExceeded from '../../../shared/core/errors/LimitExceeded';
 import Text from '../../../shared/core/objects/Text';
 import ValueObject from '../../../shared/core/objects/ValueObject';
+import CategoryLimits from '../constants/categoryLimits';
 import CategoryNameMustBeAValidText from '../error/CategoryNameMustBeAValidText';
 
 export default class CategoryName extends ValueObject {
@@ -9,8 +11,9 @@ export default class CategoryName extends ValueObject {
     super();
     try {
       this.name = new Text(name);
+      if(this.name.size() > CategoryLimits.MAX_NAME_LENGTH) throw new LimitExceeded(name);
     } catch (error) {
-      console.error(error);
+      if(error instanceof LimitExceeded) throw error;
       throw new CategoryNameMustBeAValidText(name);
     }
   }
