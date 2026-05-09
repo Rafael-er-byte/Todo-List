@@ -1,18 +1,17 @@
-import type Member from '../../../member/core/model/Member';
 import DomainEvent from '../../../shared/core/events/DomainEvent';
 import type DateTime from '../../../shared/core/objects/DateTime';
 import type IdEntity from '../../../shared/core/objects/IdEntity';
-import type TaskId from '../objects/TaskId';
-import type iTaskParams from '../interface/iTaskParams';
+import type iTaskParams from '../interface/TaskParams';
 
 export default class TaskCreated extends DomainEvent {
   constructor(
+    key: string,
     date: DateTime,
-    modifier: Member,
+    actor: IdEntity,
     idProject: IdEntity,
-    taskId: TaskId,
+    idEntity: IdEntity,
     taskParams: iTaskParams,
   ) {
-    super(date, modifier, idProject, taskId, 'TASK_BACKGROUND_IMAGE_DELETED', taskParams);
+    super(key, date, actor, idProject, idEntity, 'TASK_CREATED', taskParams);
   }
 }

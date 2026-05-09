@@ -1,13 +1,7 @@
-import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 import Entity from '../../../shared/core/model/Entity';
-import Archived from '../../../shared/core/objects/Archived';
-import type Attachment from '../../../shared/core/objects/Attachment';
 import DateTime from '../../../shared/core/objects/DateTime';
 import None from '../../../shared/core/objects/None';
 import TaskArchived from '../events/TaskArchived';
-import TaskAttachmentAdded from '../events/TaskAttachmentAdded';
-import TaskAttachmentDeleted from '../events/TaskAttachmentDeleted';
-import TaskBackgroundImageUpdated from '../events/TaskBackgroundImageUpdated';
 import TaskDescriptionUpdated from '../events/TaskDescriptionUpdated';
 import TaskDueDateUpdated from '../events/TaskDueDateUpdated';
 import TaskFinished from '../events/TaskFinished';
@@ -16,257 +10,271 @@ import TaskMoved from '../events/TaskMoved';
 import TaskBeginDateUpdated from '../events/TaskStartDateUpdated';
 import TaskUnarchived from '../events/TaskUnarchived';
 import TitleUpdated from '../events/TitleUpdated';
-import AttachmentCollection from '../objects/AttachmentCollection';
-import BackGroundImage from '../objects/BackGroundImage';
-import CategoryCollection from '../objects/CategoryCollection';
-import TaskDateTime from '../objects/TaskDateTime';
-import TaskDescription from '../objects/TaskDescription';
 import TaskId from '../objects/TaskId';
 import TaskPosition from '../objects/TaskPosition';
 import TaskTitle from '../objects/TaskTitle';
-import type iTaskParams from '../interface/iTaskParams';
 import TaskCreated from '../events/TaskCreated';
 import TaskState from '../objects/TaskState';
-import { ALLOWED_TASK_STATE, type AllowedTaskState } from '../types/AllowedTaskState';
 import TaskDeleted from '../events/TaskDeleted';
 import CannotModifyArchivedTasks from '../error/CannotModifyArchivedTasks';
 import TaskNeedsToBeArchivedBeforeDeleteIt from '../error/TaskNeedsToBeArchivedBeforeDeleteIt';
 import InvalidStartDate from '../error/InvalidStartDateTime';
 import InvalidDueDate from '../error/InvalidDueDateTime';
-import MemberCollection from '../objects/MemberCollection';
-import NoteCollection from '../objects/NoteCollection';
-import type Note from '../objects/Note';
-import type Member from '../../../member/core/model/Member';
-import type Category from '../../../category/core/model/Category';
 import TaskCategoryAdded from '../events/TaskCategoryAdded';
 import TaskCategoryDeleted from '../events/TaskCategoryDeleted';
 import TaskContributorDeleted from '../events/TaskMemberDeleted';
 import TaskMemberAdded from '../events/TaskMemberAdded';
-import TaskNoteAdded from '../events/TaskNoteAdded';
 import IdProject from '../../../shared/core/objects/IdProject';
+import IdEntity from '../../../shared/core/objects/IdEntity';
+import type TaskParams from '../interface/TaskParams';
+import InternalId from '../../../shared/core/objects/InternalId';
+import Version from '../../../shared/core/objects/Version';
+import DeletedAt from '../../../shared/core/objects/DeletedAt';
+import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
+import Text from '../../../shared/core/objects/Text';
+import type { AllowedTaskState } from '../types/AllowedTaskState';
+import Collection from '../../../shared/core/objects/Collection';
 
 export default class Task extends Entity {
   private title!: TaskTitle;
   private position!: TaskPosition;
   private state!: TaskState;
-  private archived!: Archived | None;
+  private archived: boolean = false;
+  private description!: Text | None;
 
-  private description: TaskDescription | None = new None();
-  private image: BackGroundImage | None = new None();
   private startDate: DateTime | None = new None();
   private dueDate: DateTime | None = new None();
 
-  private categories: CategoryCollection = new CategoryCollection();
-  private members: MemberCollection = new MemberCollection();
-  private attachments: AttachmentCollection = new AttachmentCollection();
-  private notes: NoteCollection = new NoteCollection();
-  private exists!: boolean;
+  private categories: Collection = new Collection([], [], []);
+  private assigned: Collection = new Collection([], [], []);
+  private readonly idProject!: IdEntity;
 
-  private readonly id!: TaskId;
-  private readonly idProject!: IdProject;
-  private readonly createdAt!: DateTime;
-
-  public constructor(params: iTaskParams) {
-    super();
-    this.title = new TaskTitle(params.title);
-    this.id = new TaskId(params.id);
-    this.idProject = new IdProject(params.idProject);
-    this.createdAt = DateTime.create(params.createdAt as string);
-
-    if (!(params.position instanceof TaskPosition)) {
-      throw new InvalidParameters('The position of the task is not valid', params.position);
-    }
-
-    this.position = params.position;
-    this.state = TaskState.create(params.state as AllowedTaskState);
-    this.archived = params.archived === true ? new Archived() : new None();
-
-    if (params.description) this.description = new TaskDescription(params.description);
-    if (params.image) this.image = new BackGroundImage(params.image);
-    if (params.startDate) this.startDate = DateTime.create(params.startDate as string);
-    if (params.dueDate) this.dueDate = DateTime.create(params.dueDate as string);
-
-    this.categories = new CategoryCollection(params.categories);
-    this.attachments = new AttachmentCollection(params.attachments);
-    this.members = new MemberCollection(params.members);
-    this.notes = new NoteCollection(params.notes);
-    this.exists = params.exists;
+  private constructor(
+    title: TaskTitle,
+    position: TaskPosition,
+    state: TaskState,
+    archived: boolean,
+    id: TaskId,
+    idProject: IdEntity,
+    description: Text | None,
+    startDate: DateTime | None,
+    dueDate: DateTime | None,
+    idInternal: InternalId | None,
+    categories: Collection,
+    assigned: Collection
+  ) {
+    super(id, idInternal);
+    this.title = title;
+    this.idProject = idProject;
+    this.archived = archived;
+    this.state = state;
+    this.description = description;
+    this.startDate = startDate;
+    this.dueDate = dueDate;
+    this.position = position;
+    this.categories = categories;
+    this.assigned = assigned;
   }
 
-  public static create(params: iTaskParams, member: Member): Task {
-    const task = new Task(params);
+  public static create(title: TaskTitle,
+    position: TaskPosition,
+    state: TaskState,
+    archived: boolean,
+    id: TaskId,
+    idProject: IdEntity,
+    description: Text | None,
+    startDate: DateTime | None,
+    dueDate: DateTime | None,
+    categories: Collection,
+    assigned: Collection,
+    actor: IdEntity, 
+    key: string
+  ): Task {
+  
+    const task = new Task(
+        title,
+        position,
+        state,
+        archived,
+        id,
+        idProject,
+        description,
+        startDate,
+        dueDate,
+        new None(),
+        categories,
+        assigned
+    );
+
+    task.create();
     task.addEvent(
-      new TaskCreated(DateTime.now(), member, task.getIdProject(), task.getID(), params),
+      new TaskCreated(key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()),
     );
     return task;
   }
 
-  public delete(member: Member): void {
+  public static fromPrimitives(params: TaskParams): Task{
+    const categories = params.categories.map((category) => {
+      return new IdEntity(category);
+    });
+
+    const assigned = params.assigned.map((assign) => {
+      return new IdEntity(assign);
+    });
+
+    const task = new Task(
+      new TaskTitle(params.title),
+      params.position,
+      TaskState.create(params.state as AllowedTaskState),
+      params.archived,
+      new TaskId(params.id),
+      new IdEntity(params.idProject),
+      params.description ? new Text(params.description) : new None(),
+      params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(),
+      params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(),
+      new InternalId(params.idInternal as number),
+      new Collection(categories, [], []),
+      new Collection(assigned, [], [])
+    );
+
+    task.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
+    return task;
+  }
+
+  public delete(actor: IdEntity, key: string): void {
     if (!this.isArchived()) {
-      throw new TaskNeedsToBeArchivedBeforeDeleteIt(this.id);
+      throw new TaskNeedsToBeArchivedBeforeDeleteIt(super.getID());
     }
-    this.addEvent(new TaskDeleted(DateTime.now(), member, this.idProject, this.id));
-
-    this.exists = false;
+    this.addEvent(new TaskDeleted(key, DateTime.now(), actor, this.idProject, super.getID()));
+    super.softDelete();
   }
 
-  public static fromPrimitives(params: iTaskParams): Task {
-    return new Task(params);
-  }
-
-  public removeCategory(category: Category, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public removeCategory(category: IdEntity, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     this.categories = this.categories.deleteItem(category);
     this.addEvent(
-      new TaskCategoryDeleted(DateTime.now(), modifier, this.idProject, this.id, category),
+      new TaskCategoryDeleted(key, DateTime.now(), actor, this.idProject, super.getID(), category),
     );
   }
 
-  public removeMember(modifier: Member, member: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
-    this.members = this.members.deleteItem(member);
+  public removeAssigned(assigned: IdEntity, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    this.assigned = this.assigned.deleteItem(assigned);
     this.addEvent(
-      new TaskContributorDeleted(DateTime.now(), modifier, this.idProject, this.id, member),
+      new TaskContributorDeleted(key, DateTime.now(), actor, this.idProject, super.getID(), assigned),
     );
   }
 
-  public deleteAttachment(attachment: Attachment, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
-    this.attachments = this.attachments.deleteItem(attachment);
-    this.addEvent(
-      new TaskAttachmentDeleted(DateTime.now(), modifier, this.idProject, this.id, attachment),
-    );
-  }
-
-  public move(list: TaskPosition, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public move(list: TaskPosition, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     this.position = list;
-    this.addEvent(new TaskMoved(DateTime.now(), modifier, this.idProject, this.id, this.position));
+    this.addEvent(new TaskMoved(key, DateTime.now(), actor, this.idProject, super.getID(), this.position));
   }
 
-  public unarchive(modifier: Member): void {
-    this.archived = new None();
-    this.addEvent(new TaskUnarchived(DateTime.now(), modifier, this.idProject, this.id));
+  public unarchive(actor: IdEntity, key: string): void {
+    this.archived = false;
+    this.addEvent(new TaskUnarchived(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
-  public archive(modifier: Member): void {
-    this.archived = new Archived();
-    this.addEvent(new TaskArchived(DateTime.now(), modifier, this.idProject, this.id));
+  public archive(actor: IdEntity, key: string): void {
+    this.archived = true;
+    this.addEvent(new TaskArchived(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
-  public addMember(modifier: Member, member: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
-    this.members = this.members.addItem(member);
-    this.addEvent(new TaskMemberAdded(DateTime.now(), modifier, this.idProject, this.id, member));
+  public assignMember(actor: IdEntity, key: string, assigned: IdEntity): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    this.assigned = this.assigned.addItem(actor);
+    this.addEvent(new TaskMemberAdded(key, DateTime.now(), actor, this.idProject, super.getID(), assigned));
   }
 
-  public addAtachment(attachment: Attachment, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
-    this.attachments = this.attachments.addItem(attachment);
-    this.addEvent(
-      new TaskAttachmentAdded(DateTime.now(), modifier, this.idProject, this.id, attachment),
-    );
-  }
-
-  public updateStartDate(date: TaskDateTime, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public updateStartDate(date: DateTime, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     if (this.dueDate instanceof DateTime) {
-      if (!DateTime.isAfter(this.dueDate, date.getDate())) {
+      if (!DateTime.isBefore(date, this.dueDate)) {
         throw new InvalidStartDate({ startDate: date, dueDate: this.dueDate });
       }
     }
     this.startDate = date;
     this.addEvent(
       new TaskBeginDateUpdated(
+        key,
         DateTime.now(),
-        modifier,
+        actor,
         this.idProject,
-        this.id,
+        super.getID(),
         this.startDate as DateTime,
       ),
     );
   }
 
-  public updateDueDate(date: TaskDateTime, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public updateDueDate(date: DateTime, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     if (this.startDate instanceof DateTime) {
-      if (!DateTime.isAfter(date.getDate(), this.startDate)) {
+      if (!DateTime.isAfter(date, this.startDate)) {
         throw new InvalidDueDate({ dueDate: date, startDate: this.startDate });
       }
     }
     this.dueDate = date;
     this.addEvent(
       new TaskDueDateUpdated(
+        key,
         DateTime.now(),
-        modifier,
+        actor,
         this.idProject,
-        this.id,
+        super.getID(),
         this.dueDate as DateTime,
       ),
     );
   }
 
-  public updateBackGroundImage(image: BackGroundImage, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
-    this.image = image;
-    this.addEvent(
-      new TaskBackgroundImageUpdated(DateTime.now(), modifier, this.idProject, this.id),
-    );
-  }
-
-  public updateTitle(title: TaskTitle, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public updateTitle(title: TaskTitle, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     this.title = title;
     this.addEvent(
-      new TitleUpdated(DateTime.now(), modifier, this.idProject, this.id, this.title.getTitle()),
+      new TitleUpdated(key, DateTime.now(), actor, this.idProject, super.getID(), this.title),
     );
   }
 
-  public updateDescription(description: TaskDescription, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public updateDescription(description: Text, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     this.description = description;
-    const descriptionText = description.getDescription();
+ 
     this.addEvent(
       new TaskDescriptionUpdated(
+        key,
         DateTime.now(),
-        modifier,
+        actor,
         this.idProject,
-        this.id,
-        descriptionText,
+        super.getID(),
+        description,
       ),
     );
   }
 
-  public addCategory(category: Category, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public addCategory(category: IdEntity, actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     this.categories = this.categories.addItem(category);
     this.addEvent(
-      new TaskCategoryAdded(DateTime.now(), modifier, this.idProject, this.id, category),
+      new TaskCategoryAdded(key, DateTime.now(), actor, this.idProject, super.getID(), category),
     );
   }
 
-  public markAsFinished(member: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public markAsFinished(actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     if (this.state.isCompleted()) return;
     this.state = TaskState.completed();
-    this.addEvent(new TaskFinished(DateTime.now(), member, this.idProject, this.id));
+    this.addEvent(new TaskFinished(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
-  public markAsPending(member: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
+  public markAsPending(actor: IdEntity, key: string): void {
+    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     if (!this.state.isCompleted()) return;
     this.state = TaskState.pending();
-    this.addEvent(new TaskMarkedAsPending(DateTime.now(), member, this.idProject, this.id));
-  }
-
-  public addNote(note: Note, modifier: Member): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(this.id);
-    this.notes.addItem(note);
-    this.addEvent(new TaskNoteAdded(DateTime.now(), modifier, this.idProject, this.id, note));
+    this.addEvent(new TaskMarkedAsPending(key, DateTime.now(), actor, this.idProject, super.getID()));
   }
 
   protected isArchived(): boolean {
-    return this.archived instanceof Archived;
+    return this.archived;
   }
 
   protected isCompleted(): boolean {
@@ -280,47 +288,26 @@ export default class Task extends Entity {
     return true;
   }
 
-  public getID(): TaskId {
-    return this.id;
-  }
-
   public getIdProject(): IdProject {
     return this.idProject;
   }
 
-  public taskExists(): boolean {
-    return this.exists;
-  }
-
-  public toPrimitives(): iTaskParams {
-    const archivedTask = this.archived instanceof Archived;
-    const descriptionTask =
-      this.description instanceof TaskDescription ? this.description.getDescription() : undefined;
-    const imageTask = this.image instanceof BackGroundImage ? this.image.getImage() : undefined;
-    const startDate =
-      this.startDate instanceof TaskDateTime ? this.startDate.getDate().getDate() : undefined;
-    const dueDate =
-      this.dueDate instanceof TaskDateTime ? this.dueDate.getDate().getDate() : undefined;
-    const state = this.state.isCompleted() ? ALLOWED_TASK_STATE[0] : ALLOWED_TASK_STATE[1];
-
+  public toPrimitives(): TaskParams {
     return {
       title: this.title.getTitle(),
       position: this.position,
-      state,
-      archived: archivedTask,
-      notesQuantity: this.notes.size(),
-      description: descriptionTask,
-      image: imageTask,
-      startDate,
-      dueDate,
-      categories: this.categories.primitiveCollection(),
-      members: this.members.primitiveCollection(),
-      attachments: this.attachments.primitiveCollection(),
-      notes: this.notes.primitiveCollection(),
-      id: this.id.getID(),
+      state: this.state.getState(),
+      archived: this.archived,
+      id: super.getID().getID(),
       idProject: this.idProject.getID(),
-      createdAt: this.createdAt.getDate(),
-      exists: this.exists,
+      categories: this.categories.getPrimitives(),
+      assigned: this.assigned.getPrimitives(),
+      description: (this.description instanceof None) ? null : (this.description as Text).getText(),
+      startDate: this.startDate instanceof DateTime ? this.startDate.getDate() : null,
+      dueDate: this.dueDate instanceof DateTime ? this.dueDate.getDate() : null,
+      idInternal: internalIdToPrimitive(super.getInternalId()),
+      version: super.getVersion().valueOf(),
+      deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }
 }
