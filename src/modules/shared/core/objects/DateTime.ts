@@ -22,6 +22,10 @@ export default class DateTime extends ValueObject {
     return futureDate.getValue() > now.getValue();
   }
 
+  static isBefore(previosDate: DateTime, furuteDate: DateTime): boolean{
+    return previosDate.getValue() < furuteDate.getValue();
+  }
+
   public getDate(): Date {
     return this.date;
   }

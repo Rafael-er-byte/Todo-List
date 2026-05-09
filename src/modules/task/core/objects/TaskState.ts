@@ -24,6 +24,10 @@ export default class TaskState extends ValueObject {
     return new TaskState(AllowedTaskState.pending);
   }
 
+  public getState(): AllowedTaskState {
+    return this.state;
+  }
+
   public isCompleted(): boolean {
     if (this.state === AllowedTaskState.completed) return true;
     return false;

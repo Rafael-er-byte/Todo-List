@@ -9,7 +9,7 @@ export default class TaskTitle extends ValueObject {
   constructor(title: string) {
     super();
     const textTitle = new Text(title);
-    if (textTitle.size() > TaskBusinessRules.titleLimit())
+    if (textTitle.size() > TaskBusinessRules.TITLE_LIMIT_SIZE)
       throw new LimitExceeded('Title size limit exceeded');
       this.title = textTitle;
   }

@@ -22,7 +22,7 @@ describe('TaskTitle Value Object', () => {
   });
 
   it('should throw if title exceeds the limit', () => {
-    const overLimit = 'a'.repeat(TaskRules.titleLimit() + 1);
+    const overLimit = 'a'.repeat(TaskRules.TITLE_LIMIT_SIZE + 1);
 
     expect(() => new TaskTitle(overLimit)).toThrow(LimitExceeded);
   });

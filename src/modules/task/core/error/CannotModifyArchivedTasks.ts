@@ -3,6 +3,6 @@ import CoreError from '../../../shared/core/errors/CoreError';
 export default class CannotModifyArchivedTasks extends CoreError {
   constructor(info?: unknown) {
     super('Cannot modify archived tasks', info);
-    Object.setPrototypeOf(this, .prototype);
+    Object.setPrototypeOf(this, CannotModifyArchivedTasks.prototype);
   }
 }

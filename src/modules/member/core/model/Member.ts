@@ -6,7 +6,6 @@ import MemberAddedToProject from '../events/MemberAddedToProject';
 import DateTime from '../../../shared/core/objects/DateTime';
 import MemberBlocked from '../events/MemberBlocked';
 import MemberActived from '../events/MemberActived';
-import MemberChangedRole from '../events/MemberRoleChanged';
 import MemberDeleted from '../events/MemberDeleted';
 import None from '../../../shared/core/objects/None';
 import ProjectMetadata from '../objects/ProjectMetadata';
