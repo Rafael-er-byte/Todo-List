@@ -291,6 +291,38 @@ export default class Task extends Entity {
     return this.idProject;
   }
 
+  public getTitle(): TaskTitle {
+    return this.title;
+  }
+
+  public getListContainer(): IdEntity {
+    return this.listContainer;
+  }
+
+  public getState(): TaskState {
+    return this.state;
+  }
+
+  public getDescription(): Text | None {
+    return this.description;
+  }
+
+  public getStartDate(): DateTime | None {
+    return this.startDate;
+  }
+
+  public getDueDate(): DateTime | None {
+    return this.dueDate;
+  }
+
+  public getCategories(): Collection {
+    return this.categories;
+  }
+
+  public getAssigned(): Collection {
+    return this.assigned;
+  }
+
   public toPrimitives(): TaskParams {
     return {
       title: this.title.getTitle(),

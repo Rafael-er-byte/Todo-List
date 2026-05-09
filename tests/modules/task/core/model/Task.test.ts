@@ -65,6 +65,20 @@ describe('Task', () => {
     expect(events[0]!.getEvent()).toBe('TASK_CREATED');
   });
 
+  it('returns values from Task getters', () => {
+    const { task } = buildTask();
+
+    expect(task.getIdProject().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getTitle().getTitle()).toBe('Initial task title');
+    expect(task.getListContainer().getID()).toBe('0143c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getState().getState()).toBe(TaskState.pending().getState());
+    expect(task.getDescription()).toBeInstanceOf(None);
+    expect(task.getStartDate()).toBeInstanceOf(None);
+    expect(task.getDueDate()).toBeInstanceOf(None);
+    expect(task.getCategories().getPrimitives()).toEqual([]);
+    expect(task.getAssigned().getPrimitives()).toEqual([]);
+  });
+
   it('updates title and emits a TitleUpdated event', () => {
     const { task, actor } = buildTask();
     task.pullEvents();
@@ -213,8 +227,7 @@ describe('Task', () => {
     task.pullEvents();
 
     task.archive(actor, 'archive-key');
-    task.pullEvents(); // clear archive event
-
+    task.pullEvents(); 
     const categoryId = new IdEntity('0e43c815-7220-7d64-8c42-6f2af4f9fd37');
     const assignedId = new IdEntity('0f43c815-7220-7d64-8c42-6f2af4f9fd37');
 
