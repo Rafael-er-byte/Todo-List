@@ -1,8 +1,6 @@
-import type TaskPosition from '../objects/TaskPosition';
-
 export default interface TaskParams {
   title: string;
-  position: TaskPosition;
+  listContainer: string;
   state: string;
   archived: boolean;
   id: string;

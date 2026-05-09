@@ -11,7 +11,6 @@ import TaskBeginDateUpdated from '../events/TaskStartDateUpdated';
 import TaskUnarchived from '../events/TaskUnarchived';
 import TitleUpdated from '../events/TitleUpdated';
 import TaskId from '../objects/TaskId';
-import TaskPosition from '../objects/TaskPosition';
 import TaskTitle from '../objects/TaskTitle';
 import TaskCreated from '../events/TaskCreated';
 import TaskState from '../objects/TaskState';
@@ -37,7 +36,7 @@ import Collection from '../../../shared/core/objects/Collection';
 
 export default class Task extends Entity {
   private title!: TaskTitle;
-  private position!: TaskPosition;
+  private listContainer!: IdEntity;
   private state!: TaskState;
   private archived: boolean = false;
   private description!: Text | None;
@@ -51,7 +50,7 @@ export default class Task extends Entity {
 
   private constructor(
     title: TaskTitle,
-    position: TaskPosition,
+    listContainer: IdEntity,
     state: TaskState,
     archived: boolean,
     id: TaskId,
@@ -71,13 +70,13 @@ export default class Task extends Entity {
     this.description = description;
     this.startDate = startDate;
     this.dueDate = dueDate;
-    this.position = position;
+    this.listContainer = listContainer;
     this.categories = categories;
     this.assigned = assigned;
   }
 
   public static create(title: TaskTitle,
-    position: TaskPosition,
+    listContainer: IdEntity,
     state: TaskState,
     archived: boolean,
     id: TaskId,
@@ -93,7 +92,7 @@ export default class Task extends Entity {
   
     const task = new Task(
         title,
-        position,
+        listContainer,
         state,
         archived,
         id,
@@ -124,7 +123,7 @@ export default class Task extends Entity {
 
     const task = new Task(
       new TaskTitle(params.title),
-      params.position,
+      new IdEntity(params.listContainer),
       TaskState.create(params.state as AllowedTaskState),
       params.archived,
       new TaskId(params.id),
@@ -165,10 +164,10 @@ export default class Task extends Entity {
     );
   }
 
-  public move(list: TaskPosition, actor: IdEntity, key: string): void {
+  public move(list: IdEntity, actor: IdEntity, key: string): void {
     if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
-    this.position = list;
-    this.addEvent(new TaskMoved(key, DateTime.now(), actor, this.idProject, super.getID(), this.position));
+    this.listContainer = list;
+    this.addEvent(new TaskMoved(key, DateTime.now(), actor, this.idProject, super.getID(), this.listContainer));
   }
 
   public unarchive(actor: IdEntity, key: string): void {
@@ -183,7 +182,7 @@ export default class Task extends Entity {
 
   public assignMember(actor: IdEntity, key: string, assigned: IdEntity): void {
     if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
-    this.assigned = this.assigned.addItem(actor);
+    this.assigned = this.assigned.addItem(assigned);
     this.addEvent(new TaskMemberAdded(key, DateTime.now(), actor, this.idProject, super.getID(), assigned));
   }
 
@@ -295,7 +294,7 @@ export default class Task extends Entity {
   public toPrimitives(): TaskParams {
     return {
       title: this.title.getTitle(),
-      position: this.position,
+      listContainer: this.listContainer.getID(),
       state: this.state.getState(),
       archived: this.archived,
       id: super.getID().getID(),
