@@ -9,8 +9,8 @@ export default interface iTaskRepository {
   update(task: Task): Promise<void>;
   getById(projectId: IdEntity, taskId: TaskId): Promise<Task | None>;
   getByCriteria(projectId: IdEntity, criteria: TaskCriteria): Promise<Task[]>;
-  getMany(projectId: IdEntity, taskIds: TaskId[]): Promise<Task[]>;
-  updateMany(projectId: IdEntity, tasks: Task[]): Promise<void>;
-  getCategoriesFromTaskById(projectId: IdEntity, taskId: TaskId, limit: number, page: number): Promise<string[]>;
-  getAssignedFromTaskById(projectId: IdEntity, taskId: TaskId, limit: number, page: number): Promise<string[]>;
+  getManyByIds(projectId: IdEntity, taskIds: TaskId[]): Promise<Task[]>;
+  updateManyByIds(projectId: IdEntity, tasks: Task[]): Promise<void>;
+  getCategoriesFromTaskById(projectId: IdEntity, taskId: TaskId, limit: number, page: number): Promise<IdEntity[]>;
+  getAssignedFromTaskById(projectId: IdEntity, taskId: TaskId, limit: number, page: number): Promise<IdEntity[]>;
 }
