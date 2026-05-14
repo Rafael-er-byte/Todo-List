@@ -52,6 +52,7 @@ describe("Member Entity", () => {
       const member = createMember();
 
       expect(member.getID().getID()).toBe(DEFAULT_ID);
+      expect(member.getOwner().getID()).toBe(DEFAULT_ID);
       expect(member.exists()).toBe(true);
       expect(member.isBlocked()).toBe(false);
       expect(member.pullEvents()[0]).toBeInstanceOf(MemberAddedToProject);
@@ -128,6 +129,7 @@ describe("Member Entity", () => {
       const member = Member.fromPrimitives(primitives);
 
       expect(member.toPrimitives()).toEqual(primitives);
+      expect(member.getOwner().getID()).toBe(primitives.idProject);
       expect(member.isBlocked()).toBe(false);
     });
 

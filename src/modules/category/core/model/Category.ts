@@ -6,7 +6,6 @@ import CategoryColor from '../objects/CategoryColor';
 import CategoryCreated from '../events/CategoryCreated';
 import CategoryNameChanged from '../events/CategoryNameChanged';
 import CategoryColorChanged from '../events/CategoryColorChanged';
-import IdProject from '../../../shared/core/objects/IdProject';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import Version from '../../../shared/core/objects/Version';
 import InternalId from '../../../shared/core/objects/InternalId';
@@ -20,19 +19,17 @@ import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive
 export default class Category extends Entity {
   private name!: CategoryName;
   private color!: CategoryColor;
-  private readonly idProject!: IdProject;
 
   private constructor(
     name: CategoryName,
     color: CategoryColor,
-    idProject: IdProject,
+    idProject: IdEntity,
     idEntity: IdCategory,
     internalId: InternalId | None,
   ) {
-    super(idEntity, internalId);
+    super(idEntity, internalId, idProject);
     this.name = name;
     this.color = color;
-    this.idProject = idProject;
   }
 
   public static create(
@@ -41,7 +38,7 @@ export default class Category extends Entity {
     name: CategoryName,
     color: CategoryColor,
     actorId: IdEntity,
-    projectID: IdProject,
+    projectID: IdEntity,
   ) {
     const category = new Category(
       name,
@@ -60,7 +57,7 @@ export default class Category extends Entity {
     const category = new Category(
         new CategoryName(params.name),
         new CategoryColor(params.color as AllowedColors),
-        new IdProject(params.idProject),
+        new IdEntity(params.idProject),
         new IdCategory(params.id),
         new InternalId(params.internalId as number),
       );
@@ -76,28 +73,32 @@ export default class Category extends Entity {
   public updateName(key: string, name: CategoryName, actor: IdEntity): void {
     this.name = name;
     this.addEvent(
-      new CategoryNameChanged(key, DateTime.now(), actor, this.idProject, super.getID(), name)
+      new CategoryNameChanged(key, DateTime.now(), actor, this.getIdProject(), super.getID(), name)
     );
   }
 
   public updateColor(key: string, color: CategoryColor, actor: IdEntity): void {
     this.color = color;
     this.addEvent(
-      new CategoryColorChanged(key, DateTime.now(), actor, this.idProject, super.getID(), color),
+      new CategoryColorChanged(key, DateTime.now(), actor, this.getIdProject(), super.getID(), color),
     );
   }
 
   public delete(key: string, actor: IdEntity): void{
     super.addEvent(
-      new CategoryDeleted(key, DateTime.now(), actor, this.idProject, super.getID())
+      new CategoryDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID())
     );
     super.softDelete();
+  }
+
+  public getIdProject(): IdEntity {
+    return super.getOwner() as IdEntity;
   }
 
   public toPrimitives(): CategoryParams {
     return {
       id: super.getID().getID(),
-      idProject: this.idProject.getID(),
+      idProject: this.getIdProject().getID(),
       name: this.name.getName(),
       color: this.color.getColor(),
       version: super.getVersion().valueOf(),

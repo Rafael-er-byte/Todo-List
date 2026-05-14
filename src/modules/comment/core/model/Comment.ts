@@ -15,34 +15,38 @@ import CommentContentUpdated from "../events/CommentContentUpdated";
 import CommentDeleted from "../events/CommentDeleted";
 import CommentMentionAdded from "../events/CommentMentionAdded";
 import Unauthorized from "../../../shared/core/errors/Unauthorized";
+import InvalidParameters from "../../../shared/core/errors/InvalidParameters";
 
 export default class Comment extends Entity {
-    private readonly creator!: IdEntity;
     private content!: Text;
     private mentions!: Collection;
+    private creator!: IdEntity;
 
     private constructor(
         id: IdComment,
         creator: IdEntity,
+        task: IdEntity,
         content: Text,
         mentions: Collection,
         internalId: InternalId | None
     ) {
-        super(id, internalId);
-        this.creator = creator;
+        super(id, internalId, task);
+        if(task instanceof None) throw new InvalidParameters('Comment owner is required');
         this.content = content;
         this.mentions = mentions;
+        this.creator = creator;
     }
 
     public static create(
         idComment: IdComment,
         creator: IdEntity,
+        task: IdEntity,
         content: Text,
         key: string,
         mentions?: Collection
     ): Comment {
         const mentionsCollection = mentions || new Collection([], [], []);
-        const comment = new Comment(idComment, creator, content, mentionsCollection, new None());
+        const comment = new Comment(idComment, creator, task ,content, mentionsCollection, new None());
         comment.create();
         comment.addEvent(new CommentCreated(key, DateTime.now(), creator, idComment, comment.toPrimitives()));
         return comment;
@@ -56,6 +60,7 @@ export default class Comment extends Entity {
         const comment = new Comment(
             new IdComment(params.id),
             new IdEntity(params.creator),
+            new IdEntity(params.idTask),
             new Text(params.content),
             new Collection(mentions, [], []),
             new InternalId(params.internalId as number)
@@ -86,7 +91,7 @@ export default class Comment extends Entity {
         newContent: Text,
         actor: IdEntity
     ): void {
-        if (actor.getID() !== this.creator.getID()) {
+        if (actor.getID() !== this.getCreator().getID()) {
             throw new Unauthorized('Only the creator can update the comment content');
         }
         this.content = newContent;
@@ -118,9 +123,10 @@ export default class Comment extends Entity {
     public toPrimitives(): CommentParams {
         return {
             id: this.getId().getID(),
-            creator: this.creator.getID(),
+            creator: this.getCreator().getID(),
             content: this.content.getText(),
             mentions: this.mentions.getPrimitives(),
+            idTask: (super.getOwner() as IdEntity).getID(),
             version: super.getVersion().valueOf(),
             deletedAt: super.getDeletedAt().toPrimitive(),
             internalId: internalIdToPrimitive(super.getInternalId()),
