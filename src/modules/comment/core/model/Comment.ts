@@ -31,7 +31,6 @@ export default class Comment extends Entity {
         internalId: InternalId | None
     ) {
         super(id, internalId, task);
-        if(task instanceof None) throw new InvalidParameters('Comment owner is required');
         this.content = content;
         this.mentions = mentions;
         this.creator = creator;
