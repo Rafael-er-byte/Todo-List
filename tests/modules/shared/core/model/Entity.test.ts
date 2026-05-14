@@ -6,6 +6,7 @@ import ID from "../../../../../src/modules/shared/core/objects/ID";
 import DateTime from "../../../../../src/modules/shared/core/objects/DateTime";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
+import Unauthorized from "../../../../../src/modules/shared/core/errors/Unauthorized";
 import InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
 import None from "../../../../../src/modules/shared/core/objects/None";
 import isNone from "../../../../../src/modules/shared/helpers/isNone";
@@ -16,16 +17,17 @@ describe('Entity abstract class', () => {
         idEntity: string,
         version: number,
         internalId: number | null,
-        deletedAt: Date | null  
+        deletedAt: Date | null,
+        owner: string | null
     }
 
     class TestEntity extends Entity {
-        constructor(idEntity: IdEntity, internalId: InternalId | None) {
-            super(idEntity, internalId);
+        constructor(idEntity: IdEntity, internalId: InternalId | None, owner: IdEntity | None) {
+            super(idEntity, internalId, owner);
         }
 
-        static create(idEntity: IdEntity, internalId: InternalId | None): TestEntity {
-            const instance = new TestEntity(idEntity, internalId);
+        static create(idEntity: IdEntity, internalId: InternalId | None, owner: IdEntity | None = new None()): TestEntity {
+            const instance = new TestEntity(idEntity, internalId, owner);
             instance.create();
             return instance;
         }
@@ -33,7 +35,8 @@ describe('Entity abstract class', () => {
         static fromPrimitives(
             params: TestParams
         ): TestEntity {
-            const instance = new TestEntity(new IdEntity(params.idEntity), params.internalId? new InternalId(params.internalId): new None());
+            const owner: IdEntity | None = params.owner ? new IdEntity(params.owner) : new None();
+            const instance = new TestEntity(new IdEntity(params.idEntity), params.internalId? new InternalId(params.internalId): new None(), owner);
             instance.build(new Version(params.version), params.deletedAt? DeletedAt.createDeleted(DateTime.create(params.deletedAt)): DeletedAt.createActive());
             return instance;
         }
@@ -51,25 +54,44 @@ describe('Entity abstract class', () => {
                 idEntity: super.getID().getID(),
                 version: super.getVersion().valueOf(),
                 internalId: isNone(super.getInternalId())? null: (super.getInternalId() as InternalId).getId(),
-                deletedAt: super.getDeletedAt().exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date 
+                deletedAt: super.getDeletedAt().exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date,
+                owner: isNone(super.getOwner())? null: (super.getOwner() as IdEntity).getID()
             };
         }
     }
 
-    function createTestEntity(): TestEntity {
+    class OwnerEntity extends Entity {
+        constructor(idEntity: IdEntity) {
+            super(idEntity, new None(), new None());
+        }
+
+        static create(idEntity: IdEntity): OwnerEntity {
+            const instance = new OwnerEntity(idEntity);
+            instance.create();
+            return instance;
+        }
+
+        toPrimitives(): unknown {
+            return { idEntity: super.getID().getID() };
+        }
+    }
+
+    function createTestEntity(owner: IdEntity | None = new None()): TestEntity {
         const idEntity = new IdEntity(ID.generateId().getId());
         const internalId = new InternalId(12);
-        return TestEntity.create(idEntity, internalId);
+        return TestEntity.create(idEntity, internalId, owner);
+    }
+
+    function createOwnerEntity(): OwnerEntity {
+        return OwnerEntity.create(new IdEntity(ID.generateId().getId()));
     }
 
     function createDomainEvent(): DomainEvent {
-        const projectInfo = new IdEntity(ID.generateId().getId());
-
         return new DomainEvent(
             ID.generateId().getId(),
             DateTime.now(),
             new IdEntity(ID.generateId().getId()),
-            projectInfo,
+            new IdEntity(ID.generateId().getId()),
             new IdEntity(ID.generateId().getId()),
             "TEST_EVENT"
         );
@@ -129,7 +151,8 @@ describe('Entity abstract class', () => {
                 idEntity: idEntity.getID(),
                 version: 5,
                 internalId: 10,
-                deletedAt: (deletedAt.getDeletedTime() as DateTime).getDate() as Date
+                deletedAt: (deletedAt.getDeletedTime() as DateTime).getDate() as Date,
+                owner: null
             }
         );
 
@@ -173,7 +196,8 @@ describe('Entity abstract class', () => {
                 idEntity: primitives.idEntity,
                 version: primitives.version,
                 internalId: primitives.internalId,
-                deletedAt: primitives.deletedAt
+                deletedAt: primitives.deletedAt,
+                owner: primitives.owner
             }
         );
 
@@ -186,5 +210,30 @@ describe('Entity abstract class', () => {
         const entity = TestEntity.create(idEntity, new None());
 
         expect(entity.getInternalId()).toBeInstanceOf(None);
+    });
+
+    // ─── Ownership tests ──────────────────────────────────────────────────────
+
+    it("should confirm ownership when the child belongs to the owner", () => {
+        const owner = createOwnerEntity();
+        const child = createTestEntity(owner.getID());
+
+        expect(() => owner.ownership(child)).not.toThrow();
+        expect(owner.ownership(child)).toBe(true);
+    });
+
+    it("should throw Unauthorized when a child has no owner and ownership is checked", () => {
+        const owner = createOwnerEntity();
+        const orphan = createTestEntity();
+
+        expect(() => owner.ownership(orphan)).toThrow(Unauthorized);
+    });
+
+    it("should throw Unauthorized when the child belongs to a different owner", () => {
+        const realOwner = createOwnerEntity();
+        const impostor = createOwnerEntity();
+        const child = createTestEntity(realOwner.getID());
+
+        expect(() => impostor.ownership(child)).toThrow(Unauthorized);
     });
 });

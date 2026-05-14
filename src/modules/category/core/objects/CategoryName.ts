@@ -1,7 +1,7 @@
 import LimitExceeded from '../../../shared/core/errors/LimitExceeded';
 import Text from '../../../shared/core/objects/Text';
 import ValueObject from '../../../shared/core/objects/ValueObject';
-import CategoryLimits from '../constants/categoryLimits';
+import CategoryLimits from '../constants/CategoryLimits';
 import CategoryNameMustBeAValidText from '../error/CategoryNameMustBeAValidText';
 
 export default class CategoryName extends ValueObject {

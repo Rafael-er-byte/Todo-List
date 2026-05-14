@@ -1,10 +1,11 @@
 import ResourceNotFound from '../errors/ResourceNotFound';
+import Unauthorized from '../errors/Unauthorized';
 import type DomainEvent from '../events/DomainEvent';
 import DateTime from '../objects/DateTime';
 import DeletedAt from '../objects/DeletedAt';
 import type IdEntity from '../objects/IdEntity';
 import type InternalId from '../objects/InternalId';
-import type None from '../objects/None';
+import None from '../objects/None';
 import Version from '../objects/Version';
 
 export default abstract class Entity {
@@ -12,14 +13,14 @@ export default abstract class Entity {
   private lastUpdate!: DateTime;
   private version!: Version;
   private deletedAt!: DeletedAt;
+  private owner!: IdEntity | None;
   private readonly idEntity!: IdEntity;
   private readonly internalId!: InternalId | None;
 
-  protected constructor(idEntity: IdEntity, internalId: InternalId | None) {
+  protected constructor(idEntity: IdEntity, internalId: InternalId | None, owner: IdEntity | None) {
     this.idEntity = idEntity;
-    if(internalId){
-      this.internalId = internalId;
-    }
+    this.internalId = internalId;
+    this.owner = owner;
   }
 
   protected addEvent(event: DomainEvent): void {
@@ -46,10 +47,20 @@ export default abstract class Entity {
     this.deletedAt = DeletedAt.delete();
   }
 
+  protected changeOwner(newOwner: IdEntity | None): void{
+    this.owner = newOwner;
+  }
+
   public pullEvents(): DomainEvent[] {
     const events = this.tmpHistory;
     this.tmpHistory = [];
     return events;
+  }
+
+  public ownership(child: Entity): boolean{
+    const isOwned = child.getOwner() instanceof None? false: child.getOwner() === this.idEntity;
+    if(!isOwned) throw new Unauthorized(`Resource ${child.getID()} is not owned by ${this.idEntity}`, child);
+    return true;
   }
 
   public getLastUpdate(): DateTime {
@@ -74,6 +85,10 @@ export default abstract class Entity {
 
   public getID(): IdEntity{
     return this.idEntity;
+  }
+
+  public getOwner(): IdEntity | None{
+    return this.owner;
   }
 
   abstract toPrimitives(): unknown;
