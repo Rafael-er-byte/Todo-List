@@ -1,4 +1,3 @@
-import type IdEntity from '../../../shared/core/objects/IdEntity';
 import type None from '../../../shared/core/objects/None';
 import type TaskCriteria from '../interface/TaskCriteria';
 import type Task from '../model/Task';
@@ -7,10 +6,10 @@ import type TaskId from '../objects/TaskId';
 export default interface iTaskRepository {
   create(task: Task): Promise<void>;
   update(task: Task): Promise<void>;
-  getById(projectId: IdEntity, taskId: TaskId): Promise<Task | None>;
-  getByCriteria(projectId: IdEntity, criteria: TaskCriteria): Promise<Task[]>;
-  getMany(projectId: IdEntity, taskIds: TaskId[]): Promise<Task[]>;
-  updateMany(projectId: IdEntity, tasks: Task[]): Promise<void>;
-  getCategoriesFromTaskById(projectId: IdEntity, taskId: TaskId, limit: number, page: number): Promise<string[]>;
-  getAssignedFromTaskById(projectId: IdEntity, taskId: TaskId, limit: number, page: number): Promise<string[]>;
+  getById(taskId: TaskId): Promise<Task | None>;
+  getByCriteria(criteria: TaskCriteria): Promise<Task[]>;
+  getMany(taskIds: TaskId[]): Promise<Task[]>;
+  updateMany(tasks: Task[]): Promise<void>;
+  getCategoriesFromTaskById(taskId: TaskId, limit: number, page: number): Promise<string[]>;
+  getAssignedFromTaskById(taskId: TaskId, limit: number, page: number): Promise<string[]>;
 }
