@@ -1,3 +1,4 @@
+import type IdEntity from '../../../shared/core/objects/IdEntity';
 import type { AllowedTaskState } from '../types/AllowedTaskState';
 
 export default interface TaskCriteria {
@@ -9,4 +10,5 @@ export default interface TaskCriteria {
   assingned: string[];
   withCategory: boolean;
   wihtAssigned: boolean;
+  idProject: IdEntity;
 }

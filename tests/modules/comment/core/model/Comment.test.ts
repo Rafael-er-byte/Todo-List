@@ -11,11 +11,13 @@ const DEFAULT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";
 const CREATOR_ID = "019df05a-8588-758c-b5e7-92af14bf85c0";
 const ACTOR_ID = "019df05a-8588-758c-b5e7-92af14bf85c1";
 const MENTION_ID = "019df05a-8588-758c-b5e7-92af14bf85c2";
+const TASK_ID = "019df05a-8588-758c-b5e7-92af14bf85c2";
 
 const createCommentParams = (
   overrides?: Partial<{
     id: string;
     creator: string;
+    idTask: string;
     content: string;
     mentions: string[];
     version: number;
@@ -26,6 +28,7 @@ const createCommentParams = (
 ) => ({
   id: DEFAULT_ID,
   creator: CREATOR_ID,
+  idTask: TASK_ID,
   content: "This is a test comment",
   mentions: [],
   version: 1,
@@ -41,6 +44,7 @@ const buildComment = (overrides?: Parameters<typeof createCommentParams>[0]) => 
   return Comment.create(
     new IdComment(params.id),
     new IdEntity(params.creator),
+    new IdEntity(params.idTask),
     new Text(params.content),
     params.key
   );
@@ -68,6 +72,7 @@ describe("Comment Entity", () => {
       const comment = buildComment();
 
       expect(comment.getCreator().getID()).toBe(CREATOR_ID);
+      expect((comment.getOwner() as IdEntity).getID()).toBe(TASK_ID);
     });
 
     it("should set the content correctly", () => {
@@ -276,6 +281,7 @@ describe("Comment Entity", () => {
 
       expect(comment.getId().getID()).toBe(params.id);
       expect(comment.getCreator().getID()).toBe(params.creator);
+      expect((comment.getOwner() as IdEntity).getID()).toBe(params.idTask);
       expect(comment.getContent().getText()).toBe(params.content);
       expect(comment.getMentions().getItems().length).toBe(1);
     });

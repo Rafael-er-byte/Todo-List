@@ -18,7 +18,6 @@ import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive
 import MemberRoleChanged from '../events/MemberRoleChanged';
 
 export default class Member extends Entity {
-  private idProject!: IdEntity;
   private status!: MemberStatus;
   private role!: MemberRole;
   private idAccount!: IdEntity;
@@ -33,9 +32,8 @@ export default class Member extends Entity {
     role: MemberRole,
     projectMetadata: ProjectMetadata
   ) {
-    super(id, internalID);
+    super(id, internalID, idProject);
     this.idAccount = idAccount;
-    this.idProject = idProject;
     this.status = status;
     this.role = role;
     this.projectMetadata = projectMetadata;
@@ -86,21 +84,21 @@ export default class Member extends Entity {
 
   public block(key: string, actor: IdEntity): void {
     this.status = MemberStatus.blocked();
-    this.addEvent(new MemberBlocked(key, DateTime.now(), actor, this.idProject, super.getID()));
+    this.addEvent(new MemberBlocked(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
   }
 
   public unBlock(key: string, actor: IdEntity): void {
     this.status = MemberStatus.active();
-    this.addEvent(new MemberActived(key, DateTime.now(), actor, this.idProject, super.getID()));
+    this.addEvent(new MemberActived(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
   }
 
   public changeRole(key: string, actor: IdEntity, role: MemberRole): void {
     this.role = role;
-    this.addEvent(new MemberRoleChanged(key, DateTime.now(), actor, this.idProject, super.getID(), role));
+    this.addEvent(new MemberRoleChanged(key, DateTime.now(), actor, this.getIdProject(), super.getID(), role));
   }
 
   public delete(key: string, actor: IdEntity): void {
-    this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.idProject, super.getID()));
+    this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
     super.softDelete();
   }
 
@@ -124,10 +122,14 @@ export default class Member extends Entity {
     this.projectMetadata = this.projectMetadata.unmarkAsFavorite();
   }
 
+  public getIdProject(): IdEntity {
+    return super.getOwner() as IdEntity;
+  }
+
   public toPrimitives(): MemberParams {
     return {
       id: super.getID().getID(),
-      idProject: this.idProject.getID(),
+      idProject: (super.getOwner() as IdEntity).getID(),
       idAccount: this.idAccount.getID(),
       status: this.status.getStatus(),
       role: this.role.getRole(),

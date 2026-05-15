@@ -59,6 +59,7 @@ describe('Task', () => {
     expect(primitives.categories).toEqual([]);
     expect(primitives.assigned).toEqual([]);
     expect(primitives.description).toBeNull();
+    expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = task.pullEvents();
     expect(events).toHaveLength(1);
@@ -128,6 +129,7 @@ describe('Task', () => {
     task.move(newListContainer, actor, 'move-key');
 
     expect(task.toPrimitives().listContainer).toBe('0643c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = task.pullEvents();
     expect(events).toHaveLength(1);
@@ -301,6 +303,7 @@ describe('Task', () => {
     expect(primitives.dueDate).toEqual(dueDate);
     expect(primitives.id).toBe('0243c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.idProject).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.idInternal).toBeNull();
     expect(primitives.version).toEqual(7);
     expect(primitives.deletedAt).toBeNull();

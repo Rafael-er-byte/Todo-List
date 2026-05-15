@@ -22,7 +22,6 @@ export default class Url extends ValueObject {
       const tld = hostParts[hostParts.length - 1] as string;
       if (!this.tldRegex.test(tld)) throw new InvalidParameters('url', newUrl);
     } catch (error) {
-      console.error(error);
       throw new InvalidParameters('url', newUrl);
     }
 
