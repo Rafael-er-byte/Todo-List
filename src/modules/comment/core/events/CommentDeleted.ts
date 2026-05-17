@@ -7,8 +7,9 @@ export default class CommentDeleted extends DomainEvent {
     key: string,
     date: DateTime,
     actor: IdEntity,
+    idTask: IdEntity,
     idEntity: IdEntity
   ) {
-    super(key, date, actor, actor, idEntity, 'COMMENT_DELETED');
+    super(key, date, actor, idTask, idEntity, 'COMMENT_DELETED');
   }
 }

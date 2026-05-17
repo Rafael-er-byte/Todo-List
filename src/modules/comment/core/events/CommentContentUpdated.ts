@@ -9,8 +9,9 @@ export default class CommentContentUpdated extends DomainEvent {
     date: DateTime,
     actor: IdEntity,
     idEntity: IdEntity,
+    idTask: IdEntity,
     content: Text
   ) {
-    super(key, date, actor, actor, idEntity, 'COMMENT_CONTENT_UPDATED', content);
+    super(key, date, actor, idTask, idEntity, 'COMMENT_CONTENT_UPDATED', content);
   }
 }
