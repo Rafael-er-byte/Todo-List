@@ -2,7 +2,6 @@ import Comment from "../../../../../src/modules/comment/core/model/Comment";
 import IdComment from "../../../../../src/modules/comment/core/objects/IdComment";
 import Text from "../../../../../src/modules/shared/core/objects/Text";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
-import Collection from "../../../../../src/modules/shared/core/objects/Collection";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 import Unauthorized from "../../../../../src/modules/shared/core/errors/Unauthorized";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
@@ -140,7 +139,7 @@ describe("Comment Entity", () => {
       try {
         comment.updateContent("test-key-5", newContent, IDMock);
       } catch (e) {
-        // Expected error
+        console.error("Expected error:", e);
       }
 
       expect(comment.getContent().getText()).toBe(originalContent);

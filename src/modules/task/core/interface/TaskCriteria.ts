@@ -7,6 +7,8 @@ export default interface TaskCriteria {
   nameLike: string;
   categories: string[];
   status: AllowedTaskState;
+  isOverDue: boolean;
+  isStarted: boolean;
   assingned: string[];
   withCategory: boolean;
   wihtAssigned: boolean;

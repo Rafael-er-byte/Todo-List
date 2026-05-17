@@ -10,6 +10,8 @@ export default interface TaskParams {
   description: string | null;
   startDate: Date | null;
   dueDate: Date | null;
+  isOverdue: boolean;
+  isStarted: boolean;
   idInternal: number | null;
   version: number | null;
   deletedAt: Date | null;
