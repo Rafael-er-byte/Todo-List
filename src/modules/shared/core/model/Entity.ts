@@ -4,7 +4,6 @@ import type DomainEvent from '../events/DomainEvent';
 import DateTime from '../objects/DateTime';
 import DeletedAt from '../objects/DeletedAt';
 import type IdEntity from '../objects/IdEntity';
-import type InternalId from '../objects/InternalId';
 import None from '../objects/None';
 import Version from '../objects/Version';
 
@@ -15,11 +14,9 @@ export default abstract class Entity {
   private deletedAt!: DeletedAt;
   private owner!: IdEntity | None;
   private readonly idEntity!: IdEntity;
-  private readonly internalId!: InternalId | None;
 
-  protected constructor(idEntity: IdEntity, internalId: InternalId | None, owner: IdEntity | None) {
+  protected constructor(idEntity: IdEntity, owner: IdEntity | None) {
     this.idEntity = idEntity;
-    this.internalId = internalId;
     this.owner = owner;
   }
 
@@ -65,10 +62,6 @@ export default abstract class Entity {
 
   public getLastUpdate(): DateTime {
     return this.lastUpdate;
-  }
-
-  public getInternalId(): InternalId | None {
-    return this.internalId;
   }
 
   public getVersion(): Version{

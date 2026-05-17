@@ -1,7 +1,5 @@
 import Entity from "../../../shared/core/model/Entity";
 import IdEntity from "../../../shared/core/objects/IdEntity";
-import InternalId from "../../../shared/core/objects/InternalId";
-import None from "../../../shared/core/objects/None";
 import Text from "../../../shared/core/objects/Text";
 import IdComment from "../objects/IdComment";
 import Collection from "../../../shared/core/objects/Collection";
@@ -9,7 +7,6 @@ import DateTime from "../../../shared/core/objects/DateTime";
 import Version from "../../../shared/core/objects/Version";
 import DeletedAt from "../../../shared/core/objects/DeletedAt";
 import type CommentParams from "../interfaces/CommentParams";
-import internalIdToPrimitive from "../../../shared/helpers/InternalIdToPrimitive";
 import CommentCreated from "../events/CommentCreated";
 import CommentContentUpdated from "../events/CommentContentUpdated";
 import CommentDeleted from "../events/CommentDeleted";
@@ -26,10 +23,9 @@ export default class Comment extends Entity {
         creator: IdEntity,
         task: IdEntity,
         content: Text,
-        mentions: Collection,
-        internalId: InternalId | None
+        mentions: Collection
     ) {
-        super(id, internalId, task);
+        super(id, task);
         this.content = content;
         this.mentions = mentions;
         this.creator = creator;
@@ -44,7 +40,7 @@ export default class Comment extends Entity {
         mentions?: Collection
     ): Comment {
         const mentionsCollection = mentions || new Collection([], [], []);
-        const comment = new Comment(idComment, creator, task ,content, mentionsCollection, new None());
+        const comment = new Comment(idComment, creator, task ,content, mentionsCollection);
         comment.create();
         comment.addEvent(new CommentCreated(key, DateTime.now(), creator, idComment, comment.toPrimitives()));
         return comment;
@@ -60,8 +56,7 @@ export default class Comment extends Entity {
             new IdEntity(params.creator),
             new IdEntity(params.idTask),
             new Text(params.content),
-            new Collection(mentions, [], []),
-            new InternalId(params.internalId as number)
+            new Collection(mentions, [], [])
         );
 
         comment.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
@@ -127,7 +122,6 @@ export default class Comment extends Entity {
             idTask: (super.getOwner() as IdEntity).getID(),
             version: super.getVersion().valueOf(),
             deletedAt: super.getDeletedAt().toPrimitive(),
-            internalId: internalIdToPrimitive(super.getInternalId()),
         };
     }
 }

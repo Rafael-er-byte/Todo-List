@@ -338,7 +338,6 @@ describe('Task', () => {
     expect(primitives.id).toBe('0243c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.idProject).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
     expect((task.getOwner() as IdEntity).getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
-    expect(primitives.idInternal).toBeNull();
     expect(primitives.version).toEqual(7);
     expect(primitives.deletedAt).toBeNull();
   });

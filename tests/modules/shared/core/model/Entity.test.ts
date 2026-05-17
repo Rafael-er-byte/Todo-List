@@ -7,7 +7,6 @@ import DateTime from "../../../../../src/modules/shared/core/objects/DateTime";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import Unauthorized from "../../../../../src/modules/shared/core/errors/Unauthorized";
-import InternalId from "../../../../../src/modules/shared/core/objects/InternalId";
 import None from "../../../../../src/modules/shared/core/objects/None";
 import isNone from "../../../../../src/modules/shared/helpers/isNone";
 
@@ -16,18 +15,17 @@ describe('Entity abstract class', () => {
     interface TestParams{
         idEntity: string,
         version: number,
-        internalId: number | null,
         deletedAt: Date | null,
         owner: string | null
     }
 
     class TestEntity extends Entity {
-        constructor(idEntity: IdEntity, internalId: InternalId | None, owner: IdEntity | None) {
-            super(idEntity, internalId, owner);
+        constructor(idEntity: IdEntity, owner: IdEntity | None) {
+            super(idEntity, owner);
         }
 
-        static create(idEntity: IdEntity, internalId: InternalId | None, owner: IdEntity | None = new None()): TestEntity {
-            const instance = new TestEntity(idEntity, internalId, owner);
+        static create(idEntity: IdEntity, owner: IdEntity | None = new None()): TestEntity {
+            const instance = new TestEntity(idEntity, owner);
             instance.create();
             return instance;
         }
@@ -36,7 +34,7 @@ describe('Entity abstract class', () => {
             params: TestParams
         ): TestEntity {
             const owner: IdEntity | None = params.owner ? new IdEntity(params.owner) : new None();
-            const instance = new TestEntity(new IdEntity(params.idEntity), params.internalId? new InternalId(params.internalId): new None(), owner);
+            const instance = new TestEntity(new IdEntity(params.idEntity), owner);
             instance.build(new Version(params.version), params.deletedAt? DeletedAt.createDeleted(DateTime.create(params.deletedAt)): DeletedAt.createActive());
             return instance;
         }
@@ -53,7 +51,6 @@ describe('Entity abstract class', () => {
             return {
                 idEntity: super.getID().getID(),
                 version: super.getVersion().valueOf(),
-                internalId: isNone(super.getInternalId())? null: (super.getInternalId() as InternalId).getId(),
                 deletedAt: super.getDeletedAt().exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date,
                 owner: isNone(super.getOwner())? null: (super.getOwner() as IdEntity).getID()
             };
@@ -78,8 +75,7 @@ describe('Entity abstract class', () => {
 
     function createTestEntity(owner: IdEntity | None = new None()): TestEntity {
         const idEntity = new IdEntity(ID.generateId().getId());
-        const internalId = new InternalId(12);
-        return TestEntity.create(idEntity, internalId, owner);
+        return TestEntity.create(idEntity, owner);
     }
 
     function createOwnerEntity(): OwnerEntity {
@@ -150,7 +146,6 @@ describe('Entity abstract class', () => {
             {
                 idEntity: idEntity.getID(),
                 version: 5,
-                internalId: 10,
                 deletedAt: (deletedAt.getDeletedTime() as DateTime).getDate() as Date,
                 owner: null
             }
@@ -195,7 +190,6 @@ describe('Entity abstract class', () => {
             {
                 idEntity: primitives.idEntity,
                 version: primitives.version,
-                internalId: primitives.internalId,
                 deletedAt: primitives.deletedAt,
                 owner: primitives.owner
             }
@@ -205,12 +199,6 @@ describe('Entity abstract class', () => {
         expect(reconstructed.getVersion().valueOf()).toBe(primitives.version);
     });
 
-    it("should return None objectfor internalId if not provided", () => {
-        const idEntity = new IdEntity(ID.generateId().getId());
-        const entity = TestEntity.create(idEntity, new None());
-
-        expect(entity.getInternalId()).toBeInstanceOf(None);
-    });
 
     // ─── Ownership tests ──────────────────────────────────────────────────────
 

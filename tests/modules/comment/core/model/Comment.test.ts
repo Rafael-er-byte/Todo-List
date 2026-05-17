@@ -21,7 +21,6 @@ const createCommentParams = (
     mentions: string[];
     version: number;
     deletedAt: Date | null;
-    internalId: number | null;
     key: string;
   }>
 ) => ({
@@ -32,7 +31,6 @@ const createCommentParams = (
   mentions: [],
   version: 1,
   deletedAt: null,
-  internalId: null,
   key: "test-key",
   ...overrides
 });
@@ -211,7 +209,7 @@ describe("Comment Entity", () => {
 
     it("should return false when comment is deleted", () => {
       const comment = Comment.fromPrimitives(
-        createCommentParams({ deletedAt: new Date(), internalId: 1 })
+        createCommentParams({ deletedAt: new Date() })
       );
 
       expect(comment.exists()).toBe(false);
@@ -253,7 +251,6 @@ describe("Comment Entity", () => {
       expect(primitives.mentions).toEqual([]);
       expect(primitives.version).toBe(1);
       expect(primitives.deletedAt).toBeNull();
-      expect(primitives.internalId).toBeNull();
     });
 
     it("should serialize comment with mentions", () => {
@@ -272,8 +269,7 @@ describe("Comment Entity", () => {
 
     it("should deserialize from primitives correctly", () => {
       const params = createCommentParams({
-        mentions: [MENTION_ID],
-        internalId: 1
+        mentions: [MENTION_ID]
       });
 
       const comment = Comment.fromPrimitives(params);

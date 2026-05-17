@@ -19,7 +19,6 @@ const createCategoryParams = (
     version: number;
     deletedAt: Date | null;
     idActor: string;
-    internalId: number | null;
     key: string;
   }>
 ) => ({
@@ -29,7 +28,6 @@ const createCategoryParams = (
   color: AllowedColors.BLACK,
   version: 1,
   deletedAt: null,
-  internalId: null,
   key: "test-key",
   ...overrides
 });
@@ -100,7 +98,7 @@ describe("Category Entity", () => {
 
     it("should return false when status is deleted", () => {
       const category = Category.fromPrimitives(
-        createCategoryParams({ deletedAt: new Date(), internalId: 1 })
+        createCategoryParams({ deletedAt: new Date() })
       );
 
       expect(category.getOwner().getID()).toBe(DEFAULT_ID);
@@ -109,7 +107,7 @@ describe("Category Entity", () => {
 
     it("should delete a category", () => {
       const category = Category.fromPrimitives(
-        createCategoryParams({ deletedAt: null, internalId: 1 })
+        createCategoryParams({ deletedAt: null })
       );
 
       category.pullEvents();
@@ -144,8 +142,7 @@ describe("Category Entity", () => {
         name: params.name,
         color: params.color,
         version: params.version,
-        deletedAt: params.deletedAt,
-        internalId: params.internalId
+        deletedAt: params.deletedAt
       });
     });
 
