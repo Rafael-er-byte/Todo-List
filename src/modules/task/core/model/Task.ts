@@ -32,6 +32,9 @@ import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive
 import Text from '../../../shared/core/objects/Text';
 import type { AllowedTaskState } from '../types/AllowedTaskState';
 import Collection from '../../../shared/core/objects/Collection';
+import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
+import TaskStarted from '../events/TaskStarted';
+import TaskOverDue from '../events/TaskOverDue';
 
 export default class Task extends Entity {
   private title!: TaskTitle;
@@ -42,6 +45,9 @@ export default class Task extends Entity {
 
   private startDate: DateTime | None = new None();
   private dueDate: DateTime | None = new None();
+
+  private isStarted: boolean = false;
+  private isOverdue: boolean = false;
 
   private categories: Collection = new Collection([], [], []);
   private assigned: Collection = new Collection([], [], []);
@@ -56,6 +62,8 @@ export default class Task extends Entity {
     description: Text | None,
     startDate: DateTime | None,
     dueDate: DateTime | None,
+    isOverDue: boolean,
+    isStarted: boolean,
     idInternal: InternalId | None,
     categories: Collection,
     assigned: Collection
@@ -67,6 +75,8 @@ export default class Task extends Entity {
     this.description = description;
     this.startDate = startDate;
     this.dueDate = dueDate;
+    this.isOverdue = isOverDue;
+    this.isStarted = isStarted;
     this.listContainer = listContainer;
     this.categories = categories;
     this.assigned = assigned;
@@ -98,6 +108,8 @@ export default class Task extends Entity {
         description,
         startDate,
         dueDate,
+        false,
+        false,
         new None(),
         categories,
         assigned
@@ -129,6 +141,8 @@ export default class Task extends Entity {
       params.description ? new Text(params.description) : new None(),
       params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(),
       params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(),
+      params.isOverdue,
+      params.isStarted,
       new InternalId(params.idInternal as number),
       new Collection(categories, [], []),
       new Collection(assigned, [], [])
@@ -290,6 +304,20 @@ export default class Task extends Entity {
     return true;
   }
 
+  public setStarted(key: string): void {
+    if(this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if(this.isCompleted()) throw new InvalidOperation('Cannot start a completed task');
+    this.isStarted = true;
+    this.addEvent(new TaskStarted(key, DateTime.now(), this.getIdProject(), super.getID()));
+  }
+
+  public setOverDue(key: string): void { 
+    if(this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if(this.isCompleted()) throw new InvalidOperation('Cannot start a completed task');
+    this.isOverdue = true;
+    this.addEvent(new TaskOverDue(key, DateTime.now(), this.getIdProject(), super.getID()));
+  }
+
   public getIdProject(): IdEntity {
     return super.getOwner() as IdEntity;
   }
@@ -326,6 +354,14 @@ export default class Task extends Entity {
     return this.assigned;
   }
 
+  public getIsStarted(): boolean {
+    return this.isStarted;
+  }
+
+  public getIsOverdue(): boolean {
+    return this.isOverdue;
+  }
+
   public toPrimitives(): TaskParams {
     return {
       title: this.title.getTitle(),
@@ -338,6 +374,8 @@ export default class Task extends Entity {
       assigned: this.assigned.getPrimitives(),
       description: (this.description instanceof None) ? null : (this.description as Text).getText(),
       startDate: this.startDate instanceof DateTime ? this.startDate.getDate() : null,
+      isOverdue: this.isOverdue,
+      isStarted: this.isStarted,
       dueDate: this.dueDate instanceof DateTime ? this.dueDate.getDate() : null,
       idInternal: internalIdToPrimitive(super.getInternalId()),
       version: super.getVersion().valueOf(),

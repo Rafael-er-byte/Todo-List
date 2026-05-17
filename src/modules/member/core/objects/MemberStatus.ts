@@ -1,4 +1,3 @@
-import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 import ValueObject from '../../../shared/core/objects/ValueObject';
 import MemberStatusNotSupported from '../error/MemberStatusNotSupported';
 import { ALLOWED_MEMBER_STATUS, AllowedMemberStatus } from '../types/AllowedMemberStatus';

@@ -1,11 +1,12 @@
 import type DateTime from '../objects/DateTime';
 import type IdEntity from '../objects/IdEntity';
+import type None from '../objects/None';
 
 export default class DomainEvent {
   private eventId!: string;
   private eventDate!: DateTime;
-  private actor!: IdEntity;
-  private projectId!: IdEntity;
+  private actor!: IdEntity | None;
+  private ownerId!: IdEntity;
   private event!: string;
   private idEntity!: IdEntity;
   private info?: unknown;
@@ -13,8 +14,8 @@ export default class DomainEvent {
   constructor(
     eventId: string,
     eventDate: DateTime,
-    actor: IdEntity,
-    projectId: IdEntity,
+    actor: IdEntity | None,
+    ownerId: IdEntity,
     idEntity: IdEntity,
     event: string,
     info?: unknown,
@@ -25,10 +26,10 @@ export default class DomainEvent {
     if (info) this.info = info;
     this.eventId = eventId;
     this.idEntity = idEntity;
-    this.projectId = projectId;
+    this.ownerId = ownerId;
   } 
  
-  public getActor(): IdEntity {
+  public getActor(): IdEntity | None {
     return this.actor;
   }
 
@@ -52,7 +53,7 @@ export default class DomainEvent {
     return this.idEntity;
   }
 
-  public getprojectInfo(): IdEntity {
-    return this.projectId;
+  public getOwnerInfo(): IdEntity {
+    return this.ownerId;
   }
 }  

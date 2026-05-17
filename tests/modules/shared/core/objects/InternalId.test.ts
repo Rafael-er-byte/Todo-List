@@ -8,9 +8,9 @@ describe('InternalId', () => {
     });
 
     it('should not allow non-numeric internal ids', () => {
-        expect(() => new InternalId('1' as any)).toThrow(InvalidParameters);
-        expect(() => new InternalId('' as any)).toThrow(InvalidParameters);
-        expect(() => new InternalId(undefined as any)).toThrow(InvalidParameters);
+        expect(() => new InternalId('1' as unknown as number)).toThrow(InvalidParameters);
+        expect(() => new InternalId('' as unknown as number)).toThrow(InvalidParameters);
+        expect(() => new InternalId(undefined as unknown as number)).toThrow(InvalidParameters);
     });
 
     it('should not allow zero or negative internal ids', () => {

@@ -1,7 +1,6 @@
 import RelationshipAlreadyExists from '../errors/RelationshipAlreadyExists';
 import ResourceNotFound from '../errors/ResourceNotFound';
 import type IdEntity from './IdEntity';
-import None from './None';
 
 export default class Collection{
   private recentlyAddedItems: IdEntity[] = [];

@@ -26,7 +26,7 @@ export default class Attachment extends ValueObject {
       this.name = name;
       this.size = size;
     } catch (err) {
-      throw new InvalidParameters('Some parameters are missing');
+      throw new InvalidParameters('Some parameters are missing', err);
     }
   }
 

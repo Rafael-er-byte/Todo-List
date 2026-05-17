@@ -59,7 +59,7 @@ describe('Task', () => {
     expect(primitives.categories).toEqual([]);
     expect(primitives.assigned).toEqual([]);
     expect(primitives.description).toBeNull();
-    expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect((task.getOwner() as IdEntity).getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = task.pullEvents();
     expect(events).toHaveLength(1);
@@ -129,7 +129,7 @@ describe('Task', () => {
     task.move(newListContainer, actor, 'move-key');
 
     expect(task.toPrimitives().listContainer).toBe('0643c815-7220-7d64-8c42-6f2af4f9fd37');
-    expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect((task.getOwner() as IdEntity).getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = task.pullEvents();
     expect(events).toHaveLength(1);
@@ -238,6 +238,40 @@ describe('Task', () => {
     expect(() => task.updateTitle(new TaskTitle('New Title'), actor, 'update-title-key')).toThrow(CannotModifyArchivedTasks);
     expect(() => task.move(new IdEntity('1043c815-7220-7d64-8c42-6f2af4f9fd37'), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
     expect(() => task.markAsFinished(actor, 'finish-key')).toThrow(CannotModifyArchivedTasks);
+    expect(() => task.setStarted('start-key')).toThrow(CannotModifyArchivedTasks);
+    expect(() => task.setOverDue('overdue-key')).toThrow(CannotModifyArchivedTasks);
+  });
+
+  it('marks task as started and emits a TaskStarted event', () => {
+    const { task } = buildTask();
+    task.pullEvents();
+
+    const primitivesBefore = task.toPrimitives();
+    expect(primitivesBefore.isStarted).toBe(false);
+
+    task.setStarted('start-key');
+
+    expect(task.toPrimitives().isStarted).toBe(true);
+
+    const events = task.pullEvents();
+    expect(events).toHaveLength(1);
+    expect(events[0]!.getEvent()).toBe('TASK_STARTED');
+  });
+
+  it('marks task as overdue and emits a TaskOverdue event', () => {
+    const { task } = buildTask();
+    task.pullEvents();
+
+    const primitivesBefore = task.toPrimitives();
+    expect(primitivesBefore.isOverdue).toBe(false);
+
+    task.setOverDue('overdue-key');
+
+    expect(task.toPrimitives().isOverdue).toBe(true);
+
+    const events = task.pullEvents();
+    expect(events).toHaveLength(1);
+    expect(events[0]!.getEvent()).toBe('TASK_OVERDUE');
   });
 
   it('throws TaskNeedsToBeArchivedBeforeDeleteIt when trying to delete non-archived task', () => {
@@ -303,7 +337,7 @@ describe('Task', () => {
     expect(primitives.dueDate).toEqual(dueDate);
     expect(primitives.id).toBe('0243c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.idProject).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
-    expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect((task.getOwner() as IdEntity).getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.idInternal).toBeNull();
     expect(primitives.version).toEqual(7);
     expect(primitives.deletedAt).toBeNull();

@@ -15,7 +15,6 @@ import CommentContentUpdated from "../events/CommentContentUpdated";
 import CommentDeleted from "../events/CommentDeleted";
 import CommentMentionAdded from "../events/CommentMentionAdded";
 import Unauthorized from "../../../shared/core/errors/Unauthorized";
-import InvalidParameters from "../../../shared/core/errors/InvalidParameters";
 
 export default class Comment extends Entity {
     private content!: Text;
