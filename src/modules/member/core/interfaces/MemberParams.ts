@@ -7,7 +7,6 @@ export default interface MemberParams {
   idAccount: string;
   status: AllowedMemberStatus;
   role: AllowedMemberRoles;
-  idInternal: number | null;
   version: number | null;
   deletedAt: Date | null;
 }

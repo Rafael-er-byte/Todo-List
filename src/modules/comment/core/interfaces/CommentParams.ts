@@ -6,5 +6,4 @@ export default interface CommentParams {
   mentions: string[];
   version: number;
   deletedAt: Date | null;
-  internalId: number | null;
 }

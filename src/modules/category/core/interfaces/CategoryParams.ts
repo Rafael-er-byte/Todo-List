@@ -5,5 +5,4 @@ export default interface CategoryParams {
   color: string;
   version: number;
   deletedAt: Date | null;
-  internalId: number | null;
 }

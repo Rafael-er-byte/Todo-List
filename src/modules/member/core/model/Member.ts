@@ -13,8 +13,6 @@ import IdEntity from '../../../shared/core/objects/IdEntity';
 import type MemberParams from '../interfaces/MemberParams';
 import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
-import InternalId from '../../../shared/core/objects/InternalId';
-import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
 import MemberRoleChanged from '../events/MemberRoleChanged';
 
 export default class Member extends Entity {
@@ -25,14 +23,13 @@ export default class Member extends Entity {
 
   private constructor(
     id: IdMember,
-    internalID: InternalId | None,
     idProject: IdEntity,
     idAccount: IdEntity,
     status: MemberStatus,
     role: MemberRole,
     projectMetadata: ProjectMetadata
   ) {
-    super(id, internalID, idProject);
+    super(id, idProject);
     this.idAccount = idAccount;
     this.status = status;
     this.role = role;
@@ -52,7 +49,6 @@ export default class Member extends Entity {
   
     const member = new Member(
       idMember,
-      new None(),
       idProject,
       idAccount,
       status,
@@ -70,7 +66,6 @@ export default class Member extends Entity {
   public static fromPrimitives(params: MemberParams): Member {
     const member = new Member(
       new IdMember(params.id),
-      new InternalId(params.idInternal as number),
       new IdEntity(params.idProject),
       new IdEntity(params.idAccount),
       MemberStatus.create(params.status),
@@ -133,7 +128,6 @@ export default class Member extends Entity {
       idAccount: this.idAccount.getID(),
       status: this.status.getStatus(),
       role: this.role.getRole(),
-      idInternal: internalIdToPrimitive(super.getInternalId()),
       version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive()
     };

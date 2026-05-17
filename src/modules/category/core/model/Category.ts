@@ -8,13 +8,10 @@ import CategoryNameChanged from '../events/CategoryNameChanged';
 import CategoryColorChanged from '../events/CategoryColorChanged';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import Version from '../../../shared/core/objects/Version';
-import InternalId from '../../../shared/core/objects/InternalId';
 import type CategoryParams from '../interfaces/CategoryParams';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import None from '../../../shared/core/objects/None';
 import CategoryDeleted from '../events/CategoryDeleted';
 import type { AllowedColors } from '../types/AllowedColors';
-import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
 
 export default class Category extends Entity {
   private name!: CategoryName;
@@ -25,9 +22,8 @@ export default class Category extends Entity {
     color: CategoryColor,
     idProject: IdEntity,
     idEntity: IdCategory,
-    internalId: InternalId | None,
   ) {
-    super(idEntity, internalId, idProject);
+    super(idEntity, idProject);
     this.name = name;
     this.color = color;
   }
@@ -44,8 +40,7 @@ export default class Category extends Entity {
       name,
       color,
       projectID,
-      id,
-      new None()
+      id
     );
 
     category.create();
@@ -59,7 +54,6 @@ export default class Category extends Entity {
         new CategoryColor(params.color as AllowedColors),
         new IdEntity(params.idProject),
         new IdCategory(params.id),
-        new InternalId(params.internalId as number),
       );
 
       category.build(
@@ -103,7 +97,6 @@ export default class Category extends Entity {
       color: this.color.getColor(),
       version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
-      internalId: internalIdToPrimitive(super.getInternalId()),
     };
   }
 }

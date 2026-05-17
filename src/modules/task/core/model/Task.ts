@@ -25,10 +25,8 @@ import TaskContributorDeleted from '../events/TaskMemberDeleted';
 import TaskMemberAdded from '../events/TaskMemberAdded';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import type TaskParams from '../interface/TaskParams';
-import InternalId from '../../../shared/core/objects/InternalId';
 import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
-import internalIdToPrimitive from '../../../shared/helpers/InternalIdToPrimitive';
 import Text from '../../../shared/core/objects/Text';
 import type { AllowedTaskState } from '../types/AllowedTaskState';
 import Collection from '../../../shared/core/objects/Collection';
@@ -64,11 +62,10 @@ export default class Task extends Entity {
     dueDate: DateTime | None,
     isOverDue: boolean,
     isStarted: boolean,
-    idInternal: InternalId | None,
     categories: Collection,
     assigned: Collection
   ) {
-    super(id, idInternal, idProject);
+    super(id, idProject);
     this.title = title;
     this.archived = archived;
     this.state = state;
@@ -110,7 +107,6 @@ export default class Task extends Entity {
         dueDate,
         false,
         false,
-        new None(),
         categories,
         assigned
     );
@@ -143,7 +139,6 @@ export default class Task extends Entity {
       params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(),
       params.isOverdue,
       params.isStarted,
-      new InternalId(params.idInternal as number),
       new Collection(categories, [], []),
       new Collection(assigned, [], [])
     );
@@ -377,7 +372,6 @@ export default class Task extends Entity {
       isOverdue: this.isOverdue,
       isStarted: this.isStarted,
       dueDate: this.dueDate instanceof DateTime ? this.dueDate.getDate() : null,
-      idInternal: internalIdToPrimitive(super.getInternalId()),
       version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
