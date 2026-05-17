@@ -1,6 +1,7 @@
 import MemberStatusNotSupported from "../../../../../src/modules/member/core/error/MemberStatusNotSupported";
 import MemberStatus from "../../../../../src/modules/member/core/objects/MemberStatus";
-import { AllowedMemberStatus } from "../../../../../src/modules/member/core/types/AllowedMemberStatus";
+import { AllowedMemberStatus } from "../../../../../src/modules/member/core/types/AllowedMemberStatus"; 
+import { describe, it, expect } from 'vitest';
 
 describe("MemberStatus Value Object", () => {
 

@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import Member from "../../../../../src/modules/member/core/model/Member";
 import MemberRole from "../../../../../src/modules/member/core/objects/MemberRole";
 import MemberStatus from "../../../../../src/modules/member/core/objects/MemberStatus";
@@ -52,7 +53,7 @@ describe("Member Entity", () => {
       const member = createMember();
 
       expect(member.getID().getID()).toBe(DEFAULT_ID);
-      expect(member.getOwner().getID()).toBe(DEFAULT_ID);
+      expect((member.getOwner() as IdEntity).getID()).toBe(DEFAULT_ID);
       expect(member.exists()).toBe(true);
       expect(member.isBlocked()).toBe(false);
       expect(member.pullEvents()[0]).toBeInstanceOf(MemberAddedToProject);
@@ -128,7 +129,7 @@ describe("Member Entity", () => {
       const member = Member.fromPrimitives(primitives);
 
       expect(member.toPrimitives()).toEqual(primitives);
-      expect(member.getOwner().getID()).toBe(primitives.idProject);
+      expect((member.getOwner() as IdEntity).getID()).toBe(primitives.idProject);
       expect(member.isBlocked()).toBe(false);
     });
 

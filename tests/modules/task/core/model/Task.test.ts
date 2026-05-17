@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import Task from '../../../../../src/modules/task/core/model/Task';
 import TaskTitle from '../../../../../src/modules/task/core/objects/TaskTitle';
 import TaskState from '../../../../../src/modules/task/core/objects/TaskState';

@@ -1,5 +1,6 @@
 import CategoryName from "../../../../../src/modules/category/core/objects/CategoryName";
 import LimitExceeded from "../../../../../src/modules/shared/core/errors/LimitExceeded";
+import { describe, it, expect } from 'vitest';
 
 describe("CategoryName Value Object", () => {
 

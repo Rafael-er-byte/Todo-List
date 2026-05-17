@@ -1,4 +1,5 @@
 import ProjectMetadata from "../../../../../src/modules/member/core/objects/ProjectMetadata";
+import { describe, it, expect } from 'vitest';
 
 describe("ProjectMetadata Value Object", () => {
   it("should default to not favorite and not watching", () => {

@@ -1,6 +1,7 @@
 import CategoryColorNotSupported from "../../../../../src/modules/category/core/error/CategoryColorNotSupported";
 import CategoryColor from "../../../../../src/modules/category/core/objects/CategoryColor";
 import { AllowedColors } from "../../../../../src/modules/category/core/types/AllowedColors";
+import { describe, it, expect } from 'vitest';
 
 describe('Category color tests', () => {
 

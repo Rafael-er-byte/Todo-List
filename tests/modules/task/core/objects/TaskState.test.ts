@@ -1,6 +1,7 @@
 import TaskState from "../../../../../src/modules/task/core/objects/TaskState";
 import TaskStateNotSupported from "../../../../../src/modules/task/core/error/TaskStateNotSupported";
 import { AllowedTaskState } from "../../../../../src/modules/task/core/types/AllowedTaskState";
+import { describe, it, expect } from 'vitest';
 
 describe('TaskState Value Object', () => {
   describe('factory methods', () => {

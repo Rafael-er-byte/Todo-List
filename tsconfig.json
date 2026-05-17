@@ -3,7 +3,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "es2020",
-    "types": ["jest"],
+    "types": ["vitest/globals"],
     "ignoreDeprecations": "5.0",
     "moduleResolution": "bundler",
     "esModuleInterop": true,

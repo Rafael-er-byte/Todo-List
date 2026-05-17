@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import Category from "../../../../../src/modules/category/core/model/Category";
 import CategoryColor from "../../../../../src/modules/category/core/objects/CategoryColor";
 import CategoryName from "../../../../../src/modules/category/core/objects/CategoryName";
@@ -5,7 +6,6 @@ import IdCategory from "../../../../../src/modules/category/core/objects/IdCateg
 import { AllowedColors } from "../../../../../src/modules/category/core/types/AllowedColors";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
-
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 
 const DEFAULT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";
@@ -46,8 +46,8 @@ const buildCategory = (overrides?: Parameters<typeof createCategoryParams>[0]) =
 };
 
 const IDMock = {
-  getID: jest.fn().mockReturnValue(DEFAULT_ID)
-} as unknown as jest.Mocked<IdEntity>;
+  getID: vi.fn().mockReturnValue(DEFAULT_ID)
+} as unknown as IdEntity;
 
 describe("Category Entity", () => {
 
@@ -56,7 +56,7 @@ describe("Category Entity", () => {
       const category = buildCategory();
 
       expect(category.getID().getID()).toBe(DEFAULT_ID);
-      expect(category.getOwner().getID()).toBe(DEFAULT_ID);
+      expect((category.getOwner() as IdEntity).getID()).toBe(DEFAULT_ID);
       expect(category.exists()).toBe(true);
     });
   });
@@ -101,7 +101,7 @@ describe("Category Entity", () => {
         createCategoryParams({ deletedAt: new Date() })
       );
 
-      expect(category.getOwner().getID()).toBe(DEFAULT_ID);
+      expect((category.getOwner() as IdEntity).getID()).toBe(DEFAULT_ID);
       expect(category.exists()).toBe(false);
     });
 

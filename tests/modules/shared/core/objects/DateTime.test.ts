@@ -1,5 +1,6 @@
 import InvalidParameters from "../../../../../src/modules/shared/core/errors/InvalidParameters";
 import DateTime from "../../../../../src/modules/shared/core/objects/DateTime";
+import { describe, it, expect } from 'vitest';
 
 describe('DateTime ValueObject', () => {
 

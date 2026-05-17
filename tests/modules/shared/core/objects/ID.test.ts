@@ -1,5 +1,6 @@
 import InvalidFormat from "../../../../../src/modules/shared/core/errors/InvalidFormat";
 import ID from "../../../../../src/modules/shared/core/objects/ID";
+import { describe, it, expect } from 'vitest';
 
 describe("ID tests", () => {
     it('Should create a valid ID instance', () => {
