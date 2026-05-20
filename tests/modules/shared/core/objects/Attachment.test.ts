@@ -4,6 +4,7 @@ import IntNumber from "../../../../../src/modules/shared/core/objects/IntNumber"
 import Text from "../../../../../src/modules/shared/core/objects/Text";
 import Url from "../../../../../src/modules/shared/core/objects/URL";
 import { AllowedAttachments } from "../../../../../src/modules/shared/core/types/AllowedAttachment.types";
+import { describe, it, expect } from 'vitest';
 
 describe('Attachment object tests', () => {
     const validUrl = new Url('http://localhost.com');

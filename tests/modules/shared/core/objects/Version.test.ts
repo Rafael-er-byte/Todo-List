@@ -1,5 +1,6 @@
 import InvalidParameters from "../../../../../src/modules/shared/core/errors/InvalidParameters";
 import Version from "../../../../../src/modules/shared/core/objects/Version";
+import { describe, it, expect } from 'vitest';
 
 describe('Version', () => {
     it('should create a version object with the correct properties', () => {
@@ -17,8 +18,8 @@ describe('Version', () => {
         expect(() => new Version(1.5)).toThrow(InvalidParameters);
         expect(() => new Version(-1.5)).toThrow(InvalidParameters);
         expect(() => new Version(-1)).toThrow(InvalidParameters);   
-        expect(() => new Version('1')).toThrow(InvalidParameters);
-        expect(() => new Version('')).toThrow(InvalidParameters);
-        expect(() => new Version(undefined)).toThrow(InvalidParameters);
+        expect(() => new Version('1' as unknown as number)).toThrow(InvalidParameters);
+        expect(() => new Version('' as unknown as number)).toThrow(InvalidParameters);
+        expect(() => new Version(undefined as unknown as number)).toThrow(InvalidParameters);
     });
 });    

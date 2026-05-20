@@ -1,6 +1,7 @@
 import DateTime from "../../../../../src/modules/shared/core/objects/DateTime";
 import DeletedAt from "../../../../../src/modules/shared/core/objects/DeletedAt";
 import None from "../../../../../src/modules/shared/core/objects/None";
+import { describe, it, expect } from 'vitest';
 
 describe('DeletedAt', () => {
 

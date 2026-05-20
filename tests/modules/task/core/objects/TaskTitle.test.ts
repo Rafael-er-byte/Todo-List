@@ -2,6 +2,7 @@ import InvalidParameters from "../../../../../src/modules/shared/core/errors/Inv
 import LimitExceeded from "../../../../../src/modules/shared/core/errors/LimitExceeded";
 import TaskRules from "../../../../../src/modules/task/core/constants/TaskRules";
 import TaskTitle from "../../../../../src/modules/task/core/objects/TaskTitle";
+import { describe, it, expect } from 'vitest';
 
 describe('TaskTitle Value Object', () => {
   it('should create a valid TaskTitle instance', () => {

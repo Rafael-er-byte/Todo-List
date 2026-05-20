@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import Version from "../../../../../src/modules/shared/core/objects/Version";
 import DeletedAt from "../../../../../src/modules/shared/core/objects/DeletedAt";
 import Entity from "../../../../../src/modules/shared/core/model/Entity";
@@ -59,7 +60,7 @@ describe('Entity abstract class', () => {
 
     class OwnerEntity extends Entity {
         constructor(idEntity: IdEntity) {
-            super(idEntity, new None(), new None());
+            super(idEntity, new None());
         }
 
         static create(idEntity: IdEntity): OwnerEntity {

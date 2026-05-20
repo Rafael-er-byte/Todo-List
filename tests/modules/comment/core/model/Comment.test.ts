@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import Comment from "../../../../../src/modules/comment/core/model/Comment";
 import IdComment from "../../../../../src/modules/comment/core/objects/IdComment";
 import Text from "../../../../../src/modules/shared/core/objects/Text";
@@ -48,12 +49,12 @@ const buildComment = (overrides?: Parameters<typeof createCommentParams>[0]) => 
 };
 
 const IDMock = {
-  getID: jest.fn().mockReturnValue(ACTOR_ID)
-} as unknown as jest.Mocked<IdEntity>;
+  getID: vi.fn().mockReturnValue(ACTOR_ID)
+} as unknown as IdEntity;
 
 const CreatorMock = {
-  getID: jest.fn().mockReturnValue(CREATOR_ID)
-} as unknown as jest.Mocked<IdEntity>;
+  getID: vi.fn().mockReturnValue(CREATOR_ID)
+} as unknown as IdEntity;
 
 describe("Comment Entity", () => {
 

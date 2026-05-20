@@ -1,5 +1,6 @@
 import InvalidParameters from "../../../../../src/modules/shared/core/errors/InvalidParameters";
 import Url from "../../../../../src/modules/shared/core/objects/URL";
+import { describe, it, expect } from 'vitest';
 
 describe('Url value object tests', () => {
 

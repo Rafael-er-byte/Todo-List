@@ -1,6 +1,7 @@
 import MemberRoleNotValid from "../../../../../src/modules/member/core/error/MemberRoleNotValid";
 import MemberRole from "../../../../../src/modules/member/core/objects/MemberRole";
 import { AllowedMemberRoles } from "../../../../../src/modules/member/core/types/AllowedMemberRoles";
+import {describe, it, expect} from 'vitest';
 
 describe("MemberRole Value Object", () => {
 
