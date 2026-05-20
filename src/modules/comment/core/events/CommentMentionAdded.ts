@@ -8,8 +8,9 @@ export default class CommentMentionAdded extends DomainEvent {
     date: DateTime,
     actor: IdEntity,
     idEntity: IdEntity,
+    idTask: IdEntity,
     mentionedId: IdEntity
   ) {
-    super(key, date, actor, actor, idEntity, 'COMMENT_MENTION_ADDED', mentionedId);
+    super(key, date, actor, idTask, idEntity, 'COMMENT_MENTION_ADDED', mentionedId);
   }
 }

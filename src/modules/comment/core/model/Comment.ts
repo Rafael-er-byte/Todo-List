@@ -42,7 +42,7 @@ export default class Comment extends Entity {
         const mentionsCollection = mentions || new Collection([], [], []);
         const comment = new Comment(idComment, creator, task ,content, mentionsCollection);
         comment.create();
-        comment.addEvent(new CommentCreated(key, DateTime.now(), creator, idComment, comment.toPrimitives()));
+        comment.addEvent(new CommentCreated(key, DateTime.now(), creator, task, idComment, comment.toPrimitives()));
         return comment;
     }
 
@@ -89,7 +89,7 @@ export default class Comment extends Entity {
         }
         this.content = newContent;
         this.addEvent(
-            new CommentContentUpdated(key, DateTime.now(), actor, this.getId(), newContent)
+            new CommentContentUpdated(key, DateTime.now(), actor, this.getOwner() as IdEntity, this.getId(), newContent)
         );
     }
 
@@ -100,7 +100,7 @@ export default class Comment extends Entity {
     ): void {
         this.mentions = this.mentions.addItem(mentionedId);
         this.addEvent(
-            new CommentMentionAdded(key, DateTime.now(), actor, this.getId(), mentionedId)
+            new CommentMentionAdded(key, DateTime.now(), actor, this.getOwner() as IdEntity, this.getId(), mentionedId)
         );
     }
 
@@ -109,7 +109,7 @@ export default class Comment extends Entity {
     }
 
     public delete(key: string, actor: IdEntity): void {
-        this.addEvent(new CommentDeleted(key, DateTime.now(), actor, this.getId()));
+        this.addEvent(new CommentDeleted(key, DateTime.now(), actor, this.getOwner() as IdEntity,  this.getId()));
         super.softDelete();
     }
 
