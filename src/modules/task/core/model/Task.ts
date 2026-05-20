@@ -33,10 +33,12 @@ import Collection from '../../../shared/core/objects/Collection';
 import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
 import TaskStarted from '../events/TaskStarted';
 import TaskOverDue from '../events/TaskOverDue';
+import IntNumber from '../../../shared/core/objects/IntNumber';
 
 export default class Task extends Entity {
   private title!: TaskTitle;
   private listContainer!: IdEntity;
+  private positionInList!: IntNumber;
   private state!: TaskState;
   private archived: boolean = false;
   private description!: Text | None;
@@ -53,6 +55,7 @@ export default class Task extends Entity {
   private constructor(
     title: TaskTitle,
     listContainer: IdEntity,
+    positionInList: IntNumber,
     state: TaskState,
     archived: boolean,
     id: TaskId,
@@ -75,6 +78,7 @@ export default class Task extends Entity {
     this.isOverdue = isOverDue;
     this.isStarted = isStarted;
     this.listContainer = listContainer;
+    this.positionInList = positionInList;
     this.categories = categories;
     this.assigned = assigned;
   }
@@ -82,6 +86,7 @@ export default class Task extends Entity {
   public static create(
     title: TaskTitle,
     listContainer: IdEntity,
+    positionInList: IntNumber,
     state: TaskState,
     archived: boolean,
     id: TaskId,
@@ -98,6 +103,7 @@ export default class Task extends Entity {
     const task = new Task(
         title,
         listContainer,
+        positionInList,
         state,
         archived,
         id,
@@ -130,6 +136,7 @@ export default class Task extends Entity {
     const task = new Task(
       new TaskTitle(params.title),
       new IdEntity(params.listContainer),
+      new IntNumber(params.positionInList),
       TaskState.create(params.state as AllowedTaskState),
       params.archived,
       new TaskId(params.id),
@@ -171,10 +178,11 @@ export default class Task extends Entity {
     );
   }
 
-  public move(list: IdEntity, actor: IdEntity, key: string): void {
+  public move(list: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void {
     if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
     this.listContainer = list;
-    this.addEvent(new TaskMoved(key, DateTime.now(), actor, this.getIdProject(), super.getID(), this.listContainer));
+    this.positionInList = positionInList;
+    this.addEvent(new TaskMoved(key, DateTime.now(), actor, this.getIdProject(), super.getID(), this.listContainer, this.positionInList));
   }
 
   public unarchive(actor: IdEntity, key: string): void {
@@ -287,8 +295,9 @@ export default class Task extends Entity {
     return this.state.isCompleted();
   }
 
-  public exportToProject(idProject: IdEntity, idList: IdEntity): void{
-    this.listContainer = idList;
+  public exportToProject(idProject: IdEntity, idNewList: IdEntity, positionInList: IntNumber): void{
+    this.listContainer = idNewList;
+    this.positionInList = positionInList;
     super.changeOwner(idProject);
   }
 
@@ -361,6 +370,7 @@ export default class Task extends Entity {
     return {
       title: this.title.getTitle(),
       listContainer: this.listContainer.getID(),
+      positionInList: this.positionInList.getValue(),
       state: this.state.getState(),
       archived: this.archived,
       id: super.getID().getID(),

@@ -5,6 +5,7 @@ import TaskState from '../../../../../src/modules/task/core/objects/TaskState';
 import TaskId from '../../../../../src/modules/task/core/objects/TaskId';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import DateTime from '../../../../../src/modules/shared/core/objects/DateTime';
+import IntNumber from '../../../../../src/modules/shared/core/objects/IntNumber';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 import None from '../../../../../src/modules/shared/core/objects/None';
 import Collection from '../../../../../src/modules/shared/core/objects/Collection';
@@ -28,6 +29,7 @@ const buildTask = () => {
   const task = Task.create(
     title,
     listContainer,
+    new IntNumber(0),
     state,
     false,
     taskId,
@@ -127,14 +129,18 @@ describe('Task', () => {
     task.pullEvents();
 
     const newListContainer = new IdEntity('0643c815-7220-7d64-8c42-6f2af4f9fd37');
-    task.move(newListContainer, actor, 'move-key');
+    task.move(newListContainer, new IntNumber(3), actor, 'move-key');
 
     expect(task.toPrimitives().listContainer).toBe('0643c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.toPrimitives().positionInList).toBe(3);
     expect((task.getOwner() as IdEntity).getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = task.pullEvents();
     expect(events).toHaveLength(1);
     expect(events[0]!.getEvent()).toBe('TASK_MOVED');
+    const info = events[0]!.getInfo() as any;
+    expect(info.newPosition).toBe('0643c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(info.positionInList).toBe(3);
   });
 
   it('assigns a member and emits a TaskMemberAdded event', () => {
@@ -237,7 +243,7 @@ describe('Task', () => {
     expect(() => task.addCategory(categoryId, actor, 'add-cat-key')).toThrow(CannotModifyArchivedTasks);
     expect(() => task.assignMember(actor, 'assign-key', assignedId)).toThrow(CannotModifyArchivedTasks);
     expect(() => task.updateTitle(new TaskTitle('New Title'), actor, 'update-title-key')).toThrow(CannotModifyArchivedTasks);
-    expect(() => task.move(new IdEntity('1043c815-7220-7d64-8c42-6f2af4f9fd37'), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
+    expect(() => task.move(new IdEntity('1043c815-7220-7d64-8c42-6f2af4f9fd37'), new IntNumber(5), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
     expect(() => task.markAsFinished(actor, 'finish-key')).toThrow(CannotModifyArchivedTasks);
     expect(() => task.setStarted('start-key')).toThrow(CannotModifyArchivedTasks);
     expect(() => task.setOverDue('overdue-key')).toThrow(CannotModifyArchivedTasks);
