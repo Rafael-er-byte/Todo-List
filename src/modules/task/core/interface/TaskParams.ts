@@ -1,6 +1,7 @@
 export default interface TaskParams {
   title: string;
   listContainer: string;
+  positionInList: number;
   state: string;
   archived: boolean;
   id: string;
