@@ -40,7 +40,7 @@ describe('Link', () => {
     const events = link.pullEvents();
 
     expect(events).toHaveLength(1);
-    expect(events[0].getEvent()).toBe('LINK_CREATED');
+    expect(events[0]!.getEvent()).toBe('LINK_CREATED');
     expect(link.getId().getID()).toBe(LINK_ID);
     expect(link.getTaskId().getID()).toBe(TASK_ID);
     expect(link.getUrl().getUrl()).toBe(URL_VALUE);
@@ -66,7 +66,7 @@ describe('Link', () => {
     const events = link.pullEvents();
 
     expect(events).toHaveLength(1);
-    expect(events[0].getEvent()).toBe('LINK_VISIBLE_TEXT_UPDATED');
+    expect(events[0]!.getEvent()).toBe('LINK_VISIBLE_TEXT_UPDATED');
     expect((link.getVisibleText() as Text).getText()).toBe(UPDATED_TEXT);
     expect(link.getUrl().getUrl()).toBe(originalUrl);
   });
@@ -87,7 +87,7 @@ describe('Link', () => {
     const events = link.pullEvents();
 
     expect(events).toHaveLength(1);
-    expect(events[0].getEvent()).toBe('LINK_DELETED');
+    expect(events[0]!.getEvent()).toBe('LINK_DELETED');
     expect(link.exists()).toBe(false);
   });
 

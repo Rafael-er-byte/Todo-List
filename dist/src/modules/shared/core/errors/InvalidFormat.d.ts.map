@@ -1,0 +1,1 @@
+{"version":3,"file":"InvalidFormat.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/shared/core/errors/InvalidFormat.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,aAAa,CAAC;AAEpC,MAAM,CAAC,OAAO,OAAO,aAAc,SAAQ,SAAS;gBACtC,OAAO,EAAE,MAAM,EAAE,IAAI,CAAC,EAAE,OAAO;CAI5C"}

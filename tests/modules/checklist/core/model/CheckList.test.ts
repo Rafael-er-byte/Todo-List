@@ -4,6 +4,7 @@ import Text from '../../../../../src/modules/shared/core/objects/Text';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import ID from '../../../../../src/modules/shared/core/objects/ID';
 import { describe, it, expect } from 'vitest';
+import type DomainEvent from '../../../../../src/modules/shared/core/events/DomainEvent';
 
 describe('CheckList', () => {
   const owner = new IdEntity(ID.generateId().getId());
@@ -18,7 +19,7 @@ describe('CheckList', () => {
     expect(checklist.getCompletedPercentage().getValue()).toBe(0);
     expect(checklist.toPrimitives().idOwner).toBe(owner.getID());
     expect(events).toHaveLength(1);
-    expect(events[0].getEvent()).toBe('CHECKLIST_CREATED');
+    expect((events[0] as DomainEvent).getEvent()).toBe('CHECKLIST_CREATED');
   });
 
   it('adds an item and updates completed percentage', () => {
@@ -31,13 +32,13 @@ describe('CheckList', () => {
 
     const events = checklist.pullEvents();
     expect(events).toHaveLength(1);
-    expect(events[0].getEvent()).toBe('CHECKLIST_ITEM_CREATED');
+    expect((events[0] as DomainEvent).getEvent()).toBe('CHECKLIST_ITEM_CREATED');
   });
 
   it('completes an item and emits ChecklistItemCompleted', () => {
     const checklist = CheckList.create(new IdCheckList(ID.generateId().getId()), owner, new Text('Tasks'), actor, key);
     checklist.addChecklistItem(new Text('Write tests'), actor, key);
-    const itemId = checklist.getItems()[0].getId().getID();
+    const itemId = checklist.getItems()[0]!.getId().getID();
     checklist.pullEvents();
 
     checklist.completeChecklistItem(itemId, actor, key);
@@ -45,20 +46,20 @@ describe('CheckList', () => {
 
     const events = checklist.pullEvents();
     expect(events).toHaveLength(1);
-    expect(events[0].getEvent()).toBe('CHECKLIST_ITEM_COMPLETED');
+    expect((events[0] as DomainEvent).getEvent()).toBe('CHECKLIST_ITEM_COMPLETED');
   });
 
   it('marks an item as pending and recalculates percentage', () => {
     const checklist = CheckList.create(new IdCheckList(ID.generateId().getId()), owner, new Text('Tasks'), actor, key);
     checklist.addChecklistItem(new Text('Build feature'), actor, key);
-    const itemId = checklist.getItems()[0].getId().getID();
+    const itemId = checklist.getItems()[0]!.getId().getID();
     checklist.completeChecklistItem(itemId, actor, key);
     checklist.pullEvents();
 
     checklist.markChecklistItemAsPending(itemId, actor, key);
     expect(checklist.getCompletedPercentage().getValue()).toBe(0);
     const events = checklist.pullEvents();
-    expect(events[0].getEvent()).toBe('CHECKLIST_ITEM_MARKED_AS_PENDING');
+    expect((events[0] as DomainEvent).getEvent()).toBe('CHECKLIST_ITEM_MARKED_AS_PENDING');
   });
 
   it('updates the checklist title and emits CheckListTitleUpdated', () => {
@@ -68,6 +69,6 @@ describe('CheckList', () => {
     checklist.updateName(new Text('Updated name'), actor, key);
     expect(checklist.getName().getText()).toBe('Updated name');
     const events = checklist.pullEvents();
-    expect(events[0].getEvent()).toBe('CHECKLIST_TITLE_UPDATED');
+    expect((events[0] as DomainEvent).getEvent()).toBe('CHECKLIST_TITLE_UPDATED');
   });
 });
