@@ -1,5 +1,4 @@
 import Entity from '../../../shared/core/model/Entity';
-import type DomainEvent from '../../../shared/core/events/DomainEvent';
 import DateTime from '../../../shared/core/objects/DateTime';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
@@ -17,6 +16,7 @@ import ChecklistItemDeleted from '../events/ChecklistItemDeleted';
 import ChecklistItemCompleted from '../events/ChecklistItemCompleted';
 import ChecklistItemMarkedAsPending from '../events/ChecklistItemMarkedAsPending';
 import ChecklistItemTitleUpdated from '../events/ChecklistItemTitleUpdated';
+import ResourceNotFound from '../../../shared/core/errors/ResourceNotFound';
 
 export default class CheckList extends Entity {
   private name!: Text;
@@ -64,7 +64,7 @@ export default class CheckList extends Entity {
   }
 
   public getItems(): ChecklistItem[] {
-    return this.items;
+    return [...this.items];
   }
 
   public getCompletedPercentage(): Decimal {
@@ -89,7 +89,7 @@ export default class CheckList extends Entity {
 
   public deleteChecklistItem(itemId: string, actor: IdEntity, key: string): void {
     const item = this.items.find((checklistItem) => checklistItem.getId().getID() === itemId);
-    if (!item) throw new Error(`Checklist item ${itemId} not found`);
+    if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
     this.items = this.items.filter((checklistItem) => checklistItem.getId().getID() !== itemId);
     this.recalculateCompletedPercentage();
     this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getOwnerId(), super.getID() as IdCheckList, item.toPrimitives()));
@@ -105,7 +105,7 @@ export default class CheckList extends Entity {
 
   public updateChecklistItemTitle(itemId: string, title: Text, actor: IdEntity, key: string): void {
     const item = this.items.find((checklistItem) => checklistItem.getId().getID() === itemId);
-    if (!item) throw new Error(`Checklist item ${itemId} not found`);
+    if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
     const updatedItem = item.updateTitle(title);
     this.items = this.items.map((checklistItem) =>
       checklistItem.getId().getID() === itemId ? updatedItem : checklistItem,
@@ -143,7 +143,7 @@ export default class CheckList extends Entity {
     EventClass: typeof ChecklistItemCompleted | typeof ChecklistItemMarkedAsPending,
   ): void {
     const item = this.items.find((checklistItem) => checklistItem.getId().getID() === itemId);
-    if (!item) throw new Error(`Checklist item ${itemId} not found`);
+    if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
 
     const updatedItem = isCompleted ? item.complete() : item.markAsPending();
     this.items = this.items.map((checklistItem) =>
