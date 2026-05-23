@@ -1,0 +1,1 @@
+{"version":3,"file":"Unauthorized.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/shared/core/errors/Unauthorized.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,aAAa,CAAC;AAEpC,MAAM,CAAC,OAAO,OAAO,YAAa,SAAQ,SAAS;gBACrC,OAAO,EAAE,MAAM,EAAE,IAAI,CAAC,EAAE,OAAO;CAI5C"}
