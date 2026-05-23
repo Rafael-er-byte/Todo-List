@@ -14,6 +14,8 @@ export default defineConfig([
     ignores: [
       "jest.config.js",
       "prettier.config.js",
+      "**/dist/**",
+      "node_modules/**/*",
     ],
 
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
