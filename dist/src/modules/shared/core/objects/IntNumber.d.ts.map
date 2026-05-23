@@ -1,1 +1,0 @@
-{"version":3,"file":"IntNumber.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/shared/core/objects/IntNumber.ts"],"names":[],"mappings":"AACA,OAAO,WAAW,MAAM,eAAe,CAAC;AAExC,MAAM,CAAC,OAAO,OAAO,SAAU,SAAQ,WAAW;IAChD,OAAO,CAAC,KAAK,CAAU;gBAEX,KAAK,EAAE,MAAM;IAWlB,QAAQ,IAAI,MAAM;CAG1B"}

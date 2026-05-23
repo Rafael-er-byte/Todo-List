@@ -12,12 +12,14 @@ const __dirname = path.dirname(__filename);
 export default defineConfig([
   {
     ignores: [
+      "**/dist/**",
+      "**/node_modules/**",
       "jest.config.js",
       "prettier.config.js",
-      "**/dist/**",
-      "node_modules/**/*",
     ],
+  },
 
+  {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
 
     plugins: {
@@ -36,5 +38,5 @@ export default defineConfig([
     },
   },
 
-  tseslint.configs.recommended,
+  ...tseslint.configs.recommended,
 ]);

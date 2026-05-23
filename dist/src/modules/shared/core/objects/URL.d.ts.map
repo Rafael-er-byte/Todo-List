@@ -1,1 +1,0 @@
-{"version":3,"file":"URL.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/shared/core/objects/URL.ts"],"names":[],"mappings":"AACA,OAAO,WAAW,MAAM,eAAe,CAAC;AAExC,MAAM,CAAC,OAAO,OAAO,GAAI,SAAQ,WAAW;IAC1C,OAAO,CAAC,GAAG,CAAU;IACrB,OAAO,CAAC,QAAQ,CAAC,aAAa,CAAsB;IACpD,OAAO,CAAC,QAAQ,CAAC,QAAQ,CAAoB;gBAEjC,MAAM,EAAE,MAAM;IAuBnB,MAAM,IAAI,MAAM;CAGxB"}
