@@ -1,1 +1,0 @@
-{"version":3,"file":"InvalidFormat.js","sourceRoot":"","sources":["../../../../../../src/modules/shared/core/errors/InvalidFormat.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,aAAa,CAAC;AAEpC,MAAM,CAAC,OAAO,OAAO,aAAc,SAAQ,SAAS;IAClD,YAAY,OAAe,EAAE,IAAc;QACzC,KAAK,CAAC,OAAO,EAAE,IAAI,CAAC,CAAC;QACrB,MAAM,CAAC,cAAc,CAAC,IAAI,EAAE,aAAa,CAAC,SAAS,CAAC,CAAC;IACvD,CAAC;CACF"}
