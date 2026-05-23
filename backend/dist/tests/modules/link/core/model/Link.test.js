@@ -1,0 +1,71 @@
+import { describe, it, expect } from 'vitest';
+import Link from '../../../../../src/modules/link/core/model/Link';
+import LinkId from '../../../../../src/modules/link/core/objects/LinkId';
+import Url from '../../../../../src/modules/shared/core/objects/URL';
+import Text from '../../../../../src/modules/shared/core/objects/Text';
+import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
+import None from '../../../../../src/modules/shared/core/objects/None';
+const LINK_ID = '019df05a-8588-758c-b5e7-92af14bf85d0';
+const TASK_ID = '019df05a-8588-758c-b5e7-92af14bf85d1';
+const CREATOR_ID = '019df05a-8588-758c-b5e7-92af14bf85d2';
+const URL_VALUE = 'https://example.com/test-link';
+const INITIAL_TEXT = 'Initial visible text';
+const UPDATED_TEXT = 'Updated visible text';
+const createLinkParams = (overrides) => ({
+    id: LINK_ID,
+    idTask: TASK_ID,
+    url: URL_VALUE,
+    visibleText: INITIAL_TEXT,
+    version: 0,
+    deletedAt: null,
+    ...overrides,
+});
+describe('Link', () => {
+    it('creates a link and emits a LinkCreated event', () => {
+        const link = Link.create(new LinkId(LINK_ID), new IdEntity(TASK_ID), new Url(URL_VALUE), 'create-key', new IdEntity(CREATOR_ID), new Text(INITIAL_TEXT));
+        const events = link.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0].getEvent()).toBe('LINK_CREATED');
+        expect(link.getId().getID()).toBe(LINK_ID);
+        expect(link.getTaskId().getID()).toBe(TASK_ID);
+        expect(link.getUrl().getUrl()).toBe(URL_VALUE);
+        expect(link.getVisibleText()).toBeInstanceOf(Text);
+        expect(link.getVisibleText().getText()).toBe(INITIAL_TEXT);
+    });
+    it('updates visible text and emits LinkVisibleTextUpdated event', () => {
+        const link = Link.create(new LinkId(LINK_ID), new IdEntity(TASK_ID), new Url(URL_VALUE), 'create-key', new IdEntity(CREATOR_ID), new Text(INITIAL_TEXT));
+        link.pullEvents();
+        const originalUrl = link.getUrl().getUrl();
+        link.updateVisibleText('update-key', new Text(UPDATED_TEXT), new IdEntity(CREATOR_ID));
+        const events = link.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0].getEvent()).toBe('LINK_VISIBLE_TEXT_UPDATED');
+        expect(link.getVisibleText().getText()).toBe(UPDATED_TEXT);
+        expect(link.getUrl().getUrl()).toBe(originalUrl);
+    });
+    it('deletes the link and emits LinkDeleted event', () => {
+        const link = Link.create(new LinkId(LINK_ID), new IdEntity(TASK_ID), new Url(URL_VALUE), 'create-key', new IdEntity(CREATOR_ID), new Text(INITIAL_TEXT));
+        link.pullEvents();
+        link.delete('delete-key', new IdEntity(CREATOR_ID));
+        const events = link.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0].getEvent()).toBe('LINK_DELETED');
+        expect(link.exists()).toBe(false);
+    });
+    it('reconstructs from primitives and preserves visible text when present', () => {
+        const params = createLinkParams();
+        const link = Link.fromPrimitives(params);
+        expect(link.getId().getID()).toBe(LINK_ID);
+        expect(link.getTaskId().getID()).toBe(TASK_ID);
+        expect(link.getUrl().getUrl()).toBe(URL_VALUE);
+        expect(link.getVisibleText()).toBeInstanceOf(Text);
+        expect(link.getVisibleText().getText()).toBe(INITIAL_TEXT);
+    });
+    it('reconstructs from primitives with no visible text', () => {
+        const params = createLinkParams({ visibleText: null });
+        const link = Link.fromPrimitives(params);
+        expect(link.getVisibleText()).toBeInstanceOf(None);
+        expect(link.getUrl().getUrl()).toBe(URL_VALUE);
+    });
+});
+//# sourceMappingURL=Link.test.js.map
