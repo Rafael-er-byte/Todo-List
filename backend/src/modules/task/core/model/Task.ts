@@ -7,6 +7,7 @@ import TaskDueDateUpdated from '../events/TaskDueDateUpdated';
 import TaskFinished from '../events/TaskFinished';
 import TaskMarkedAsPending from '../events/TaskMarkedAsPending';
 import TaskMoved from '../events/TaskMoved';
+import TaskExported from '../events/TaskExported';
 import TaskBeginDateUpdated from '../events/TaskStartDateUpdated';
 import TaskUnarchived from '../events/TaskUnarchived';
 import TitleUpdated from '../events/TitleUpdated';
@@ -41,6 +42,7 @@ export default class Task extends Entity {
   private positionInList!: IntNumber;
   private state!: TaskState;
   private archived: boolean = false;
+  private listArchived: boolean = false;
   private description!: Text | None;
 
   private startDate: DateTime | None = new None();
@@ -58,6 +60,7 @@ export default class Task extends Entity {
     positionInList: IntNumber,
     state: TaskState,
     archived: boolean,
+    listArchived: boolean,
     id: TaskId,
     idProject: IdEntity,
     description: Text | None,
@@ -71,6 +74,7 @@ export default class Task extends Entity {
     super(id, idProject);
     this.title = title;
     this.archived = archived;
+    this.listArchived = listArchived;
     this.state = state;
     this.description = description;
     this.startDate = startDate;
@@ -106,6 +110,7 @@ export default class Task extends Entity {
         positionInList,
         state,
         archived,
+        false,
         id,
         idProject,
         description,
@@ -139,6 +144,7 @@ export default class Task extends Entity {
       new IntNumber(params.positionInList),
       TaskState.create(params.state as AllowedTaskState),
       params.archived,
+      params.listArchived ?? false,
       new TaskId(params.id),
       new IdEntity(params.idProject),
       params.description ? new Text(params.description) : new None(),
@@ -163,7 +169,7 @@ export default class Task extends Entity {
   }
 
   public removeCategory(category: IdEntity, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.categories = this.categories.deleteItem(category);
     this.addEvent(
       new TaskCategoryDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID(), category),
@@ -171,7 +177,7 @@ export default class Task extends Entity {
   }
 
   public removeAssigned(assigned: IdEntity, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.assigned = this.assigned.deleteItem(assigned);
     this.addEvent(
       new TaskContributorDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID(), assigned),
@@ -179,7 +185,7 @@ export default class Task extends Entity {
   }
 
   public move(list: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.listContainer = list;
     this.positionInList = positionInList;
     this.addEvent(new TaskMoved(key, DateTime.now(), actor, this.getIdProject(), super.getID(), this.listContainer, this.positionInList));
@@ -196,13 +202,13 @@ export default class Task extends Entity {
   }
 
   public assignMember(actor: IdEntity, key: string, assigned: IdEntity): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.assigned = this.assigned.addItem(assigned);
     this.addEvent(new TaskMemberAdded(key, DateTime.now(), actor, this.getIdProject(), super.getID(), assigned));
   }
 
   public updateStartDate(date: DateTime, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     if (this.dueDate instanceof DateTime) {
       if (!DateTime.isBefore(date, this.dueDate)) {
         throw new InvalidStartDate({ startDate: date, dueDate: this.dueDate });
@@ -222,7 +228,7 @@ export default class Task extends Entity {
   }
 
   public updateDueDate(date: DateTime, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     if (this.startDate instanceof DateTime) {
       if (!DateTime.isAfter(date, this.startDate)) {
         throw new InvalidDueDate({ dueDate: date, startDate: this.startDate });
@@ -242,7 +248,7 @@ export default class Task extends Entity {
   }
 
   public updateTitle(title: TaskTitle, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.title = title;
     this.addEvent(
       new TitleUpdated(key, DateTime.now(), actor, this.getIdProject(), super.getID(), this.title),
@@ -250,7 +256,7 @@ export default class Task extends Entity {
   }
 
   public updateDescription(description: Text, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.description = description;
  
     this.addEvent(
@@ -266,7 +272,7 @@ export default class Task extends Entity {
   }
 
   public addCategory(category: IdEntity, actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.categories = this.categories.addItem(category);
     this.addEvent(
       new TaskCategoryAdded(key, DateTime.now(), actor, this.getIdProject(), super.getID(), category),
@@ -274,14 +280,14 @@ export default class Task extends Entity {
   }
 
   public markAsFinished(actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     if (this.state.isCompleted()) return;
     this.state = TaskState.completed();
     this.addEvent(new TaskFinished(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
   }
 
   public markAsPending(actor: IdEntity, key: string): void {
-    if (this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     if (!this.state.isCompleted()) return;
     this.state = TaskState.pending();
     this.addEvent(new TaskMarkedAsPending(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
@@ -291,13 +297,20 @@ export default class Task extends Entity {
     return this.archived;
   }
 
+  protected cannotBeModified(): boolean {
+    return this.archived || this.listArchived;
+  }
+
   protected isCompleted(): boolean {
     return this.state.isCompleted();
   }
 
-  public exportToProject(idProject: IdEntity, idList: IdEntity): void{
+  public exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void {
+    if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.listContainer = idList;
-    super.changeOwner(idProject);
+    this.positionInList = positionInList;
+    super.changeOwner(newProject);
+    this.addEvent(new TaskExported(key, DateTime.now(), actor, newProject, super.getID(), idList, positionInList));
   }
 
   public overDue(): boolean {
@@ -308,17 +321,33 @@ export default class Task extends Entity {
   }
 
   public setStarted(key: string): void {
-    if(this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if(this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     if(this.isCompleted()) throw new InvalidOperation('Cannot start a completed task');
     this.isStarted = true;
     this.addEvent(new TaskStarted(key, DateTime.now(), this.getIdProject(), super.getID()));
   }
 
   public setOverDue(key: string): void { 
-    if(this.isArchived()) throw new CannotModifyArchivedTasks(super.getID());
+    if(this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     if(this.isCompleted()) throw new InvalidOperation('Cannot start a completed task');
     this.isOverdue = true;
     this.addEvent(new TaskOverDue(key, DateTime.now(), this.getIdProject(), super.getID()));
+  }
+
+  public updatePosition(positionInList: IntNumber): void {
+    this.positionInList = positionInList;
+  }
+
+  public archiveByOther(): void{
+    this.listArchived = true;
+  }
+
+  public unarchiveByOther():void{
+    this.listArchived = false;
+  }
+
+  public deleteByOther(): void{
+    super.softDelete();
   }
 
   public getIdProject(): IdEntity {
@@ -365,6 +394,14 @@ export default class Task extends Entity {
     return this.isOverdue;
   }
 
+  public getPositionInList(): IntNumber {
+    return this.positionInList;
+  }
+
+  public isArchivedByList(): boolean {
+    return this.listArchived;
+  }
+
   public toPrimitives(): TaskParams {
     return {
       title: this.title.getTitle(),
@@ -372,6 +409,7 @@ export default class Task extends Entity {
       positionInList: this.positionInList.getValue(),
       state: this.state.getState(),
       archived: this.archived,
+      listArchived: this.listArchived,
       id: super.getID().getID(),
       idProject: (super.getOwner() as IdEntity).getID(),
       categories: this.categories.getPrimitives(),

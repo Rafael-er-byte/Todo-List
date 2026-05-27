@@ -15,6 +15,7 @@ export default class Task extends Entity {
     private positionInList;
     private state;
     private archived;
+    private listArchived;
     private description;
     private startDate;
     private dueDate;
@@ -40,11 +41,16 @@ export default class Task extends Entity {
     markAsFinished(actor: IdEntity, key: string): void;
     markAsPending(actor: IdEntity, key: string): void;
     protected isArchived(): boolean;
+    protected cannotBeModified(): boolean;
     protected isCompleted(): boolean;
-    exportToProject(idProject: IdEntity, idList: IdEntity): void;
+    exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void;
     overDue(): boolean;
     setStarted(key: string): void;
     setOverDue(key: string): void;
+    updatePosition(positionInList: IntNumber): void;
+    archiveByOther(): void;
+    unarchiveByOther(): void;
+    deleteByOther(): void;
     getIdProject(): IdEntity;
     getTitle(): TaskTitle;
     getListContainer(): IdEntity;
@@ -56,6 +62,8 @@ export default class Task extends Entity {
     getAssigned(): Collection;
     getIsStarted(): boolean;
     getIsOverdue(): boolean;
+    getPositionInList(): IntNumber;
+    isArchivedByList(): boolean;
     toPrimitives(): TaskParams;
 }
 //# sourceMappingURL=Task.d.ts.map

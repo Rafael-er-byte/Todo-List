@@ -34,6 +34,7 @@ describe('Task', () => {
         const primitives = task.toPrimitives();
         expect(primitives.title).toBe('Initial task title');
         expect(primitives.archived).toBe(false);
+        expect(primitives.listArchived).toBe(false);
         expect(primitives.id).toBe('0243c815-7220-7d64-8c42-6f2af4f9fd37');
         expect(primitives.idProject).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
         expect(primitives.state).toBe('PENDING');
@@ -100,6 +101,19 @@ describe('Task', () => {
         const events = task.pullEvents();
         expect(events).toHaveLength(1);
         expect(events[0].getEvent()).toBe('TASK_MOVED');
+    });
+    it('exports a task to another project and emits a TaskExported event', () => {
+        const { task, actor } = buildTask();
+        task.pullEvents();
+        const newProject = new IdEntity('2043c815-7220-7d64-8c42-6f2af4f9fd37');
+        const newList = new IdEntity('2143c815-7220-7d64-8c42-6f2af4f9fd37');
+        task.exportToProject(newProject, newList, new IntNumber(5), actor, 'export-key');
+        expect(task.toPrimitives().idProject).toBe('2043c815-7220-7d64-8c42-6f2af4f9fd37');
+        expect(task.toPrimitives().listContainer).toBe('2143c815-7220-7d64-8c42-6f2af4f9fd37');
+        expect(task.toPrimitives().positionInList).toBe(5);
+        const events = task.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0].getEvent()).toBe('TASK_EXPORTED');
     });
     it('assigns a member and emits a TaskMemberAdded event', () => {
         const { task, actor } = buildTask();
@@ -181,6 +195,32 @@ describe('Task', () => {
         expect(() => task.setStarted('start-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.setOverDue('overdue-key')).toThrow(CannotModifyArchivedTasks);
     });
+    it('archives and unarchives by other without emitting events', () => {
+        const { task } = buildTask();
+        task.pullEvents();
+        task.archiveByOther();
+        expect(task.toPrimitives().listArchived).toBe(true);
+        expect(task.isArchivedByList()).toBe(true);
+        expect(task.pullEvents()).toHaveLength(0);
+        task.unarchiveByOther();
+        expect(task.toPrimitives().listArchived).toBe(false);
+        expect(task.isArchivedByList()).toBe(false);
+        expect(task.pullEvents()).toHaveLength(0);
+    });
+    it('throws CannotModifyArchivedTasks when trying to modify a task archived by its list', () => {
+        const { task, actor } = buildTask();
+        task.pullEvents();
+        task.archiveByOther();
+        const categoryId = new IdEntity('1543c815-7220-7d64-8c42-6f2af4f9fd37');
+        const assignedId = new IdEntity('1643c815-7220-7d64-8c42-6f2af4f9fd37');
+        expect(() => task.addCategory(categoryId, actor, 'add-cat-key')).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.assignMember(actor, 'assign-key', assignedId)).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.updateTitle(new TaskTitle('New Title'), actor, 'update-title-key')).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.move(new IdEntity('1743c815-7220-7d64-8c42-6f2af4f9fd37'), new IntNumber(3), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.markAsFinished(actor, 'finish-key')).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.setStarted('start-key')).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.setOverDue('overdue-key')).toThrow(CannotModifyArchivedTasks);
+    });
     it('marks task as started and emits a TaskStarted event', () => {
         const { task } = buildTask();
         task.pullEvents();
@@ -207,6 +247,31 @@ describe('Task', () => {
         const { task, actor } = buildTask();
         task.pullEvents();
         expect(() => task.delete(actor, 'delete-key')).toThrow(TaskNeedsToBeArchivedBeforeDeleteIt);
+    });
+    it('does not allow deleting a task individually when it is only archived by its list', () => {
+        const { task, actor } = buildTask();
+        task.pullEvents();
+        task.archiveByOther();
+        expect(() => task.delete(actor, 'delete-key')).toThrow(TaskNeedsToBeArchivedBeforeDeleteIt);
+        expect(task.exists()).toBe(true);
+        expect(task.pullEvents()).toHaveLength(0);
+    });
+    it('deletes a directly archived task even when it is also archived by its list', () => {
+        const { task, actor } = buildTask();
+        task.pullEvents();
+        task.archiveByOther();
+        task.archive(actor, 'archive-key');
+        task.pullEvents();
+        expect(() => task.delete(actor, 'delete-key')).not.toThrow();
+        expect(task.exists()).toBe(false);
+        expect(task.pullEvents()).toHaveLength(1);
+    });
+    it('deletes by other without emitting events', () => {
+        const { task } = buildTask();
+        task.pullEvents();
+        task.deleteByOther();
+        expect(task.exists()).toBe(false);
+        expect(task.pullEvents()).toHaveLength(0);
     });
     it('can be deleted only after it is archived', () => {
         const { task, actor } = buildTask();
@@ -245,6 +310,7 @@ describe('Task', () => {
         expect(primitives.title).toBe('Initial task title');
         expect(primitives.state).toBe('COMPLETED');
         expect(primitives.archived).toBe(false);
+        expect(primitives.listArchived).toBe(false);
         expect(primitives.listContainer).toBe('0143c815-7220-7d64-8c42-6f2af4f9fd37');
         expect(primitives.categories).toEqual(['1143c815-7220-7d64-8c42-6f2af4f9fd37']);
         expect(primitives.assigned).toEqual(['1243c815-7220-7d64-8c42-6f2af4f9fd37']);
@@ -256,6 +322,18 @@ describe('Task', () => {
         expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
         expect(primitives.version).toEqual(7);
         expect(primitives.deletedAt).toBeNull();
+    });
+    it('restores listArchived from primitives', () => {
+        const { task } = buildTask();
+        const primitives = task.toPrimitives();
+        task.pullEvents();
+        const restored = Task.fromPrimitives({
+            ...primitives,
+            listArchived: true,
+        });
+        expect(restored.toPrimitives().listArchived).toBe(true);
+        expect(restored.isArchivedByList()).toBe(true);
+        expect(restored.pullEvents()).toHaveLength(0);
     });
     it('throws InvalidStartDate when start date is not before due date', () => {
         const { task, actor } = buildTask();
