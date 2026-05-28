@@ -15,6 +15,8 @@ import InvalidStartDate from '../../../../../src/modules/task/core/error/Invalid
 import InvalidDueDate from '../../../../../src/modules/task/core/error/InvalidDueDateTime';
 import ResourceNotFound from '../../../../../src/modules/shared/core/errors/ResourceNotFound';
 import RelationshipAlreadyExists from '../../../../../src/modules/shared/core/errors/RelationshipAlreadyExists';
+import TaskIsAlreadyArchived from '../../../../../src/modules/task/core/error/TaskIsAlreadyArchived';
+import CannotDeleteIndividuallyTaskArchivedByOtherEntity from '../../../../../src/modules/task/core/error/CannotDeleteIndividuallyTaskArchivedByOtherEntity';
 
 const buildTask = () => {
   const title = new TaskTitle('Initial task title');
@@ -160,7 +162,7 @@ describe('Task', () => {
     expect(events[0]!.getEvent()).toBe('TASK_EXPORTED');
   });
 
-  it('assigns a member and emits a TaskMemberAdded event', () => {
+  it('assigns a member and emits a TaskMemberAdded event', () => { 
     const { task, actor } = buildTask();
     task.pullEvents();
 
@@ -345,22 +347,9 @@ describe('Task', () => {
 
     task.archiveByOther();
 
-    expect(() => task.delete(actor, 'delete-key')).toThrow(TaskNeedsToBeArchivedBeforeDeleteIt);
+    expect(() => task.delete(actor, 'delete-key')).toThrow(CannotDeleteIndividuallyTaskArchivedByOtherEntity);
     expect(task.exists()).toBe(true);
     expect(task.pullEvents()).toHaveLength(0);
-  });
-
-  it('deletes a directly archived task even when it is also archived by its list', () => {
-    const { task, actor } = buildTask();
-    task.pullEvents();
-
-    task.archiveByOther();
-    task.archive(actor, 'archive-key');
-    task.pullEvents();
-
-    expect(() => task.delete(actor, 'delete-key')).not.toThrow();
-    expect(task.exists()).toBe(false);
-    expect(task.pullEvents()).toHaveLength(1);
   });
 
   it('deletes by other without emitting events', () => {
@@ -515,5 +504,13 @@ describe('Task', () => {
     const primitives = task.toPrimitives();
     expect(primitives.startDate).toEqual(startDate);
     expect(primitives.dueDate).toEqual(dueDate);
+  });
+
+  it("Should not allow modify when the task is archived by another entity, the atribute archivedByOther is that is used fro this", () => {
+    const {task, actor} = buildTask();
+
+    task.archiveByOther();
+
+    expect(() => task.archive(actor, 'example-key')).toThrow(TaskIsAlreadyArchived);
   });
 });

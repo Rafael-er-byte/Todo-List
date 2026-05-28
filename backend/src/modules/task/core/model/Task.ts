@@ -35,6 +35,8 @@ import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
 import TaskStarted from '../events/TaskStarted';
 import TaskOverDue from '../events/TaskOverDue';
 import IntNumber from '../../../shared/core/objects/IntNumber';
+import TaskIsAlreadyArchived from '../error/TaskIsAlreadyArchived';
+import CannotDeleteIndividuallyTaskArchivedByOtherEntity from '../error/CannotDeleteIndividuallyTaskArchivedByOtherEntity';
 
 export default class Task extends Entity {
   private title!: TaskTitle;
@@ -87,6 +89,39 @@ export default class Task extends Entity {
     this.assigned = assigned;
   }
 
+  //build from primitives
+  public static fromPrimitives(params: TaskParams): Task{
+    const categories = params.categories.map((category) => {
+      return new IdEntity(category);
+    });
+
+    const assigned = params.assigned.map((assign) => {
+      return new IdEntity(assign);
+    });
+
+    const task = new Task(
+      new TaskTitle(params.title),
+      new IdEntity(params.listContainer),
+      new IntNumber(params.positionInList),
+      TaskState.create(params.state as AllowedTaskState),
+      params.archived,
+      params.listArchived ?? false,
+      new TaskId(params.id),
+      new IdEntity(params.idProject),
+      params.description ? new Text(params.description) : new None(),
+      params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(),
+      params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(),
+      params.isOverdue,
+      params.isStarted,
+      new Collection(categories, [], []),
+      new Collection(assigned, [], [])
+    );
+
+    task.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
+    return task;
+  }
+
+  //mutable methods
   public static create(
     title: TaskTitle,
     listContainer: IdEntity,
@@ -129,38 +164,8 @@ export default class Task extends Entity {
     return task;
   }
 
-  public static fromPrimitives(params: TaskParams): Task{
-    const categories = params.categories.map((category) => {
-      return new IdEntity(category);
-    });
-
-    const assigned = params.assigned.map((assign) => {
-      return new IdEntity(assign);
-    });
-
-    const task = new Task(
-      new TaskTitle(params.title),
-      new IdEntity(params.listContainer),
-      new IntNumber(params.positionInList),
-      TaskState.create(params.state as AllowedTaskState),
-      params.archived,
-      params.listArchived ?? false,
-      new TaskId(params.id),
-      new IdEntity(params.idProject),
-      params.description ? new Text(params.description) : new None(),
-      params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(),
-      params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(),
-      params.isOverdue,
-      params.isStarted,
-      new Collection(categories, [], []),
-      new Collection(assigned, [], [])
-    );
-
-    task.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
-    return task;
-  }
-
   public delete(actor: IdEntity, key: string): void {
+    if(this.listArchived) throw new CannotDeleteIndividuallyTaskArchivedByOtherEntity({id: this.getID().getID()});
     if (!this.isArchived()) {
       throw new TaskNeedsToBeArchivedBeforeDeleteIt(super.getID());
     }
@@ -197,6 +202,7 @@ export default class Task extends Entity {
   }
 
   public archive(actor: IdEntity, key: string): void {
+    if(this.listArchived) throw new TaskIsAlreadyArchived({taskId:this.getID().getID()});
     this.archived = true;
     this.addEvent(new TaskArchived(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
   }
@@ -293,31 +299,12 @@ export default class Task extends Entity {
     this.addEvent(new TaskMarkedAsPending(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
   }
 
-  protected isArchived(): boolean {
-    return this.archived;
-  }
-
-  protected cannotBeModified(): boolean {
-    return this.archived || this.listArchived;
-  }
-
-  protected isCompleted(): boolean {
-    return this.state.isCompleted();
-  }
-
   public exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void {
     if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.listContainer = idList;
     this.positionInList = positionInList;
     super.changeOwner(newProject);
     this.addEvent(new TaskExported(key, DateTime.now(), actor, newProject, super.getID(), idList, positionInList));
-  }
-
-  public overDue(): boolean {
-    if (this.dueDate instanceof DateTime && DateTime.isAfter(this.dueDate, DateTime.now())) {
-      return false;
-    }
-    return true;
   }
 
   public setStarted(key: string): void {
@@ -334,6 +321,7 @@ export default class Task extends Entity {
     this.addEvent(new TaskOverDue(key, DateTime.now(), this.getIdProject(), super.getID()));
   }
 
+  //mutable methods accesible for another classes
   public updatePosition(positionInList: IntNumber): void {
     this.positionInList = positionInList;
   }
@@ -348,6 +336,26 @@ export default class Task extends Entity {
 
   public deleteByOther(): void{
     super.softDelete();
+  }
+
+  //getters
+  protected isArchived(): boolean {
+    return this.archived;
+  }
+
+  protected cannotBeModified(): boolean {
+    return this.archived || this.listArchived;
+  }
+
+  protected isCompleted(): boolean {
+    return this.state.isCompleted();
+  }
+
+  public overDue(): boolean {
+    if (this.dueDate instanceof DateTime && DateTime.isAfter(this.dueDate, DateTime.now())) {
+      return false;
+    }
+    return true;
   }
 
   public getIdProject(): IdEntity {

@@ -94,8 +94,8 @@ export default class List extends Entity{
         if(this.tasks instanceof None){
             this.tasks = [task];
         }else{
-            let part1 = this.tasks.slice(0, task.getPositionInList().getValue());
-            let part2 = this.tasks.slice(task.getPositionInList().getValue());
+            const part1 = this.tasks.slice(0, task.getPositionInList().getValue());
+            const part2 = this.tasks.slice(task.getPositionInList().getValue());
             part2.forEach(t => t.updatePosition(new IntNumber(t.getPositionInList().getValue() + 1)));
             this.tasks = [...part1, task, ...part2];
         }
