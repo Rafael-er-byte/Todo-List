@@ -18,11 +18,16 @@ export default class List extends Entity {
     updateTitle(newTitle: ListTitle, key: string, actor: IdEntity): void;
     move(newPosition: PositiveInteger, key: string, actor: IdEntity): void;
     export(newProject: IdEntity, newPosition: PositiveInteger, key: string, actor: IdEntity): void;
+    archive(key: string, actor: IdEntity): void;
+    unarchive(key: string, actor: IdEntity): void;
+    unarvhive(key: string, actor: IdEntity): void;
+    delete(key: string, actor: IdEntity): void;
     addTask(task: Task): void;
-    archive(): void;
-    unarvhive(): void;
-    delete(): void;
     removeTask(task: Task): void;
+    getTitle(): ListTitle;
+    getPosition(): PositiveInteger;
+    getTasks(): Task[];
+    isArchived(): boolean;
     toPrimitives(): ListParams;
 }
 //# sourceMappingURL=List.d.ts.map

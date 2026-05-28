@@ -12,6 +12,15 @@ describe('List', () => {
         const list = buildList();
         expect(list.toPrimitives().position).toBe(1);
     });
+    it('returns list information with getters', () => {
+        const list = buildList();
+        const tasks = list.getTasks();
+        tasks.push({});
+        expect(list.getTitle().getValue().getText()).toBe('Backlog');
+        expect(list.getPosition().getValue()).toBe(1);
+        expect(list.isArchived()).toBe(false);
+        expect(list.getTasks()).toHaveLength(0);
+    });
     it('moves a list with a positive integer position and emits event', () => {
         const list = buildList();
         const actor = new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37');
@@ -46,6 +55,31 @@ describe('List', () => {
     });
     it('does not allow negative list positions', () => {
         expect(() => List.create(new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'), new ListTitle(new Text('Backlog')), new PositiveInteger(-1), [], new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'))).toThrow(InvalidParameters);
+    });
+    it('archives and unarchives a list with events', () => {
+        const list = buildList();
+        const actor = new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37');
+        list.archive('list-archived-key', actor);
+        expect(list.isArchived()).toBe(true);
+        let events = list.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0].getEvent()).toBe('LIST_ARCHIVED');
+        list.unarchive('list-unarchived-key', actor);
+        expect(list.isArchived()).toBe(false);
+        events = list.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0].getEvent()).toBe('LIST_UNARCHIVED');
+    });
+    it('deletes an archived list with event', () => {
+        const list = buildList();
+        const actor = new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37');
+        list.archive('list-archived-key', actor);
+        list.pullEvents();
+        list.delete('list-deleted-key', actor);
+        expect(list.exists()).toBe(false);
+        const events = list.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0].getEvent()).toBe('LIST_DELETED');
     });
 });
 //# sourceMappingURL=List.test.js.map

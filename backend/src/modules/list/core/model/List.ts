@@ -12,6 +12,9 @@ import DateTime from "../../../shared/core/objects/DateTime";
 import ListTitle from "../object/ListTitle";
 import ListMoved from "../events/ListMoved";
 import ListExported from "../events/ListExported";
+import ListArchived from "../events/ListArchived";
+import ListUnarchived from "../events/ListUnarchived";
+import ListDeleted from "../events/ListDeleted";
 import ResourceNotFound from "../../../shared/core/errors/ResourceNotFound";
 import InvalidOperation from "../../../shared/core/errors/InvalidOperation";
 import CannotModifyArchivedList from "../errors/CannotModifyArchivedList";
@@ -69,6 +72,7 @@ export default class List extends Entity{
         to.addTask(task);
     }
 
+    //mutable actions 
     public updateTitle(newTitle: ListTitle, key: string, actor: IdEntity): void{
         if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
         this.title = newTitle;
@@ -90,6 +94,32 @@ export default class List extends Entity{
         this.addEvent(new ListExported(key, DateTime.now(), actor, newProject, this.id, newPosition));
     }
 
+    public archive(key: string, actor: IdEntity): void{
+        this.archived = true;
+        (this.tasks as Task[]).forEach(task => {
+            task.archiveByOther();
+        });
+        this.addEvent(new ListArchived(key, DateTime.now(), actor, super.getOwner() as IdEntity, this.id));
+    }
+
+    public unarchive(key: string, actor: IdEntity): void{
+        this.archived = false;
+        (this.tasks as Task[]).forEach(task => {
+            task.unarchiveByOther();
+        });
+        this.addEvent(new ListUnarchived(key, DateTime.now(), actor, super.getOwner() as IdEntity, this.id));
+    }
+
+    public delete(key: string, actor: IdEntity): void{
+        if(!this.archived) throw new InvalidOperation(`List must be archived before being delete`, {listID:this.getID().getID()});
+        (this.tasks as Task[]).forEach(task => {
+            task.deleteByOther();
+        });
+        this.addEvent(new ListDeleted(key, DateTime.now(), actor, super.getOwner() as IdEntity, this.id));
+        super.softDelete();
+    }
+
+    //validations
     public addTask(task: Task): void{
         if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
         if(task.getPositionInList().getValue() > this.tasks.length || 
@@ -102,28 +132,6 @@ export default class List extends Entity{
             part2.forEach(t => t.updatePosition(new PositiveInteger(t.getPositionInList().getValue() + 1)));
             this.tasks = [...part1, task, ...part2];
         }
-    }
-
-    public archive(): void{
-        this.archived = true;
-        (this.tasks as Task[]).forEach(task => {
-            task.archiveByOther();
-        });
-    }
-
-    public unarvhive(): void{
-        this.archived = false;
-        (this.tasks as Task[]).forEach(task => {
-            task.unarchiveByOther();
-        });
-    }
-
-    public delete(): void{
-        if(!this.archived) throw new InvalidOperation(`List must be archived before being delete`, {listID:this.getID().getID()});
-        (this.tasks as Task[]).forEach(task => {
-            task.deleteByOther();
-        });
-        super.softDelete();
     }
 
     public removeTask(task: Task): void{
@@ -144,6 +152,23 @@ export default class List extends Entity{
                             });
             this.tasks = this.tasks.filter(t => t.getID().getID() === task.getID().getID());
         }
+    }
+
+    //getters
+    public getTitle(): ListTitle{
+        return this.title;
+    }
+
+    public getPosition(): PositiveInteger{
+        return this.position;
+    }
+
+    public getTasks(): Task[]{
+        return [...this.tasks];
+    }
+
+    public isArchived(): boolean{
+        return this.archived;
     }
 
     public toPrimitives(): ListParams{
