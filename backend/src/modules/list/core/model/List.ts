@@ -1,6 +1,5 @@
 import ListId from "../object/ListId";
 import Text from "../../../shared/core/objects/Text";
-import IntNumber from "../../../shared/core/objects/IntNumber";
 import Entity from "../../../shared/core/model/Entity";
 import DeletedAt from "../../../shared/core/objects/DeletedAt";
 import Version from "../../../shared/core/objects/Version";
@@ -16,18 +15,20 @@ import ListExported from "../events/ListExported";
 import ResourceNotFound from "../../../shared/core/errors/ResourceNotFound";
 import InvalidOperation from "../../../shared/core/errors/InvalidOperation";
 import CannotModifyArchivedList from "../errors/CannotModifyArchivedList";
+import InvalidPositionInList from "../errors/InvalidPositionInList";
+import PositiveInteger from "../../../shared/core/objects/PositiveInteger"
 
 export default class List extends Entity{
     private readonly id!: ListId;
     private title!: ListTitle ;
-    private position!: IntNumber;
+    private position!: PositiveInteger;
     private archived: boolean = false;
     private tasks!: Task[];
 
     private constructor(
         id: ListId,
         title: ListTitle,
-        position: IntNumber,
+        position: PositiveInteger,
         tasks: Task[],
         projectId: IdEntity
     ){
@@ -41,7 +42,7 @@ export default class List extends Entity{
     public static create(
         id: ListId,
         title: ListTitle,
-        position: IntNumber,
+        position: PositiveInteger,
         tasks: Task[],
         projectId: IdEntity
     ){
@@ -55,7 +56,7 @@ export default class List extends Entity{
         const list = new List(
             new ListId(params.id),
             new ListTitle(new Text(params.title)),
-            new IntNumber(params.position),
+            new PositiveInteger(params.position),
             params.tasks,
             new IdEntity(params.projectId)
         );
@@ -74,13 +75,13 @@ export default class List extends Entity{
         this.addEvent(new ListTitleUpdated(key, DateTime.now(), actor, super.getOwner() as IdEntity, this.id, newTitle.getValue()));
     }
 
-    public move(newPosition: IntNumber, key: string, actor: IdEntity): void{
+    public move(newPosition: PositiveInteger, key: string, actor: IdEntity): void{
         if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
         this.position = newPosition;
         this.addEvent(new ListMoved(key, DateTime.now(), actor, super.getOwner() as IdEntity, this.id, newPosition));
     }
 
-    public export(newProject: IdEntity, newPosition: IntNumber, key: string, actor: IdEntity): void{
+    public export(newProject: IdEntity, newPosition: PositiveInteger, key: string, actor: IdEntity): void{
         super.changeOwner(newProject);
         this.position = newPosition;
         if(!(this.tasks instanceof None)){
@@ -91,12 +92,14 @@ export default class List extends Entity{
 
     public addTask(task: Task): void{
         if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
+        if(task.getPositionInList().getValue() > this.tasks.length || 
+            task.getPositionInList().getValue() < 0)throw new InvalidPositionInList({positionToInsert: task.getPositionInList().getValue(), listId: this.getID().getID()});
         if(this.tasks instanceof None){
             this.tasks = [task];
         }else{
             const part1 = this.tasks.slice(0, task.getPositionInList().getValue());
             const part2 = this.tasks.slice(task.getPositionInList().getValue());
-            part2.forEach(t => t.updatePosition(new IntNumber(t.getPositionInList().getValue() + 1)));
+            part2.forEach(t => t.updatePosition(new PositiveInteger(t.getPositionInList().getValue() + 1)));
             this.tasks = [...part1, task, ...part2];
         }
     }

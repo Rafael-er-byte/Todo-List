@@ -8,7 +8,7 @@ import IdEntity from '../../../shared/core/objects/IdEntity';
 import type TaskParams from '../interface/TaskParams';
 import Text from '../../../shared/core/objects/Text';
 import Collection from '../../../shared/core/objects/Collection';
-import IntNumber from '../../../shared/core/objects/IntNumber';
+import PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 export default class Task extends Entity {
     private title;
     private listContainer;
@@ -24,12 +24,12 @@ export default class Task extends Entity {
     private categories;
     private assigned;
     private constructor();
-    static create(title: TaskTitle, listContainer: IdEntity, positionInList: IntNumber, state: TaskState, archived: boolean, id: TaskId, idProject: IdEntity, description: Text | None, startDate: DateTime | None, dueDate: DateTime | None, categories: Collection, assigned: Collection, actor: IdEntity, key: string): Task;
     static fromPrimitives(params: TaskParams): Task;
+    static create(title: TaskTitle, listContainer: IdEntity, positionInList: PositiveInteger, state: TaskState, archived: boolean, id: TaskId, idProject: IdEntity, description: Text | None, startDate: DateTime | None, dueDate: DateTime | None, categories: Collection, assigned: Collection, actor: IdEntity, key: string): Task;
     delete(actor: IdEntity, key: string): void;
     removeCategory(category: IdEntity, actor: IdEntity, key: string): void;
     removeAssigned(assigned: IdEntity, actor: IdEntity, key: string): void;
-    move(list: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void;
+    move(list: IdEntity, positionInList: PositiveInteger, actor: IdEntity, key: string): void;
     unarchive(actor: IdEntity, key: string): void;
     archive(actor: IdEntity, key: string): void;
     assignMember(actor: IdEntity, key: string, assigned: IdEntity): void;
@@ -40,17 +40,17 @@ export default class Task extends Entity {
     addCategory(category: IdEntity, actor: IdEntity, key: string): void;
     markAsFinished(actor: IdEntity, key: string): void;
     markAsPending(actor: IdEntity, key: string): void;
-    protected isArchived(): boolean;
-    protected cannotBeModified(): boolean;
-    protected isCompleted(): boolean;
-    exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void;
-    overDue(): boolean;
+    exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: PositiveInteger, actor: IdEntity, key: string): void;
     setStarted(key: string): void;
     setOverDue(key: string): void;
-    updatePosition(positionInList: IntNumber): void;
+    updatePosition(positionInList: PositiveInteger): void;
     archiveByOther(): void;
     unarchiveByOther(): void;
     deleteByOther(): void;
+    protected isArchived(): boolean;
+    protected cannotBeModified(): boolean;
+    protected isCompleted(): boolean;
+    overDue(): boolean;
     getIdProject(): IdEntity;
     getTitle(): TaskTitle;
     getListContainer(): IdEntity;
@@ -62,7 +62,7 @@ export default class Task extends Entity {
     getAssigned(): Collection;
     getIsStarted(): boolean;
     getIsOverdue(): boolean;
-    getPositionInList(): IntNumber;
+    getPositionInList(): PositiveInteger;
     isArchivedByList(): boolean;
     toPrimitives(): TaskParams;
 }

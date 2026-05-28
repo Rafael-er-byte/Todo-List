@@ -8,13 +8,16 @@ import DateTime from '../../../../../src/modules/shared/core/objects/DateTime';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 import None from '../../../../../src/modules/shared/core/objects/None';
 import Collection from '../../../../../src/modules/shared/core/objects/Collection';
-import IntNumber from '../../../../../src/modules/shared/core/objects/IntNumber';
+import PositiveInteger from '../../../../../src/modules/shared/core/objects/PositiveInteger';
 import CannotModifyArchivedTasks from '../../../../../src/modules/task/core/error/CannotModifyArchivedTasks';
 import TaskNeedsToBeArchivedBeforeDeleteIt from '../../../../../src/modules/task/core/error/TaskNeedsToBeArchivedBeforeDeleteIt';
 import InvalidStartDate from '../../../../../src/modules/task/core/error/InvalidStartDateTime';
 import InvalidDueDate from '../../../../../src/modules/task/core/error/InvalidDueDateTime';
 import ResourceNotFound from '../../../../../src/modules/shared/core/errors/ResourceNotFound';
 import RelationshipAlreadyExists from '../../../../../src/modules/shared/core/errors/RelationshipAlreadyExists';
+import TaskIsAlreadyArchived from '../../../../../src/modules/task/core/error/TaskIsAlreadyArchived';
+import CannotDeleteIndividuallyTaskArchivedByOtherEntity from '../../../../../src/modules/task/core/error/CannotDeleteIndividuallyTaskArchivedByOtherEntity';
+import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
 const buildTask = () => {
     const title = new TaskTitle('Initial task title');
     const listContainer = new IdEntity('0143c815-7220-7d64-8c42-6f2af4f9fd37');
@@ -24,7 +27,7 @@ const buildTask = () => {
     const actor = new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37');
     const categories = new Collection([], [], []);
     const assigned = new Collection([], [], []);
-    const task = Task.create(title, listContainer, new IntNumber(1), state, false, taskId, projectId, new None(), new None(), new None(), categories, assigned, actor, 'task-created-key');
+    const task = Task.create(title, listContainer, new PositiveInteger(1), state, false, taskId, projectId, new None(), new None(), new None(), categories, assigned, actor, 'task-created-key');
     return { task, actor };
 };
 describe('Task', () => {
@@ -47,6 +50,14 @@ describe('Task', () => {
         const events = task.pullEvents();
         expect(events).toHaveLength(1);
         expect(events[0].getEvent()).toBe('TASK_CREATED');
+    });
+    it('does not allow creating a task with negative position', () => {
+        const title = new TaskTitle('Initial task title');
+        const listContainer = new IdEntity('0143c815-7220-7d64-8c42-6f2af4f9fd37');
+        const taskId = new TaskId('0243c815-7220-7d64-8c42-6f2af4f9fd37');
+        const projectId = new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+        const actor = new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37');
+        expect(() => Task.create(title, listContainer, new PositiveInteger(-1), TaskState.pending(), false, taskId, projectId, new None(), new None(), new None(), new Collection([], [], []), new Collection([], [], []), actor, 'task-created-key')).toThrow(InvalidParameters);
     });
     it('returns values from Task getters', () => {
         const { task } = buildTask();
@@ -94,7 +105,7 @@ describe('Task', () => {
         const { task, actor } = buildTask();
         task.pullEvents();
         const newListContainer = new IdEntity('0643c815-7220-7d64-8c42-6f2af4f9fd37');
-        task.move(newListContainer, new IntNumber(2), actor, 'move-key');
+        task.move(newListContainer, new PositiveInteger(2), actor, 'move-key');
         expect(task.toPrimitives().listContainer).toBe('0643c815-7220-7d64-8c42-6f2af4f9fd37');
         expect(task.toPrimitives().positionInList).toBe(2);
         expect(task.getOwner().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
@@ -107,7 +118,7 @@ describe('Task', () => {
         task.pullEvents();
         const newProject = new IdEntity('2043c815-7220-7d64-8c42-6f2af4f9fd37');
         const newList = new IdEntity('2143c815-7220-7d64-8c42-6f2af4f9fd37');
-        task.exportToProject(newProject, newList, new IntNumber(5), actor, 'export-key');
+        task.exportToProject(newProject, newList, new PositiveInteger(5), actor, 'export-key');
         expect(task.toPrimitives().idProject).toBe('2043c815-7220-7d64-8c42-6f2af4f9fd37');
         expect(task.toPrimitives().listContainer).toBe('2143c815-7220-7d64-8c42-6f2af4f9fd37');
         expect(task.toPrimitives().positionInList).toBe(5);
@@ -190,7 +201,7 @@ describe('Task', () => {
         expect(() => task.addCategory(categoryId, actor, 'add-cat-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.assignMember(actor, 'assign-key', assignedId)).toThrow(CannotModifyArchivedTasks);
         expect(() => task.updateTitle(new TaskTitle('New Title'), actor, 'update-title-key')).toThrow(CannotModifyArchivedTasks);
-        expect(() => task.move(new IdEntity('1043c815-7220-7d64-8c42-6f2af4f9fd37'), new IntNumber(3), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.move(new IdEntity('1043c815-7220-7d64-8c42-6f2af4f9fd37'), new PositiveInteger(3), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.markAsFinished(actor, 'finish-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.setStarted('start-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.setOverDue('overdue-key')).toThrow(CannotModifyArchivedTasks);
@@ -216,7 +227,7 @@ describe('Task', () => {
         expect(() => task.addCategory(categoryId, actor, 'add-cat-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.assignMember(actor, 'assign-key', assignedId)).toThrow(CannotModifyArchivedTasks);
         expect(() => task.updateTitle(new TaskTitle('New Title'), actor, 'update-title-key')).toThrow(CannotModifyArchivedTasks);
-        expect(() => task.move(new IdEntity('1743c815-7220-7d64-8c42-6f2af4f9fd37'), new IntNumber(3), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
+        expect(() => task.move(new IdEntity('1743c815-7220-7d64-8c42-6f2af4f9fd37'), new PositiveInteger(3), actor, 'move-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.markAsFinished(actor, 'finish-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.setStarted('start-key')).toThrow(CannotModifyArchivedTasks);
         expect(() => task.setOverDue('overdue-key')).toThrow(CannotModifyArchivedTasks);
@@ -252,19 +263,9 @@ describe('Task', () => {
         const { task, actor } = buildTask();
         task.pullEvents();
         task.archiveByOther();
-        expect(() => task.delete(actor, 'delete-key')).toThrow(TaskNeedsToBeArchivedBeforeDeleteIt);
+        expect(() => task.delete(actor, 'delete-key')).toThrow(CannotDeleteIndividuallyTaskArchivedByOtherEntity);
         expect(task.exists()).toBe(true);
         expect(task.pullEvents()).toHaveLength(0);
-    });
-    it('deletes a directly archived task even when it is also archived by its list', () => {
-        const { task, actor } = buildTask();
-        task.pullEvents();
-        task.archiveByOther();
-        task.archive(actor, 'archive-key');
-        task.pullEvents();
-        expect(() => task.delete(actor, 'delete-key')).not.toThrow();
-        expect(task.exists()).toBe(false);
-        expect(task.pullEvents()).toHaveLength(1);
     });
     it('deletes by other without emitting events', () => {
         const { task } = buildTask();
@@ -384,6 +385,11 @@ describe('Task', () => {
         const primitives = task.toPrimitives();
         expect(primitives.startDate).toEqual(startDate);
         expect(primitives.dueDate).toEqual(dueDate);
+    });
+    it("Should not allow modify when the task is archived by another entity, the atribute archivedByOther is that is used fro this", () => {
+        const { task, actor } = buildTask();
+        task.archiveByOther();
+        expect(() => task.archive(actor, 'example-key')).toThrow(TaskIsAlreadyArchived);
     });
 });
 //# sourceMappingURL=Task.test.js.map

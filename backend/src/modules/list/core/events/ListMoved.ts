@@ -1,7 +1,7 @@
 import DomainEvent from '../../../shared/core/events/DomainEvent';
 import type DateTime from '../../../shared/core/objects/DateTime';
 import type IdEntity from '../../../shared/core/objects/IdEntity';
-import type IntNumber from '../../../shared/core/objects/IntNumber';
+import type PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 
 export default class ListMoved extends DomainEvent {
   constructor(
@@ -10,7 +10,7 @@ export default class ListMoved extends DomainEvent {
     actor: IdEntity,
     idProject: IdEntity,
     idEntity: IdEntity,
-    newPosition: IntNumber,
+    newPosition: PositiveInteger,
   ) {
     super(key, date, actor, idProject, idEntity, 'LIST_MOVED', newPosition);
   }

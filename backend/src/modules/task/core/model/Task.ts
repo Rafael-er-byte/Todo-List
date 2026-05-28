@@ -34,14 +34,14 @@ import Collection from '../../../shared/core/objects/Collection';
 import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
 import TaskStarted from '../events/TaskStarted';
 import TaskOverDue from '../events/TaskOverDue';
-import IntNumber from '../../../shared/core/objects/IntNumber';
 import TaskIsAlreadyArchived from '../error/TaskIsAlreadyArchived';
 import CannotDeleteIndividuallyTaskArchivedByOtherEntity from '../error/CannotDeleteIndividuallyTaskArchivedByOtherEntity';
+import PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 
 export default class Task extends Entity {
   private title!: TaskTitle;
   private listContainer!: IdEntity;
-  private positionInList!: IntNumber;
+  private positionInList!: PositiveInteger;
   private state!: TaskState;
   private archived: boolean = false;
   private listArchived: boolean = false;
@@ -59,7 +59,7 @@ export default class Task extends Entity {
   private constructor(
     title: TaskTitle,
     listContainer: IdEntity,
-    positionInList: IntNumber,
+    positionInList: PositiveInteger,
     state: TaskState,
     archived: boolean,
     listArchived: boolean,
@@ -102,7 +102,7 @@ export default class Task extends Entity {
     const task = new Task(
       new TaskTitle(params.title),
       new IdEntity(params.listContainer),
-      new IntNumber(params.positionInList),
+      new PositiveInteger(params.positionInList),
       TaskState.create(params.state as AllowedTaskState),
       params.archived,
       params.listArchived ?? false,
@@ -125,7 +125,7 @@ export default class Task extends Entity {
   public static create(
     title: TaskTitle,
     listContainer: IdEntity,
-    positionInList: IntNumber,
+    positionInList: PositiveInteger,
     state: TaskState,
     archived: boolean,
     id: TaskId,
@@ -189,7 +189,7 @@ export default class Task extends Entity {
     );
   }
 
-  public move(list: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void {
+  public move(list: IdEntity, positionInList: PositiveInteger, actor: IdEntity, key: string): void {
     if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.listContainer = list;
     this.positionInList = positionInList;
@@ -299,7 +299,7 @@ export default class Task extends Entity {
     this.addEvent(new TaskMarkedAsPending(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
   }
 
-  public exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: IntNumber, actor: IdEntity, key: string): void {
+  public exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: PositiveInteger, actor: IdEntity, key: string): void {
     if (this.cannotBeModified()) throw new CannotModifyArchivedTasks(super.getID());
     this.listContainer = idList;
     this.positionInList = positionInList;
@@ -322,7 +322,7 @@ export default class Task extends Entity {
   }
 
   //mutable methods accesible for another classes
-  public updatePosition(positionInList: IntNumber): void {
+  public updatePosition(positionInList: PositiveInteger): void {
     this.positionInList = positionInList;
   }
 
@@ -402,7 +402,7 @@ export default class Task extends Entity {
     return this.isOverdue;
   }
 
-  public getPositionInList(): IntNumber {
+  public getPositionInList(): PositiveInteger {
     return this.positionInList;
   }
 

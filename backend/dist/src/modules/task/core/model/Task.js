@@ -32,7 +32,9 @@ import Collection from '../../../shared/core/objects/Collection';
 import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
 import TaskStarted from '../events/TaskStarted';
 import TaskOverDue from '../events/TaskOverDue';
-import IntNumber from '../../../shared/core/objects/IntNumber';
+import TaskIsAlreadyArchived from '../error/TaskIsAlreadyArchived';
+import CannotDeleteIndividuallyTaskArchivedByOtherEntity from '../error/CannotDeleteIndividuallyTaskArchivedByOtherEntity';
+import PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 export default class Task extends Entity {
     constructor(title, listContainer, positionInList, state, archived, listArchived, id, idProject, description, startDate, dueDate, isOverDue, isStarted, categories, assigned) {
         super(id, idProject);
@@ -58,12 +60,7 @@ export default class Task extends Entity {
         this.categories = categories;
         this.assigned = assigned;
     }
-    static create(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, categories, assigned, actor, key) {
-        const task = new Task(title, listContainer, positionInList, state, archived, false, id, idProject, description, startDate, dueDate, false, false, categories, assigned);
-        task.create();
-        task.addEvent(new TaskCreated(key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()));
-        return task;
-    }
+    //build from primitives
     static fromPrimitives(params) {
         const categories = params.categories.map((category) => {
             return new IdEntity(category);
@@ -71,11 +68,20 @@ export default class Task extends Entity {
         const assigned = params.assigned.map((assign) => {
             return new IdEntity(assign);
         });
-        const task = new Task(new TaskTitle(params.title), new IdEntity(params.listContainer), new IntNumber(params.positionInList), TaskState.create(params.state), params.archived, params.listArchived ?? false, new TaskId(params.id), new IdEntity(params.idProject), params.description ? new Text(params.description) : new None(), params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(), params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(), params.isOverdue, params.isStarted, new Collection(categories, [], []), new Collection(assigned, [], []));
+        const task = new Task(new TaskTitle(params.title), new IdEntity(params.listContainer), new PositiveInteger(params.positionInList), TaskState.create(params.state), params.archived, params.listArchived ?? false, new TaskId(params.id), new IdEntity(params.idProject), params.description ? new Text(params.description) : new None(), params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(), params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(), params.isOverdue, params.isStarted, new Collection(categories, [], []), new Collection(assigned, [], []));
         task.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
         return task;
     }
+    //mutable methods
+    static create(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, categories, assigned, actor, key) {
+        const task = new Task(title, listContainer, positionInList, state, archived, false, id, idProject, description, startDate, dueDate, false, false, categories, assigned);
+        task.create();
+        task.addEvent(new TaskCreated(key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()));
+        return task;
+    }
     delete(actor, key) {
+        if (this.listArchived)
+            throw new CannotDeleteIndividuallyTaskArchivedByOtherEntity({ id: this.getID().getID() });
         if (!this.isArchived()) {
             throw new TaskNeedsToBeArchivedBeforeDeleteIt(super.getID());
         }
@@ -106,6 +112,8 @@ export default class Task extends Entity {
         this.addEvent(new TaskUnarchived(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
     }
     archive(actor, key) {
+        if (this.listArchived)
+            throw new TaskIsAlreadyArchived({ taskId: this.getID().getID() });
         this.archived = true;
         this.addEvent(new TaskArchived(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
     }
@@ -171,15 +179,6 @@ export default class Task extends Entity {
         this.state = TaskState.pending();
         this.addEvent(new TaskMarkedAsPending(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
     }
-    isArchived() {
-        return this.archived;
-    }
-    cannotBeModified() {
-        return this.archived || this.listArchived;
-    }
-    isCompleted() {
-        return this.state.isCompleted();
-    }
     exportToProject(newProject, idList, positionInList, actor, key) {
         if (this.cannotBeModified())
             throw new CannotModifyArchivedTasks(super.getID());
@@ -187,12 +186,6 @@ export default class Task extends Entity {
         this.positionInList = positionInList;
         super.changeOwner(newProject);
         this.addEvent(new TaskExported(key, DateTime.now(), actor, newProject, super.getID(), idList, positionInList));
-    }
-    overDue() {
-        if (this.dueDate instanceof DateTime && DateTime.isAfter(this.dueDate, DateTime.now())) {
-            return false;
-        }
-        return true;
     }
     setStarted(key) {
         if (this.cannotBeModified())
@@ -210,6 +203,7 @@ export default class Task extends Entity {
         this.isOverdue = true;
         this.addEvent(new TaskOverDue(key, DateTime.now(), this.getIdProject(), super.getID()));
     }
+    //mutable methods accesible for another classes
     updatePosition(positionInList) {
         this.positionInList = positionInList;
     }
@@ -221,6 +215,22 @@ export default class Task extends Entity {
     }
     deleteByOther() {
         super.softDelete();
+    }
+    //getters
+    isArchived() {
+        return this.archived;
+    }
+    cannotBeModified() {
+        return this.archived || this.listArchived;
+    }
+    isCompleted() {
+        return this.state.isCompleted();
+    }
+    overDue() {
+        if (this.dueDate instanceof DateTime && DateTime.isAfter(this.dueDate, DateTime.now())) {
+            return false;
+        }
+        return true;
     }
     getIdProject() {
         return super.getOwner();
