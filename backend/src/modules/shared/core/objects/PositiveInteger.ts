@@ -8,7 +8,7 @@ export default class PositiveInteger extends ValueObject{
     constructor(value: number){
         super();
         this.value = new IntNumber(value);
-        if(this.value.getValue() < 0)throw new InvalidParameters('Value must be a valid positive integer', {value: value});
+        if(this.value.getValue() <= 0)throw new InvalidParameters('Value must be a valid positive integer', {value: value});
     }
 
     public getValue(): number{

@@ -122,13 +122,14 @@ export default class List extends Entity{
     //validations
     public addTask(task: Task): void{
         if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
-        if(task.getPositionInList().getValue() > this.tasks.length || 
-            task.getPositionInList().getValue() < 0)throw new InvalidPositionInList({positionToInsert: task.getPositionInList().getValue(), listId: this.getID().getID()});
+
+        if(task.getPositionInList().getValue()  > this.tasks.length + 1 || 
+            task.getPositionInList().getValue() <= 0)throw new InvalidPositionInList({positionToInsert: task.getPositionInList().getValue(), listId: this.getID().getID()});
         if(this.tasks instanceof None){
             this.tasks = [task];
         }else{
-            const part1 = this.tasks.slice(0, task.getPositionInList().getValue());
-            const part2 = this.tasks.slice(task.getPositionInList().getValue());
+            const part1 = this.tasks.slice(0, task.getPositionInList().getValue() - 1);
+            const part2 = this.tasks.slice(task.getPositionInList().getValue() -1);
             part2.forEach(t => t.updatePosition(new PositiveInteger(t.getPositionInList().getValue() + 1)));
             this.tasks = [...part1, task, ...part2];
         }
@@ -136,21 +137,17 @@ export default class List extends Entity{
 
     public removeTask(task: Task): void{
         if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
-        if(this.tasks instanceof None){
-            throw new ResourceNotFound(
-                    `The task with id: ${task.getID().getID()} does not exists in list with id: ${this.getID()}`, 
-                    {
-                        taskId: task.getID().getID(), 
-                        listId: this.getID().getID()
-                    });
-        }else{
-            if(!this.tasks.find(t => t.getID().getID() === task.getID().getID())) throw new ResourceNotFound(
-                            `The task with id: ${task.getID().getID()} does not exists in list with id: ${this.getID()}`, 
-                            {
-                                taskId: task.getID().getID(), 
-                                listId: this.getID().getID()
-                            });
-            this.tasks = this.tasks.filter(t => t.getID().getID() === task.getID().getID());
+        
+        if(!this.tasks.find(t => t.getID().getID() === task.getID().getID())) throw new ResourceNotFound(
+                        `The task with id: ${task.getID().getID()} does not exists in list with id: ${this.getID()}`, 
+                        {
+                            taskId: task.getID().getID(), 
+                            listId: this.getID().getID()
+                        });
+        this.tasks = this.tasks.filter(t => t.getID().getID() !== task.getID().getID());
+        for(let i = task.getPositionInList().getValue() - 1; i < this.tasks.length; i++){
+            const nextTask = this.tasks[i] as Task;
+            nextTask.updatePosition(new PositiveInteger(nextTask.getPositionInList().getValue() - 1));
         }
     }
 

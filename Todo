@@ -1,4 +1,4 @@
-Update Task tests
-Create List tests
 Create percentageCompleted object for validate percentages between 0 and 100 in checklist
-Update Task Position in list atribute an change it to an object that validates that an posotion cannot be negative
+Test list adding and removing tasks
+Tesk list mutable methods
+Add list repository
