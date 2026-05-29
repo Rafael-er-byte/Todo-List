@@ -44,7 +44,7 @@ export default abstract class Entity {
     this.deletedAt = DeletedAt.delete();
   }
 
-  protected changeOwner(newOwner: IdEntity | None): void{
+  public changeOwner(newOwner: IdEntity | None): void{
     this.owner = newOwner;
   }
 

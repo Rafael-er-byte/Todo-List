@@ -1,0 +1,1 @@
+{"version":3,"file":"ListTitle.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/list/core/object/ListTitle.ts"],"names":[],"mappings":"AACA,OAAO,KAAK,IAAI,MAAM,mCAAmC,CAAC;AAG1D,MAAM,CAAC,OAAO,OAAO,SAAS;IAC1B,OAAO,CAAC,QAAQ,CAAC,KAAK,CAAQ;gBAElB,KAAK,EAAE,IAAI;IAOhB,QAAQ,IAAI,IAAI;CAG1B"}

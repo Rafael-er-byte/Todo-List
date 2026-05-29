@@ -16,7 +16,7 @@ export default abstract class Entity {
     protected create(): void;
     protected build(version: Version, deletedAt: DeletedAt): void;
     protected softDelete(): void;
-    protected changeOwner(newOwner: IdEntity | None): void;
+    changeOwner(newOwner: IdEntity | None): void;
     pullEvents(): DomainEvent[];
     ownership(child: Entity): boolean;
     getLastUpdate(): DateTime;
