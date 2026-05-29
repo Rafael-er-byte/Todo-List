@@ -4,7 +4,6 @@ import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
 import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
-import Decimal from '../../../shared/core/objects/Decimal';
 import type CheckListParams from '../interfaces/CheckListParams';
 import ChecklistItem from '../objects/ChecklistItem';
 import IdCheckList from '../objects/IdCheckList';
@@ -17,13 +16,14 @@ import ChecklistItemCompleted from '../events/ChecklistItemCompleted';
 import ChecklistItemMarkedAsPending from '../events/ChecklistItemMarkedAsPending';
 import ChecklistItemTitleUpdated from '../events/ChecklistItemTitleUpdated';
 import ResourceNotFound from '../../../shared/core/errors/ResourceNotFound';
+import PercentageCompleted from '../objects/PercentageCompleted';
 
 export default class CheckList extends Entity {
   private name!: Text;
   private items: ChecklistItem[] = [];
-  private completedPercentage!: Decimal;
+  private completedPercentage!: PercentageCompleted;
 
-  private constructor(id: IdCheckList, owner: IdEntity, name: Text, items: ChecklistItem[], completedPercentage: Decimal) {
+  private constructor(id: IdCheckList, owner: IdEntity, name: Text, items: ChecklistItem[], completedPercentage: PercentageCompleted) {
     super(id, owner);
     this.name = name;
     this.items = items;
@@ -38,7 +38,7 @@ export default class CheckList extends Entity {
     key: string,
     items: ChecklistItem[] = [],
   ): CheckList {
-    const checklist = new CheckList(id, owner, name, items, new Decimal(0));
+    const checklist = new CheckList(id, owner, name, items, new PercentageCompleted(0));
     checklist.create();
     checklist.recalculateCompletedPercentage();
     checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getOwnerId(), id, checklist.toPrimitives()));
@@ -52,7 +52,7 @@ export default class CheckList extends Entity {
       new IdEntity(params.idOwner),
       new Text(params.name),
       items,
-      new Decimal(params.completedPercentage),
+      new PercentageCompleted(params.completedPercentage),
     );
 
     checklist.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
@@ -67,7 +67,7 @@ export default class CheckList extends Entity {
     return [...this.items];
   }
 
-  public getCompletedPercentage(): Decimal {
+  public getCompletedPercentage(): PercentageCompleted {
     return this.completedPercentage;
   }
 
@@ -155,12 +155,12 @@ export default class CheckList extends Entity {
 
   private recalculateCompletedPercentage(): void {
     if (this.items.length === 0) {
-      this.completedPercentage = new Decimal(0);
+      this.completedPercentage = new PercentageCompleted(0);
       return;
     }
 
     const completedCount = this.items.filter((item) => item.isCompleted()).length;
     const percent = (completedCount / this.items.length) * 100;
-    this.completedPercentage = new Decimal(percent);
+    this.completedPercentage = new PercentageCompleted(percent);
   }
 }
