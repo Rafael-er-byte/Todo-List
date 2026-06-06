@@ -1,22 +1,23 @@
 import Entity from '../../../shared/core/model/Entity';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
-import Decimal from '../../../shared/core/objects/Decimal';
 import type CheckListParams from '../interfaces/CheckListParams';
 import ChecklistItem from '../objects/ChecklistItem';
 import IdCheckList from '../objects/IdCheckList';
+import PercentageCompleted from '../objects/PercentageCompleted';
+import CheckListName from '../objects/CheckListName';
 export default class CheckList extends Entity {
     private name;
     private items;
     private completedPercentage;
     private constructor();
-    static create(id: IdCheckList, owner: IdEntity, name: Text, actor: IdEntity, key: string, items?: ChecklistItem[]): CheckList;
+    static create(id: IdCheckList, owner: IdEntity, name: CheckListName, actor: IdEntity, key: string, items?: ChecklistItem[]): CheckList;
     static fromPrimitives(params: CheckListParams): CheckList;
-    getName(): Text;
+    getName(): CheckListName;
     getItems(): ChecklistItem[];
-    getCompletedPercentage(): Decimal;
+    getCompletedPercentage(): PercentageCompleted;
     private getOwnerId;
-    updateName(name: Text, actor: IdEntity, key: string): void;
+    updateName(name: CheckListName, actor: IdEntity, key: string): void;
     addChecklistItem(title: Text, actor: IdEntity, key: string): void;
     deleteChecklistItem(itemId: string, actor: IdEntity, key: string): void;
     completeChecklistItem(itemId: string, actor: IdEntity, key: string): void;

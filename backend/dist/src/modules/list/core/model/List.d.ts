@@ -20,7 +20,6 @@ export default class List extends Entity {
     export(newProject: IdEntity, newPosition: PositiveInteger, key: string, actor: IdEntity): void;
     archive(key: string, actor: IdEntity): void;
     unarchive(key: string, actor: IdEntity): void;
-    unarvhive(key: string, actor: IdEntity): void;
     delete(key: string, actor: IdEntity): void;
     addTask(task: Task): void;
     removeTask(task: Task): void;

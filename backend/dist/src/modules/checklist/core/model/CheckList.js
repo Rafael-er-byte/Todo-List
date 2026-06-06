@@ -4,7 +4,6 @@ import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
 import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
-import Decimal from '../../../shared/core/objects/Decimal';
 import ChecklistItem from '../objects/ChecklistItem';
 import IdCheckList from '../objects/IdCheckList';
 import CheckListCreated from '../events/CheckListCreated';
@@ -16,6 +15,8 @@ import ChecklistItemCompleted from '../events/ChecklistItemCompleted';
 import ChecklistItemMarkedAsPending from '../events/ChecklistItemMarkedAsPending';
 import ChecklistItemTitleUpdated from '../events/ChecklistItemTitleUpdated';
 import ResourceNotFound from '../../../shared/core/errors/ResourceNotFound';
+import PercentageCompleted from '../objects/PercentageCompleted';
+import CheckListName from '../objects/CheckListName';
 export default class CheckList extends Entity {
     constructor(id, owner, name, items, completedPercentage) {
         super(id, owner);
@@ -25,7 +26,7 @@ export default class CheckList extends Entity {
         this.completedPercentage = completedPercentage;
     }
     static create(id, owner, name, actor, key, items = []) {
-        const checklist = new CheckList(id, owner, name, items, new Decimal(0));
+        const checklist = new CheckList(id, owner, name, items, new PercentageCompleted(0));
         checklist.create();
         checklist.recalculateCompletedPercentage();
         checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getOwnerId(), id, checklist.toPrimitives()));
@@ -33,7 +34,7 @@ export default class CheckList extends Entity {
     }
     static fromPrimitives(params) {
         const items = params.items.map((item) => ChecklistItem.fromPrimitives(item));
-        const checklist = new CheckList(new IdCheckList(params.id), new IdEntity(params.idOwner), new Text(params.name), items, new Decimal(params.completedPercentage));
+        const checklist = new CheckList(new IdCheckList(params.id), new IdEntity(params.idOwner), new CheckListName(params.name), items, new PercentageCompleted(params.completedPercentage));
         checklist.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
         return checklist;
     }
@@ -51,7 +52,7 @@ export default class CheckList extends Entity {
     }
     updateName(name, actor, key) {
         this.name = name;
-        this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getOwnerId(), super.getID(), { name: name.getText() }));
+        this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getOwnerId(), super.getID(), { name: name.getName() }));
     }
     addChecklistItem(title, actor, key) {
         const item = ChecklistItem.create(title);
@@ -92,7 +93,7 @@ export default class CheckList extends Entity {
         return {
             id: super.getID().getID(),
             idOwner: this.getOwnerId().getID(),
-            name: this.name.getText(),
+            name: this.name.getName(),
             items: this.items.map((item) => item.toPrimitives()),
             completedPercentage: this.completedPercentage.toPrimitive(),
             version: super.getVersion().valueOf(),
@@ -110,12 +111,12 @@ export default class CheckList extends Entity {
     }
     recalculateCompletedPercentage() {
         if (this.items.length === 0) {
-            this.completedPercentage = new Decimal(0);
+            this.completedPercentage = new PercentageCompleted(0);
             return;
         }
         const completedCount = this.items.filter((item) => item.isCompleted()).length;
         const percent = (completedCount / this.items.length) * 100;
-        this.completedPercentage = new Decimal(percent);
+        this.completedPercentage = new PercentageCompleted(percent);
     }
 }
 //# sourceMappingURL=CheckList.js.map
