@@ -1,7 +1,6 @@
 import type DomainEvent from '../../../shared/core/events/DomainEvent';
 import type None from '../../../shared/core/objects/None';
 import type TaskCriteria from '../interface/TaskCriteria';
-import type TaskFromList from '../interface/TaskFromList';
 import type Task from '../model/Task';
 import type TaskId from '../objects/TaskId';
 
@@ -15,5 +14,4 @@ export default interface TaskRepository {
   getCategoriesFromTaskById(taskId: TaskId, limit: number, page: number): Promise<string[]>;
   getAssignedFromTaskById(taskId: TaskId, limit: number, page: number): Promise<string[]>;
   getTaskLog(taskId: TaskId, limit: number, page: number): Promise<DomainEvent[]>;
-  getFromList(criteria: TaskFromList): Promise<Task[]>
 }
