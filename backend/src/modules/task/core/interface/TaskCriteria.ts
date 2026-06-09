@@ -5,14 +5,13 @@ export default interface TaskCriteria {
   limit: number;
   page: number;
   archived:"ALL" | "ACTIVE" | "ARCHIVED";
-  withCategory: boolean;
-  wihtAssigned: boolean;
   idProject: IdEntity;
   
   nameLike?: string;
+  lists?: string[];
   categories?: string[];
   status?: AllowedTaskState;
   isOverDue?: boolean;
   isStarted?: boolean;
-  assingned?: string[];
+  assigned?: string[];
 }
