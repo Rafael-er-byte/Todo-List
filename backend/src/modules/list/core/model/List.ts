@@ -180,4 +180,8 @@ export default class List extends Entity{
             deletedAt: this.getDeletedAt().toPrimitive()
         }
     }
+
+    public moveByOther(newPosition: PositiveInteger): void{
+        this.position = newPosition;
+    }
 }

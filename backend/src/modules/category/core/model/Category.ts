@@ -11,7 +11,7 @@ import Version from '../../../shared/core/objects/Version';
 import type CategoryParams from '../interfaces/CategoryParams';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import CategoryDeleted from '../events/CategoryDeleted';
-import type { AllowedColors } from '../types/AllowedColors';
+import type { AllowedColors } from '../../../shared/core/types/AllowedColors';
 
 export default class Category extends Entity {
   private name!: CategoryName;

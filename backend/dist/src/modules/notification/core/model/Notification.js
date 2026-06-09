@@ -9,19 +9,19 @@ import NotificationAlreadyRead from '../error/NotificationAlreadyRead';
 import IdNotification from '../objects/IdNotification';
 import NotificationStatus from '../objects/NotificationStatus';
 export default class Notification extends Entity {
-    constructor(idNotification, event, status, idUser) {
+    constructor(idNotification, eventKey, status, idUser) {
         super(idNotification, idUser);
-        this.event = event;
+        this.eventKey = eventKey;
         this.status = status;
     }
-    static create(key, idNotification, event, idUser, actor) {
-        const notification = new Notification(idNotification, event, NotificationStatus.unread(), idUser);
+    static create(key, idNotification, eventKey, idUser, actor) {
+        const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), idUser);
         notification.create();
         notification.addEvent(new NotificationCreated(key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()));
         return notification;
     }
     static fromPrimitives(params) {
-        const notification = new Notification(new IdNotification(params.id), new IdEntity(params.event), NotificationStatus.create(params.status), new IdEntity(params.idUser));
+        const notification = new Notification(new IdNotification(params.id), params.eventKey, NotificationStatus.create(params.status), new IdEntity(params.idUser));
         notification.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
         return notification;
     }
@@ -35,8 +35,8 @@ export default class Notification extends Entity {
     getId() {
         return super.getID();
     }
-    getEvent() {
-        return this.event;
+    getEventKey() {
+        return this.eventKey;
     }
     getStatus() {
         return this.status;
@@ -47,7 +47,7 @@ export default class Notification extends Entity {
     toPrimitives() {
         return {
             id: this.getId().getID(),
-            event: this.event.getID(),
+            eventKey: this.eventKey,
             status: this.status.getStatus(),
             idUser: this.getIdUser().getID(),
             version: super.getVersion().valueOf(),
