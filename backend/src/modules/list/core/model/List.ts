@@ -2,7 +2,6 @@ import ListId from "../object/ListId";
 import Text from "../../../shared/core/objects/Text";
 import Entity from "../../../shared/core/model/Entity";
 import DeletedAt from "../../../shared/core/objects/DeletedAt";
-import Version from "../../../shared/core/objects/Version";
 import IdEntity from "../../../shared/core/objects/IdEntity";
 import Task from "../../../task/core/model/Task";
 import None from "../../../shared/core/objects/None";
@@ -63,7 +62,7 @@ export default class List extends Entity{
             params.tasks,
             new IdEntity(params.projectId)
         );
-        list.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+        list.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return list;
     }
 
@@ -176,8 +175,11 @@ export default class List extends Entity{
             archived: this.archived,
             tasks: this.tasks,
             projectId: this.getOwner().toString(),
-            version: this.getVersion().valueOf(),
             deletedAt: this.getDeletedAt().toPrimitive()
         }
+    }
+
+    public moveByOther(newPosition: PositiveInteger): void{
+        this.position = newPosition;
     }
 }

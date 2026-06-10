@@ -1,6 +1,6 @@
 import ValueObject from '../../../shared/core/objects/ValueObject';
+import { ALLOWED_COLORS, AllowedColors } from '../../../shared/core/types/AllowedColors';
 import CategoryColorNotSupported from '../error/CategoryColorNotSupported';
-import { ALLOWED_COLORS, AllowedColors } from '../types/AllowedColors';
 export default class CategoryColor extends ValueObject {
     constructor(color) {
         super();

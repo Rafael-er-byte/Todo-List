@@ -5,12 +5,10 @@ import DateTime from '../objects/DateTime';
 import DeletedAt from '../objects/DeletedAt';
 import type IdEntity from '../objects/IdEntity';
 import None from '../objects/None';
-import Version from '../objects/Version';
 
 export default abstract class Entity {
   private tmpHistory: DomainEvent[] = [];
   private lastUpdate!: DateTime;
-  private version!: Version;
   private deletedAt!: DeletedAt;
   private owner!: IdEntity | None;
   private readonly idEntity!: IdEntity;
@@ -27,16 +25,13 @@ export default abstract class Entity {
 
     this.tmpHistory.push(event);
     this.lastUpdate = event.getDate();
-    this.version = this.version.increment();
   }
 
   protected create(): void {
-    this.version = new Version(0);
     this.deletedAt = DeletedAt.createActive();
   }
 
-  protected build(version: Version, deletedAt: DeletedAt): void {
-    this.version = version;
+  protected build(deletedAt: DeletedAt): void {
     this.deletedAt = deletedAt;
   }
 
@@ -62,10 +57,6 @@ export default abstract class Entity {
 
   public getLastUpdate(): DateTime {
     return this.lastUpdate;
-  }
-
-  public getVersion(): Version{
-    return this.version;  
   }
 
   public getDeletedAt(): DeletedAt {

@@ -10,7 +10,6 @@ import MemberDeleted from '../events/MemberDeleted';
 import ProjectMetadata from '../objects/ProjectMetadata';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import type MemberParams from '../interfaces/MemberParams';
-import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import MemberRoleChanged from '../events/MemberRoleChanged';
 
@@ -72,7 +71,7 @@ export default class Member extends Entity {
       new ProjectMetadata()  
     );
 
-    member.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
+    member.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return member;
   }
 
@@ -127,7 +126,6 @@ export default class Member extends Entity {
       idAccount: this.idAccount.getID(),
       status: this.status.getStatus(),
       role: this.role.getRole(),
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive()
     };
   }

@@ -20,7 +20,6 @@ const createCommentParams = (
     idTask: string;
     content: string;
     mentions: string[];
-    version: number;
     deletedAt: Date | null;
     key: string;
   }>
@@ -30,7 +29,6 @@ const createCommentParams = (
   idTask: TASK_ID,
   content: "This is a test comment",
   mentions: [],
-  version: 1,
   deletedAt: null,
   key: "test-key",
   ...overrides
@@ -250,7 +248,6 @@ describe("Comment Entity", () => {
       expect(primitives.creator).toBe(params.creator);
       expect(primitives.content).toBe(params.content);
       expect(primitives.mentions).toEqual([]);
-      expect(primitives.version).toBe(1);
       expect(primitives.deletedAt).toBeNull();
     });
 

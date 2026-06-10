@@ -4,6 +4,5 @@ export default interface CommentParams {
   idTask: string;
   content: string;
   mentions: string[];
-  version: number;
   deletedAt: Date | null;
 }

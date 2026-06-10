@@ -16,7 +16,6 @@ const createCategoryParams = (
     idProject: string;
     name: string;
     color: AllowedColors;
-    version: number;
     deletedAt: Date | null;
     idActor: string;
     key: string;
@@ -26,7 +25,6 @@ const createCategoryParams = (
   idProject: DEFAULT_ID,
   name: "Backlog",
   color: AllowedColors.BLACK,
-  version: 1,
   deletedAt: null,
   key: "test-key",
   ...overrides
@@ -141,7 +139,6 @@ describe("Category Entity", () => {
         idProject: params.idProject,
         name: params.name,
         color: params.color,
-        version: params.version,
         deletedAt: params.deletedAt
       });
     });

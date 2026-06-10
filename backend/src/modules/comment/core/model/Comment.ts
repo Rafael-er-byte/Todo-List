@@ -4,7 +4,6 @@ import Text from "../../../shared/core/objects/Text";
 import IdComment from "../objects/IdComment";
 import Collection from "../../../shared/core/objects/Collection";
 import DateTime from "../../../shared/core/objects/DateTime";
-import Version from "../../../shared/core/objects/Version";
 import DeletedAt from "../../../shared/core/objects/DeletedAt";
 import type CommentParams from "../interfaces/CommentParams";
 import CommentCreated from "../events/CommentCreated";
@@ -59,7 +58,7 @@ export default class Comment extends Entity {
             new Collection(mentions, [], [])
         );
 
-        comment.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+        comment.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return comment;
     }
 
@@ -120,7 +119,6 @@ export default class Comment extends Entity {
             content: this.content.getText(),
             mentions: this.mentions.getPrimitives(),
             idTask: (super.getOwner() as IdEntity).getID(),
-            version: super.getVersion().valueOf(),
             deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }

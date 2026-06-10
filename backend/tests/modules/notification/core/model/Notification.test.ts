@@ -14,19 +14,17 @@ const ACTOR_ID = '019df05a-8588-758c-b5e7-92af14bf85c2';
 const createNotificationParams = (
   overrides?: Partial<{
     id: string;
-    event: string;
+    eventKey: string;
     status: AllowedNotificationStatus;
     idUser: string;
-    version: number;
     deletedAt: Date | null;
     key: string;
   }>,
 ) => ({
   id: DEFAULT_ID,
-  event: EVENT_ID,
+  eventKey: EVENT_ID,
   status: AllowedNotificationStatus.unread,
   idUser: USER_ID,
-  version: 1,
   deletedAt: null,
   key: 'test-key',
   ...overrides,
@@ -38,7 +36,7 @@ const buildNotification = (overrides?: Parameters<typeof createNotificationParam
   return Notification.create(
     params.key,
     new IdNotification(params.id),
-    new IdEntity(params.event),
+    params.eventKey,
     new IdEntity(params.idUser),
     new IdEntity(ACTOR_ID),
   );
@@ -50,7 +48,7 @@ describe('Notification Entity', () => {
       const notification = buildNotification();
 
       expect(notification.getId().getID()).toBe(DEFAULT_ID);
-      expect(notification.getEvent().getID()).toBe(EVENT_ID);
+      expect(notification.getEventKey()).toBe(EVENT_ID);
       expect(notification.getIdUser().getID()).toBe(USER_ID);
       expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.unread);
       expect(notification.exists()).toBe(true);
@@ -123,10 +121,9 @@ describe('Notification Entity', () => {
 
       expect(primitives).toEqual({
         id: params.id,
-        event: params.event,
+        eventKey: params.eventKey,
         status: params.status,
         idUser: params.idUser,
-        version: params.version,
         deletedAt: params.deletedAt,
       });
     });
@@ -137,7 +134,7 @@ describe('Notification Entity', () => {
       const notification = Notification.fromPrimitives(params);
 
       expect(notification.getId().getID()).toBe(params.id);
-      expect(notification.getEvent().getID()).toBe(params.event);
+      expect(notification.getEventKey()).toBe(params.eventKey);
       expect(notification.getIdUser().getID()).toBe(params.idUser);
       expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.read);
     });
@@ -149,7 +146,7 @@ describe('Notification Entity', () => {
 
       const primitives = notification.toPrimitives();
       expect(primitives.id).toBe(DEFAULT_ID);
-      expect(primitives.event).toBe(EVENT_ID);
+      expect(primitives.eventKey).toBe(EVENT_ID);
       expect(primitives.idUser).toBe(USER_ID);
       expect(primitives.status).toBe(AllowedNotificationStatus.read);
     });

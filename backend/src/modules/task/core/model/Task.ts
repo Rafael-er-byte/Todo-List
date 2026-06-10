@@ -26,7 +26,6 @@ import TaskContributorDeleted from '../events/TaskMemberDeleted';
 import TaskMemberAdded from '../events/TaskMemberAdded';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import type TaskParams from '../interface/TaskParams';
-import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import Text from '../../../shared/core/objects/Text';
 import type { AllowedTaskState } from '../types/AllowedTaskState';
@@ -117,7 +116,7 @@ export default class Task extends Entity {
       new Collection(assigned, [], [])
     );
 
-    task.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
+    task.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return task;
   }
 
@@ -427,7 +426,6 @@ export default class Task extends Entity {
       isOverdue: this.isOverdue,
       isStarted: this.isStarted,
       dueDate: this.dueDate instanceof DateTime ? this.dueDate.getDate() : null,
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }

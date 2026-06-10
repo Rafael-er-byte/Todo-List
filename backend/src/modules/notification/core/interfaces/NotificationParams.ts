@@ -2,9 +2,8 @@ import type { AllowedNotificationStatus } from '../types/AllowedNotificationStat
 
 export default interface NotificationParams {
   id: string;
-  event: string;
+  eventKey: string;
   status: AllowedNotificationStatus;
   idUser: string;
-  version: number;
   deletedAt: Date | null;
 }

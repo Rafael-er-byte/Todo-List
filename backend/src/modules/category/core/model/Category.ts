@@ -7,11 +7,10 @@ import CategoryCreated from '../events/CategoryCreated';
 import CategoryNameChanged from '../events/CategoryNameChanged';
 import CategoryColorChanged from '../events/CategoryColorChanged';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
-import Version from '../../../shared/core/objects/Version';
 import type CategoryParams from '../interfaces/CategoryParams';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import CategoryDeleted from '../events/CategoryDeleted';
-import type { AllowedColors } from '../types/AllowedColors';
+import type { AllowedColors } from '../../../shared/core/types/AllowedColors';
 
 export default class Category extends Entity {
   private name!: CategoryName;
@@ -57,7 +56,6 @@ export default class Category extends Entity {
       );
 
       category.build(
-        new Version(params.version), 
         DeletedAt.createFromPrimitive(params.deletedAt)
       );
 
@@ -95,7 +93,6 @@ export default class Category extends Entity {
       idProject: this.getIdProject().getID(),
       name: this.name.getName(),
       color: this.color.getColor(),
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }
