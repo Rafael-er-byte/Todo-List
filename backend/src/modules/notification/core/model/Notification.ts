@@ -8,20 +8,24 @@ import NotificationAlreadyRead from '../error/NotificationAlreadyRead';
 import type NotificationParams from '../interfaces/NotificationParams';
 import IdNotification from '../objects/IdNotification';
 import NotificationStatus from '../objects/NotificationStatus';
+import type { NotificationTypes } from '../types/NotificationTypes';
 
 export default class Notification extends Entity {
   private eventKey!: string;
   private status!: NotificationStatus;
+  private type!: NotificationTypes;
 
   private constructor(
     idNotification: IdNotification,
     eventKey: string,
     status: NotificationStatus,
+    type: NotificationTypes,
     idUser: IdEntity,
   ) {
     super(idNotification, idUser);
     this.eventKey = eventKey;
     this.status = status;
+    this.type = type;
   }
 
   public static create(
@@ -30,8 +34,9 @@ export default class Notification extends Entity {
     eventKey: string,
     idUser: IdEntity,
     actor: IdEntity,
+    type: NotificationTypes,
   ): Notification {
-    const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), idUser);
+    const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), type, idUser);
     notification.create();
     notification.addEvent(
       new NotificationCreated(key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()),
@@ -44,6 +49,7 @@ export default class Notification extends Entity {
       new IdNotification(params.id),
       params.eventKey,
       NotificationStatus.create(params.status),
+      params.type as NotificationTypes, 
       new IdEntity(params.idUser),
     );
 
@@ -81,6 +87,10 @@ export default class Notification extends Entity {
     return super.getOwner() as IdEntity;
   }
 
+  public getType(): NotificationTypes {
+    return this.type;
+  }
+
   public toPrimitives(): NotificationParams {
     return {
       id: this.getId().getID(),
@@ -88,6 +98,7 @@ export default class Notification extends Entity {
       status: this.status.getStatus(),
       idUser: this.getIdUser().getID(),
       deletedAt: super.getDeletedAt().toPrimitive(),
+      type: this.type,
     };
   }
 }

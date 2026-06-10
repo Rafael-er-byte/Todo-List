@@ -6,4 +6,5 @@ export default interface NotificationParams {
   status: AllowedNotificationStatus;
   idUser: string;
   deletedAt: Date | null;
+  type: string;
 }
