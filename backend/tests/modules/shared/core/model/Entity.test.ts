@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import Version from "../../../../../src/modules/shared/core/objects/Version";
 import DeletedAt from "../../../../../src/modules/shared/core/objects/DeletedAt";
 import Entity from "../../../../../src/modules/shared/core/model/Entity";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
@@ -15,7 +14,6 @@ describe('Entity abstract class', () => {
 
     interface TestParams{
         idEntity: string,
-        version: number,
         deletedAt: Date | null,
         owner: string | null
     }
@@ -36,7 +34,7 @@ describe('Entity abstract class', () => {
         ): TestEntity {
             const owner: IdEntity | None = params.owner ? new IdEntity(params.owner) : new None();
             const instance = new TestEntity(new IdEntity(params.idEntity), owner);
-            instance.build(new Version(params.version), params.deletedAt? DeletedAt.createDeleted(DateTime.create(params.deletedAt)): DeletedAt.createActive());
+            instance.build(params.deletedAt? DeletedAt.createDeleted(DateTime.create(params.deletedAt)): DeletedAt.createActive());
             return instance;
         }
 
@@ -51,7 +49,6 @@ describe('Entity abstract class', () => {
         toPrimitives(): TestParams {
             return {
                 idEntity: super.getID().getID(),
-                version: super.getVersion().valueOf(),
                 deletedAt: super.getDeletedAt().exists()? null: (super.getDeletedAt().getDeletedTime() as DateTime).getDate() as Date,
                 owner: isNone(super.getOwner())? null: (super.getOwner() as IdEntity).getID()
             };
@@ -109,15 +106,11 @@ describe('Entity abstract class', () => {
         expect(events).toContain(event);
     });
 
-    it("should increase version and update lastUpdate when adding an event", () => {
+    it("should update lastUpdate when adding an event", () => {
         const entity = createTestEntity();
         const event = createDomainEvent();
 
-        const initialVersion = entity.getVersion().valueOf();
-        expect(initialVersion).toEqual(0);
         entity.addEvent(event);
-        expect(entity.getVersion().valueOf()).toEqual(1);
-        expect(entity.getVersion().valueOf()).toBe(initialVersion + 1);
         expect(entity.getLastUpdate()).toBe(event.getDate());
     });
 
@@ -146,7 +139,6 @@ describe('Entity abstract class', () => {
         const entity = TestEntity.fromPrimitives(
             {
                 idEntity: idEntity.getID(),
-                version: 5,
                 deletedAt: (deletedAt.getDeletedTime() as DateTime).getDate() as Date,
                 owner: null
             }
@@ -168,7 +160,6 @@ describe('Entity abstract class', () => {
         const primitives = entity.toPrimitives();
 
         expect(primitives.idEntity).toBe(entity.getID().getID());
-        expect(primitives.version).toBe(entity.getVersion().valueOf());
         expect(primitives.deletedAt).toBeNull();
     });
 
@@ -190,14 +181,12 @@ describe('Entity abstract class', () => {
         const reconstructed = TestEntity.fromPrimitives(
             {
                 idEntity: primitives.idEntity,
-                version: primitives.version,
                 deletedAt: primitives.deletedAt,
                 owner: primitives.owner
             }
         );
 
         expect(reconstructed.getID().getID()).toBe(primitives.idEntity);
-        expect(reconstructed.getVersion().valueOf()).toBe(primitives.version);
     });
 
 

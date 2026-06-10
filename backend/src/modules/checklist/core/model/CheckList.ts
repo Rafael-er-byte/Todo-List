@@ -2,7 +2,6 @@ import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
-import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import type CheckListParams from '../interfaces/CheckListParams';
 import ChecklistItem from '../objects/ChecklistItem';
@@ -56,7 +55,7 @@ export default class CheckList extends Entity {
       new PercentageCompleted(params.completedPercentage),
     );
 
-    checklist.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+    checklist.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return checklist;
   }
 
@@ -131,7 +130,6 @@ export default class CheckList extends Entity {
       name: this.name.getName(),
       items: this.items.map((item) => item.toPrimitives()),
       completedPercentage: this.completedPercentage.toPrimitive(),
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }

@@ -29,7 +29,6 @@
 - Factory method to build objects and emit events or apply logic, private constructors
 - Shared module contain useful objects, errors and the primary entitties or classes to dont repeat logic and maintain the strucutre
 - Softdelete instead of hard delete
-- Versioning to avoid inconsitencies
 - Uses uuid v7 to have better distribution, dont depend from database and dont use secuential ids that easily can de gessed
 - Dont use try-catch inside domain
 - Key from event is used as an indepotency key, is provided by client

@@ -17,7 +17,6 @@ const createNotificationParams = (
     eventKey: string;
     status: AllowedNotificationStatus;
     idUser: string;
-    version: number;
     deletedAt: Date | null;
     key: string;
   }>,
@@ -26,7 +25,6 @@ const createNotificationParams = (
   eventKey: EVENT_ID,
   status: AllowedNotificationStatus.unread,
   idUser: USER_ID,
-  version: 1,
   deletedAt: null,
   key: 'test-key',
   ...overrides,
@@ -126,7 +124,6 @@ describe('Notification Entity', () => {
         eventKey: params.eventKey,
         status: params.status,
         idUser: params.idUser,
-        version: params.version,
         deletedAt: params.deletedAt,
       });
     });

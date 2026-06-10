@@ -4,7 +4,6 @@ import None from '../../../shared/core/objects/None';
 import Text from '../../../shared/core/objects/Text';
 import Url from '../../../shared/core/objects/URL';
 import DateTime from '../../../shared/core/objects/DateTime';
-import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import type LinkParams from '../interfaces/LinkParams';
 import LinkId from '../objects/LinkId';
@@ -44,7 +43,7 @@ export default class Link extends Entity {
       params.visibleText ? new Text(params.visibleText) : new None(),
     );
 
-    link.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+    link.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return link;
   }
 
@@ -82,7 +81,6 @@ export default class Link extends Entity {
       idTask: this.getTaskId().getID(),
       url: this.url.getUrl(),
       visibleText: this.visibleText instanceof None ? null : this.visibleText.getText(),
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }

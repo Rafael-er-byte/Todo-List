@@ -122,7 +122,6 @@ describe("Member Entity", () => {
     it("should reconstruct a member from primitives", () => {
       const primitives = {
         ...createParams({ role: AllowedMemberRoles.member }),
-        version: 1,
         deletedAt: null,
       };
 
@@ -148,7 +147,6 @@ describe("Member Entity", () => {
         idAccount: DEFAULT_ID,
         status: AllowedMemberStatus.active,
         role: AllowedMemberRoles.admin,
-        version: 1,
         deletedAt: null,
       });
     });

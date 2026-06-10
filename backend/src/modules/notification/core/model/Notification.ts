@@ -2,7 +2,6 @@ import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import Version from '../../../shared/core/objects/Version';
 import NotificationCreated from '../events/NotificationCreated';
 import NotificationRead from '../events/NotificationRead';
 import NotificationAlreadyRead from '../error/NotificationAlreadyRead';
@@ -49,7 +48,6 @@ export default class Notification extends Entity {
     );
 
     notification.build(
-      new Version(params.version),
       DeletedAt.createFromPrimitive(params.deletedAt),
     );
 
@@ -89,7 +87,6 @@ export default class Notification extends Entity {
       eventKey: this.eventKey,
       status: this.status.getStatus(),
       idUser: this.getIdUser().getID(),
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }

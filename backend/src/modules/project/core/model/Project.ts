@@ -4,7 +4,6 @@ import DateTime from '../../../shared/core/objects/DateTime';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import None from '../../../shared/core/objects/None';
-import Version from '../../../shared/core/objects/Version';
 import Attachment from '../../../shared/core/objects/Attachment';
 import IntNumber from '../../../shared/core/objects/IntNumber';
 import Text from '../../../shared/core/objects/Text';
@@ -153,7 +152,7 @@ export default class Project extends Entity {
       params.invitaionToken ? ID.fromString(params.invitaionToken) : new None()
     );
 
-    project.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+    project.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return project;
   }
 
@@ -340,7 +339,6 @@ export default class Project extends Entity {
       createResourcesSettings: this.createResourcesSettings.getSetting(),
       showCompletedTasks: this.showCompletedTasks,
       invitaionToken: this.invitaionToken instanceof None ? null : (this.invitaionToken as ID).getId(),
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }

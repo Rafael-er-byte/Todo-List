@@ -1,7 +1,6 @@
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import Attachment from '../../../shared/core/objects/Attachment';
 import Url from '../../../shared/core/objects/URL';
@@ -57,7 +56,7 @@ export default class TaskAttachment extends Entity {
       new IdEntity(params.idTask),
     );
 
-    taskAttachment.build(new Version(params.version as number), DeletedAt.createFromPrimitive(params.deletedAt));
+    taskAttachment.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return taskAttachment;
   }
 
@@ -119,7 +118,6 @@ export default class TaskAttachment extends Entity {
         name: this.attachment.getName().getText(),
         size: this.attachment.getSize().getValue(),
       },
-      version: super.getVersion().valueOf(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }

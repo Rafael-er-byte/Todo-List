@@ -19,6 +19,5 @@ export default interface ProjectParams {
   createResourcesSettings: AllowedProjectSetting;
   showCompletedTasks: boolean;
   invitaionToken: string | null;
-  version: number;
   deletedAt: Date | null;
 }
