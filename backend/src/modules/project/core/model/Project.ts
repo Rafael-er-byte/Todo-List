@@ -248,13 +248,16 @@ export default class Project extends Entity {
     this.lists = [...list1, list, ...list2];
   }
 
-  public removeList(listId: string): void {
+  public removeList(list: List): void {
     this.ensureCanBeModified();
-    if(!this.lists.find(l => l.getID().getID() === listId)) {
-      throw new ResourceNotFound(`The list with id: ${listId} does not exists in project with id: ${this.getID().getID()}`, {listId, projectId: this.getID().getID()});
+    if(!this.lists.find(l => l.getID().getID() === list.getID().getID())) {
+      throw new ResourceNotFound(`The list with id: ${list.getID().getID()} does not exists in project with id: ${this.getID().getID()}`, {listID: list.getID().getID(), projectId: this.getID().getID()});
     }
 
-    this.lists = this.lists.filter(l => l.getID().getID() !== listId);
+    let listToReorganize = this.lists.slice(list.getPosition().getValue() -1);
+
+    listToReorganize.forEach(l => l.moveByOther(new PositiveInteger(l.getPosition().getValue() - 1)));
+    this.lists = this.lists.filter(l => l.getID().getID() !== list.getID().getID());
   }
 
   public generateInvitationToken(): string {
@@ -344,7 +347,7 @@ export default class Project extends Entity {
   }
 
   private ensureCanBeModified(): void {
-    if (this.status.isClosed()) throw new CannotModifyClosedProject(this.id.getID());
+    if (this.status.isClosed() || !this.exists()) throw new CannotModifyClosedProject(this.id.getID());
   }
 
   private ensureBackgroundMatchesType(): void {
