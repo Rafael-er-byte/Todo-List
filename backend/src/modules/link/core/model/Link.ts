@@ -12,11 +12,13 @@ import LinkDeleted from '../events/LinkDeleted';
 import LinkVisibleTextUpdated from '../events/LinkVisibleTextUpdated';
 
 export default class Link extends Entity {
+  private task!: IdEntity;
   private url!: Url;
   private visibleText!: Text | None;
 
   private constructor(id: LinkId, task: IdEntity, url: Url, visibleText: Text | None) {
-    super(id, task);
+    super(id);
+    this.task = task;
     this.url = url;
     this.visibleText = visibleText;
   }
@@ -52,7 +54,7 @@ export default class Link extends Entity {
   }
 
   public getTaskId(): IdEntity {
-    return super.getOwner() as IdEntity;
+    return this.task;
   }
 
   public getUrl(): Url {

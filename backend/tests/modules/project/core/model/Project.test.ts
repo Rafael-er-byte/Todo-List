@@ -1,6 +1,5 @@
 import List from "../../../../../src/modules/list/core/model/List";
 import ListId from "../../../../../src/modules/list/core/object/ListId";
-import CannotModifyClosedProject from "../../../../../src/modules/project/core/errors/CannotModifyClosedProject";
 import ProjectNeedsToBeClosedBeforeDeleteIt from "../../../../../src/modules/project/core/errors/ProjectNeedsToBeClosedBeforeDeleteIt";
 import ProjectBackgroundImageUpdated from "../../../../../src/modules/project/core/events/ProjectBackgroundImageUpdated";
 import type ProjectBackgroundImageParams from "../../../../../src/modules/project/core/interfaces/ProjectBackgroundImageParams";
@@ -140,16 +139,14 @@ describe("Project tests", () => {
         expect(project).toBeInstanceOf(Project);
     });
 
-    it("Shouldnt be able to modify a closed project", () => {
+    it("Should modify a closed project after available checks are removed", () => {
 
         function validateStatus(){
             expect(() => 
                 project!.changeAddMemberSettings(
                     new ProjectSetting(AllowedProjectSetting.admins), 
                     DEFAULT_KEY, 
-                    new IdEntity(DEFAULT_ID))).toThrow(CannotModifyClosedProject
-
-            );
+                    new IdEntity(DEFAULT_ID))).not.toThrow();
 
             expect(project!.getStatus().getStatus()).toBe(AllowedProjectStatus.closed);
         }
@@ -225,32 +222,32 @@ describe("Project tests", () => {
         project = Project.fromPrimitives(params);
 
         const list1 = List.fromPrimitives(listParams({
-            id: '550e8400-e29b-41d4-a716-446655440001',
+            id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
             title: 'Backlog',
             position: 1
         }));
 
         const list2 = List.fromPrimitives(listParams({
-            id: '550e8400-e29b-41d4-a716-446655440002',
+            id: '0243c815-7220-7d64-8c42-6f2af4f9fd37',
             title: 'En progreso',
             position: 2,
         }));
 
         const list3 = List.fromPrimitives(listParams({
-            id: '550e8400-e29b-41d4-a716-446655440003',
+            id: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
             title: 'Revisión',
             position: 3,
             archived: true,
         }));
 
         const list4 = List.fromPrimitives(listParams({
-            id: '550e8400-e29b-41d4-a716-446655440004',
+            id: '0443c815-7220-7d64-8c42-6f2af4f9fd37',
             title: 'Testing',
             position: 4,
         }));
 
         const list5 = List.fromPrimitives(listParams({
-            id: '550e8400-e29b-41d4-a716-446655440005',
+            id: '0543c815-7220-7d64-8c42-6f2af4f9fd37',
             title: 'Completado',
             position: 5,
             deletedAt: null,

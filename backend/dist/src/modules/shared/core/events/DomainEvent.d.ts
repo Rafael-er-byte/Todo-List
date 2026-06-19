@@ -5,17 +5,15 @@ export default class DomainEvent {
     private eventId;
     private eventDate;
     private actor;
-    private ownerId;
     private event;
     private idEntity;
     private info?;
-    constructor(eventId: string, eventDate: DateTime, actor: IdEntity | None, ownerId: IdEntity, idEntity: IdEntity, event: string, info?: unknown);
+    constructor(eventId: string, eventDate: DateTime, actor: IdEntity | None, idEntity: IdEntity, event: string, info?: unknown);
     getActor(): IdEntity | None;
     getDate(): DateTime;
     getEvent(): string;
     getInfo(): unknown;
     getId(): string;
     getIdEntity(): IdEntity;
-    getOwnerInfo(): IdEntity;
 }
 //# sourceMappingURL=DomainEvent.d.ts.map

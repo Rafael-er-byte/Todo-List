@@ -7,10 +7,11 @@ export default class CommentCreated extends DomainEvent {
     key: string,
     date: DateTime,
     actor: IdEntity,
-    idEntity: IdEntity,
     idTask: IdEntity,
+    idEntity: IdEntity,
     info?: unknown
   ) {
-    super(key, date, actor, idTask, idEntity, 'COMMENT_CREATED', info);
+    const newInfo = { idTask, ...(info as object) };
+    super(key, date, actor, idTask, idEntity, 'COMMENT_CREATED', newInfo);
   }
 }

@@ -31,7 +31,7 @@ describe("Member Entity", () => {
         it("should create a valid member", () => {
             const member = createMember();
             expect(member.getID().getID()).toBe(DEFAULT_ID);
-            expect(member.getOwner().getID()).toBe(DEFAULT_ID);
+            expect(member.getIdProject().getID()).toBe(DEFAULT_ID);
             expect(member.exists()).toBe(true);
             expect(member.isBlocked()).toBe(false);
             expect(member.pullEvents()[0]).toBeInstanceOf(MemberAddedToProject);
@@ -79,12 +79,11 @@ describe("Member Entity", () => {
         it("should reconstruct a member from primitives", () => {
             const primitives = {
                 ...createParams({ role: AllowedMemberRoles.member }),
-                version: 1,
                 deletedAt: null,
             };
             const member = Member.fromPrimitives(primitives);
             expect(member.toPrimitives()).toEqual(primitives);
-            expect(member.getOwner().getID()).toBe(primitives.idProject);
+            expect(member.getIdProject().getID()).toBe(primitives.idProject);
             expect(member.isBlocked()).toBe(false);
         });
     });
@@ -98,7 +97,6 @@ describe("Member Entity", () => {
                 idAccount: DEFAULT_ID,
                 status: AllowedMemberStatus.active,
                 role: AllowedMemberRoles.admin,
-                version: 1,
                 deletedAt: null,
             });
         });

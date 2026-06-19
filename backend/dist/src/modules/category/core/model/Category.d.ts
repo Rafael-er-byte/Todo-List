@@ -7,6 +7,7 @@ import IdEntity from '../../../shared/core/objects/IdEntity';
 export default class Category extends Entity {
     private name;
     private color;
+    private idProject;
     private constructor();
     static create(key: string, id: IdCategory, name: CategoryName, color: CategoryColor, actorId: IdEntity, projectID: IdEntity): Category;
     static fromPrimitives(params: CategoryParams): Category;

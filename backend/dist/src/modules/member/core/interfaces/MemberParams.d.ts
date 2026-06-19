@@ -6,7 +6,6 @@ export default interface MemberParams {
     idAccount: string;
     status: AllowedMemberStatus;
     role: AllowedMemberRoles;
-    version: number | null;
     deletedAt: Date | null;
 }
 //# sourceMappingURL=MemberParams.d.ts.map

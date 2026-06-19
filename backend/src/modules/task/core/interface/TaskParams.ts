@@ -4,7 +4,6 @@ export default interface TaskParams {
   positionInList: number;
   state: string;
   archived: boolean;
-  listArchived: boolean;
   id: string;
   idProject: string;
   assigned: string[];

@@ -3,6 +3,7 @@ import NotificationAlreadyRead from '../../../../../src/modules/notification/cor
 import Notification from '../../../../../src/modules/notification/core/model/Notification';
 import IdNotification from '../../../../../src/modules/notification/core/objects/IdNotification';
 import { AllowedNotificationStatus } from '../../../../../src/modules/notification/core/types/AllowedNotificationStatus';
+import { NotificationTypes } from '../../../../../src/modules/notification/core/types/NotificationTypes';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 const DEFAULT_ID = '019df05a-8588-758c-b5e7-92af14bf85cf';
 const EVENT_ID = '019df05a-8588-758c-b5e7-92af14bf85c0';
@@ -13,14 +14,14 @@ const createNotificationParams = (overrides) => ({
     eventKey: EVENT_ID,
     status: AllowedNotificationStatus.unread,
     idUser: USER_ID,
-    version: 1,
+    type: NotificationTypes.info,
     deletedAt: null,
     key: 'test-key',
     ...overrides,
 });
 const buildNotification = (overrides) => {
     const params = createNotificationParams(overrides);
-    return Notification.create(params.key, new IdNotification(params.id), params.eventKey, new IdEntity(params.idUser), new IdEntity(ACTOR_ID));
+    return Notification.create(params.key, new IdNotification(params.id), params.eventKey, new IdEntity(params.idUser), new IdEntity(ACTOR_ID), params.type);
 };
 describe('Notification Entity', () => {
     describe('Creation', () => {
@@ -30,6 +31,7 @@ describe('Notification Entity', () => {
             expect(notification.getEventKey()).toBe(EVENT_ID);
             expect(notification.getIdUser().getID()).toBe(USER_ID);
             expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.unread);
+            expect(notification.getType()).toBe(NotificationTypes.info);
             expect(notification.exists()).toBe(true);
         });
         it('should emit NotificationCreated event on creation', () => {
@@ -85,7 +87,7 @@ describe('Notification Entity', () => {
                 eventKey: params.eventKey,
                 status: params.status,
                 idUser: params.idUser,
-                version: params.version,
+                type: params.type,
                 deletedAt: params.deletedAt,
             });
         });
@@ -96,6 +98,7 @@ describe('Notification Entity', () => {
             expect(notification.getEventKey()).toBe(params.eventKey);
             expect(notification.getIdUser().getID()).toBe(params.idUser);
             expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.read);
+            expect(notification.getType()).toBe(params.type);
         });
         it('should preserve immutable details after marking as read', () => {
             const notification = buildNotification();
@@ -104,6 +107,7 @@ describe('Notification Entity', () => {
             expect(primitives.id).toBe(DEFAULT_ID);
             expect(primitives.eventKey).toBe(EVENT_ID);
             expect(primitives.idUser).toBe(USER_ID);
+            expect(primitives.type).toBe(NotificationTypes.info);
             expect(primitives.status).toBe(AllowedNotificationStatus.read);
         });
     });

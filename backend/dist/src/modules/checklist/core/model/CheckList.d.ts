@@ -7,6 +7,7 @@ import IdCheckList from '../objects/IdCheckList';
 import PercentageCompleted from '../objects/PercentageCompleted';
 import CheckListName from '../objects/CheckListName';
 export default class CheckList extends Entity {
+    private task;
     private name;
     private items;
     private completedPercentage;
@@ -16,7 +17,7 @@ export default class CheckList extends Entity {
     getName(): CheckListName;
     getItems(): ChecklistItem[];
     getCompletedPercentage(): PercentageCompleted;
-    private getOwnerId;
+    private getTaskId;
     updateName(name: CheckListName, actor: IdEntity, key: string): void;
     addChecklistItem(title: Text, actor: IdEntity, key: string): void;
     deleteChecklistItem(itemId: string, actor: IdEntity, key: string): void;

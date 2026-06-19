@@ -19,12 +19,14 @@ import PercentageCompleted from '../objects/PercentageCompleted';
 import CheckListName from '../objects/CheckListName';
 
 export default class CheckList extends Entity {
+  private task!: IdEntity;
   private name!: CheckListName;
   private items: ChecklistItem[] = [];
   private completedPercentage!: PercentageCompleted;
 
-  private constructor(id: IdCheckList, owner: IdEntity, name: CheckListName, items: ChecklistItem[], completedPercentage: PercentageCompleted) {
-    super(id, owner);
+  private constructor(id: IdCheckList, task: IdEntity, name: CheckListName, items: ChecklistItem[], completedPercentage: PercentageCompleted) {
+    super(id);
+    this.task = task;
     this.name = name;
     this.items = items;
     this.completedPercentage = completedPercentage;
@@ -41,7 +43,7 @@ export default class CheckList extends Entity {
     const checklist = new CheckList(id, owner, name, items, new PercentageCompleted(0));
     checklist.create();
     checklist.recalculateCompletedPercentage();
-    checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getOwnerId(), id, checklist.toPrimitives()));
+    checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getTaskId(), id, checklist.toPrimitives()));
     return checklist;
   }
 
@@ -71,20 +73,20 @@ export default class CheckList extends Entity {
     return this.completedPercentage;
   }
 
-  private getOwnerId(): IdEntity {
-    return super.getOwner() as IdEntity;
+  private getTaskId(): IdEntity {
+    return this.task;
   }
 
   public updateName(name: CheckListName, actor: IdEntity, key: string): void {
     this.name = name;
-    this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getOwnerId(), super.getID() as IdCheckList, { name: name.getName() }));
+    this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, { name: name.getName() }));
   }
 
   public addChecklistItem(title: Text, actor: IdEntity, key: string): void {
     const item = ChecklistItem.create(title);
     this.items = [...this.items, item];
     this.recalculateCompletedPercentage();
-    this.addEvent(new ChecklistItemCreated(key, DateTime.now(), actor, this.getOwnerId(), super.getID() as IdCheckList, item.toPrimitives()));
+    this.addEvent(new ChecklistItemCreated(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, item.toPrimitives()));
   }
 
   public deleteChecklistItem(itemId: string, actor: IdEntity, key: string): void {
@@ -92,7 +94,7 @@ export default class CheckList extends Entity {
     if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
     this.items = this.items.filter((checklistItem) => checklistItem.getId().getID() !== itemId);
     this.recalculateCompletedPercentage();
-    this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getOwnerId(), super.getID() as IdCheckList, item.toPrimitives()));
+    this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, item.toPrimitives()));
   }
 
   public completeChecklistItem(itemId: string, actor: IdEntity, key: string): void {
@@ -111,7 +113,7 @@ export default class CheckList extends Entity {
       checklistItem.getId().getID() === itemId ? updatedItem : checklistItem,
     );
     this.addEvent(
-      new ChecklistItemTitleUpdated(key, DateTime.now(), actor, this.getOwnerId(), super.getID() as IdCheckList, {
+      new ChecklistItemTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, {
         id: itemId,
         title: title.getText(),
       }),
@@ -119,14 +121,14 @@ export default class CheckList extends Entity {
   }
 
   public delete(actor: IdEntity, key: string): void {
-    this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getOwnerId(), super.getID() as IdCheckList));
+    this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList));
     super.softDelete();
   }
 
   public toPrimitives(): CheckListParams {
     return {
       id: (super.getID() as IdCheckList).getID(),
-      idOwner: this.getOwnerId().getID(),
+      idOwner: this.getTaskId().getID(),
       name: this.name.getName(),
       items: this.items.map((item) => item.toPrimitives()),
       completedPercentage: this.completedPercentage.toPrimitive(),
@@ -149,7 +151,7 @@ export default class CheckList extends Entity {
       checklistItem.getId().getID() === itemId ? updatedItem : checklistItem,
     );
     this.recalculateCompletedPercentage();
-    this.addEvent(new EventClass(key, DateTime.now(), actor, this.getOwnerId(), super.getID() as IdCheckList, updatedItem.toPrimitives()));
+    this.addEvent(new EventClass(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, updatedItem.toPrimitives()));
   }
 
   private recalculateCompletedPercentage(): void {

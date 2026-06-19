@@ -9,12 +9,12 @@ import MemberActived from '../events/MemberActived';
 import MemberDeleted from '../events/MemberDeleted';
 import ProjectMetadata from '../objects/ProjectMetadata';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import MemberRoleChanged from '../events/MemberRoleChanged';
 export default class Member extends Entity {
     constructor(id, idProject, idAccount, status, role, projectMetadata) {
-        super(id, idProject);
+        super(id);
+        this.idProject = idProject;
         this.idAccount = idAccount;
         this.status = status;
         this.role = role;
@@ -28,7 +28,7 @@ export default class Member extends Entity {
     }
     static fromPrimitives(params) {
         const member = new Member(new IdMember(params.id), new IdEntity(params.idProject), new IdEntity(params.idAccount), MemberStatus.create(params.status), new MemberRole(params.role), new ProjectMetadata());
-        member.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+        member.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return member;
     }
     block(key, actor) {
@@ -63,16 +63,15 @@ export default class Member extends Entity {
         this.projectMetadata = this.projectMetadata.unmarkAsFavorite();
     }
     getIdProject() {
-        return super.getOwner();
+        return this.idProject;
     }
     toPrimitives() {
         return {
             id: super.getID().getID(),
-            idProject: super.getOwner().getID(),
+            idProject: this.idProject.getID(),
             idAccount: this.idAccount.getID(),
             status: this.status.getStatus(),
             role: this.role.getRole(),
-            version: super.getVersion().valueOf(),
             deletedAt: super.getDeletedAt().toPrimitive()
         };
     }

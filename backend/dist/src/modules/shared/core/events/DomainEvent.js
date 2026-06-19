@@ -1,5 +1,5 @@
 export default class DomainEvent {
-    constructor(eventId, eventDate, actor, ownerId, idEntity, event, info) {
+    constructor(eventId, eventDate, actor, idEntity, event, info) {
         this.actor = actor;
         this.event = event;
         this.eventDate = eventDate;
@@ -7,7 +7,6 @@ export default class DomainEvent {
             this.info = info;
         this.eventId = eventId;
         this.idEntity = idEntity;
-        this.ownerId = ownerId;
     }
     getActor() {
         return this.actor;
@@ -26,9 +25,6 @@ export default class DomainEvent {
     }
     getIdEntity() {
         return this.idEntity;
-    }
-    getOwnerInfo() {
-        return this.ownerId;
     }
 }
 //# sourceMappingURL=DomainEvent.js.map

@@ -11,6 +11,7 @@ export default class List extends Entity {
     private position;
     private archived;
     private tasks;
+    private projectId;
     private constructor();
     static create(id: ListId, title: ListTitle, position: PositiveInteger, tasks: Task[], projectId: IdEntity): List;
     static fromPrimitives(params: ListParams): List;
@@ -27,6 +28,8 @@ export default class List extends Entity {
     getPosition(): PositiveInteger;
     getTasks(): Task[];
     isArchived(): boolean;
+    getProjectId(): IdEntity;
     toPrimitives(): ListParams;
+    moveByOther(newPosition: PositiveInteger): void;
 }
 //# sourceMappingURL=List.d.ts.map

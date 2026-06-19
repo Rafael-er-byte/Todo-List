@@ -7,6 +7,7 @@ import type MemberParams from '../interfaces/MemberParams';
 export default class Member extends Entity {
     private status;
     private role;
+    private idProject;
     private idAccount;
     private projectMetadata;
     private constructor();

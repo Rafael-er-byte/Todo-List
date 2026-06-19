@@ -16,7 +16,6 @@ const createLinkParams = (overrides) => ({
     idTask: TASK_ID,
     url: URL_VALUE,
     visibleText: INITIAL_TEXT,
-    version: 0,
     deletedAt: null,
     ...overrides,
 });

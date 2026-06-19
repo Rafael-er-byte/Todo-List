@@ -1,4 +1,3 @@
-import List from '../../../list/core/model/List';
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
@@ -20,7 +19,6 @@ import ProjectCreated from '../events/ProjectCreated';
 import ProjectDeleted from '../events/ProjectDeleted';
 import ProjectDescriptionUpdated from '../events/ProjectDescriptionUpdated';
 import ProjectNameUpdated from '../events/ProjectNameUpdated';
-import CannotModifyClosedProject from '../errors/CannotModifyClosedProject';
 import ProjectNeedsToBeClosedBeforeDeleteIt from '../errors/ProjectNeedsToBeClosedBeforeDeleteIt';
 import type ProjectParams from '../interfaces/ProjectParams';
 import ProjectBackGroundColor from '../objects/ProjectBackGroundColor';
@@ -39,7 +37,7 @@ import PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 import ResourceNotFound from '../../../shared/core/errors/ResourceNotFound';
 import ID from '../../../shared/core/objects/ID';
 import { AllowedBackgroundType } from '../types/AllowedBackgroundType';
-import Unauthorized from '../../../shared/core/errors/Unauthorized';
+import type ProjectList from '../objects/ProjectList';
 
 export default class Project extends Entity {
   private readonly id!: ProjectId;
@@ -47,7 +45,7 @@ export default class Project extends Entity {
   private projectName!: ProjectName;
   private projectDescription!: ProjectDescription | None;
   private background!: ProjectBackGroundImage | ProjectBackGroundColor;
-  private lists!: List[];
+  private lists!: ProjectList[];
   private commentAuthorization!: ProjectSetting;
   private inmutableComment!: boolean;
   private addMemberSettings!: ProjectSetting;
@@ -61,7 +59,7 @@ export default class Project extends Entity {
     projectName: ProjectName,
     projectDescription: ProjectDescription | None,
     background: ProjectBackGroundImage | ProjectBackGroundColor,
-    lists: List[],
+    lists: ProjectList[],
     commentAuthorization: ProjectSetting,
     inmutableComment: boolean,
     addMemberSettings: ProjectSetting,
@@ -69,15 +67,12 @@ export default class Project extends Entity {
     showCompletedTasks: boolean,
     invitaionToken: ID | None = new None(),
   ) {
-    super(id, id);
+    super(id);
     this.id = id;
     this.status = status;
     this.projectName = projectName;
     this.projectDescription = projectDescription;
     this.background = background;
-    lists.forEach(l => {
-      this.listOwnership(l);
-    });
     this.lists = lists;
     this.commentAuthorization = commentAuthorization;
     this.inmutableComment = inmutableComment;
@@ -92,7 +87,7 @@ export default class Project extends Entity {
     projectName: ProjectName,
     projectDescription: ProjectDescription | None,
     background: ProjectBackGroundImage | ProjectBackGroundColor,
-    lists: List[],
+    lists: ProjectList[],
     commentAuthorization: ProjectSetting,
     inmutableComment: boolean,
     addMemberSettings: ProjectSetting,
@@ -215,45 +210,47 @@ export default class Project extends Entity {
     this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
   }
 
-  public addList(list: List): void {
-    this.available();
-    this.listOwnership(list);
-
-    if(this.lists.find((existingList) => existingList.getID().getID() === list.getID().getID())) {
-      throw new ConflictDuplicateResource(`A list with ID ${list.getID().getID()} already exists in the project.`);
+  public addProjectList(Projectlist: ProjectList): void {
+    if(this.lists.find((existingProjectList) => existingProjectList.idList.getID() === Projectlist.idList.getID())) {
+      throw new ConflictDuplicateResource(`A Projectlist with ID ${Projectlist.idList.getID()} already exists in the project.`);
     }
-    if(list.getPosition().getValue() > this.lists.length + 1 || list.getPosition().getValue() < 1) {
+    if(Projectlist.position.getValue() > this.lists.length + 1 || Projectlist.position.getValue() < 1) {
       throw new InvalidPositionInProject(this.id.getID());
     }
     
-    const list1 = this.lists.slice(0, list.getPosition().getValue() - 1);
-    const list2 = this.lists.slice(list.getPosition().getValue() -1);
+    const Projectlist1 = this.lists.slice(0, Projectlist.position.getValue() - 1);
+    const Projectlist2 = this.lists.slice(Projectlist.position.getValue() -1);
 
-    list2.forEach(l => l.moveByOther(new PositiveInteger(l.getPosition().getValue() + 1)));
-    this.lists = [...list1, list, ...list2];
+    Projectlist2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
+    this.lists = [...Projectlist1, Projectlist, ...Projectlist2];
   }
 
-  public removeList(list: List): void {
-    this.available();
-    this.listOwnership(list);
-    if(!this.lists.find(l => l.getID().getID() === list.getID().getID())) {
-      throw new ResourceNotFound(`The list with id: ${list.getID().getID()} does not exists in project with id: ${this.getID().getID()}`, {listID: list.getID().getID(), projectId: this.getID().getID()});
+  public removeProjectList(list: ProjectList): void {
+    if(!this.lists.find(l => l.idList.getID() === list.idList.getID())) {
+      throw new ResourceNotFound(`The list with id: ${list.idList.getID()} does not exists in project with id: ${this.getID()}`, {listId: list.idList.getID(), projectId: this.getID()});
     }
 
-    let listToReorganize = this.lists.slice(list.getPosition().getValue() -1);
+    let ProjectlistToReorganize = this.lists.slice(list.position.getValue() -1);
 
-    listToReorganize.forEach(l => l.moveByOther(new PositiveInteger(l.getPosition().getValue() - 1)));
-    this.lists = this.lists.filter(l => l.getID().getID() !== list.getID().getID());
+    ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
+    this.lists = this.lists.filter(l => l.idList.getID() !== list.idList.getID());
+  }
+
+  // Backwards-compatible wrappers
+  public addList(list: ProjectList): void {
+    this.addProjectList(list);
+  }
+
+  public removeList(list: ProjectList): void {
+    this.removeProjectList(list);
   }
 
   public generateInvitationToken(): string {
-    this.available();
     this.invitaionToken = ID.generateId();
     return (this.invitaionToken as ID).getId();
   }
 
   public invalidateInvitationToken(): void {
-    this.available();
     this.invitaionToken = new None();
   }
 
@@ -285,7 +282,7 @@ export default class Project extends Entity {
     return (this.background instanceof ProjectBackGroundColor)? AllowedBackgroundType.color: AllowedBackgroundType.image;
   }
 
-  public getLists(): List[] {
+  public getlists(): ProjectList[] {
     return [...this.lists];
   }
 
@@ -331,17 +328,5 @@ export default class Project extends Entity {
       invitaionToken: this.invitaionToken instanceof None ? null : (this.invitaionToken as ID).getId(),
       deletedAt: super.getDeletedAt().toPrimitive(),
     };
-  }
-
-  public available(): boolean {
-    if(!this.exists())throw new ResourceNotFound(`The project with id: ${this.id.getID()} doesnt exists`);
-    if (this.status.isClosed()) throw new CannotModifyClosedProject(this.id.getID());
-    return true;
-  }
-
-  private listOwnership(list: List): void{
-    if(!((list.getOwner() as IdEntity).getID() === this.id.getID())){
-      throw new Unauthorized(`The list with id: ${list.getID().getID()} doesnt belongs to project with id: ${this.id.getID()}`);
-    }
   }
 }

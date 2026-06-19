@@ -12,10 +12,10 @@ import PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 export default class Task extends Entity {
     private title;
     private listContainer;
+    private idProject;
     private positionInList;
     private state;
     private archived;
-    private listArchived;
     private description;
     private startDate;
     private dueDate;
@@ -24,6 +24,7 @@ export default class Task extends Entity {
     private categories;
     private assigned;
     private constructor();
+    private ensureNotArchived;
     static fromPrimitives(params: TaskParams): Task;
     static create(title: TaskTitle, listContainer: IdEntity, positionInList: PositiveInteger, state: TaskState, archived: boolean, id: TaskId, idProject: IdEntity, description: Text | None, startDate: DateTime | None, dueDate: DateTime | None, categories: Collection, assigned: Collection, actor: IdEntity, key: string): Task;
     delete(actor: IdEntity, key: string): void;
@@ -43,13 +44,10 @@ export default class Task extends Entity {
     exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: PositiveInteger, actor: IdEntity, key: string): void;
     setStarted(key: string): void;
     setOverDue(key: string): void;
+    isAssigned(assigned: IdEntity): boolean;
     updatePosition(positionInList: PositiveInteger): void;
-    archiveByOther(): void;
-    unarchiveByOther(): void;
-    deleteByOther(): void;
-    protected isArchived(): boolean;
-    protected cannotBeModified(): boolean;
-    protected isCompleted(): boolean;
+    isArchived(): boolean;
+    isCompleted(): boolean;
     overDue(): boolean;
     getIdProject(): IdEntity;
     getTitle(): TaskTitle;
@@ -63,7 +61,6 @@ export default class Task extends Entity {
     getIsStarted(): boolean;
     getIsOverdue(): boolean;
     getPositionInList(): PositiveInteger;
-    isArchivedByList(): boolean;
     toPrimitives(): TaskParams;
 }
 //# sourceMappingURL=Task.d.ts.map

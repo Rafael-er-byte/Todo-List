@@ -61,7 +61,7 @@ describe('List with tasks', () => {
         ]);
         expect(tasks.map((task) => task.getPositionInList().getValue())).toEqual([1, 2]);
     });
-    it('exports a list and cascades project ownership to child tasks without emitting task events', () => {
+    it('exports a list to a new project without emitting task events', () => {
         const originalProject = '0343c815-7220-7d64-8c42-6f2af4f9fd37';
         const newProject = new IdEntity('0543c815-7220-7d64-8c42-6f2af4f9fd37');
         const list = List.create(new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'), new ListTitle(new Text('Backlog')), new PositiveInteger(1), [
@@ -70,11 +70,11 @@ describe('List with tasks', () => {
         const task = list.getTasks()[0];
         task.pullEvents();
         list.export(newProject, new PositiveInteger(2), 'list-exported-key', new IdEntity('0643c815-7220-7d64-8c42-6f2af4f9fd37'));
-        expect(list.getOwner().getID()).toBe(newProject.getID());
-        expect(task.getIdProject().getID()).toBe(newProject.getID());
+        expect(list.getProjectId().getID()).toBe(newProject.getID());
+        expect(task.getIdProject().getID()).toBe(originalProject);
         expect(task.pullEvents()).toHaveLength(0);
     });
-    it('archives and unarchives a list, cascading listArchived state to each task without emitting task events', () => {
+    it('archives and unarchives a list without emitting task events', () => {
         const list = List.create(new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'), new ListTitle(new Text('Backlog')), new PositiveInteger(1), [
             buildTask('0143c815-7220-7d64-8c42-6f2af4f9fd37', '0343c815-7220-7d64-8c42-6f2af4f9fd37', 1, '0243c815-7220-7d64-8c42-6f2af4f9fd37'),
         ], new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'));
@@ -83,14 +83,12 @@ describe('List with tasks', () => {
         const actor = new IdEntity('0643c815-7220-7d64-8c42-6f2af4f9fd37');
         list.archive('list-archived-key', actor);
         expect(list.isArchived()).toBe(true);
-        expect(task.isArchivedByList()).toBe(true);
         expect(task.pullEvents()).toHaveLength(0);
         list.unarchive('list-unarchived-key', actor);
         expect(list.isArchived()).toBe(false);
-        expect(task.isArchivedByList()).toBe(false);
         expect(task.pullEvents()).toHaveLength(0);
     });
-    it('deletes an archived list and soft deletes child tasks by cascade', () => {
+    it('deletes an archived list without emitting task events', () => {
         const list = List.create(new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'), new ListTitle(new Text('Backlog')), new PositiveInteger(1), [
             buildTask('0143c815-7220-7d64-8c42-6f2af4f9fd37', '0343c815-7220-7d64-8c42-6f2af4f9fd37', 1, '0243c815-7220-7d64-8c42-6f2af4f9fd37'),
         ], new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'));
@@ -101,7 +99,7 @@ describe('List with tasks', () => {
         list.pullEvents();
         list.delete('list-deleted-key', actor);
         expect(list.exists()).toBe(false);
-        expect(task.exists()).toBe(false);
+        expect(task.exists()).toBe(true);
         expect(task.pullEvents()).toHaveLength(0);
     });
 });

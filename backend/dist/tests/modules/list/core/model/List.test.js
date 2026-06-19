@@ -55,7 +55,6 @@ describe('List', () => {
             archived: false,
             tasks: [],
             projectId: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
-            version: 2,
             deletedAt: null,
         });
         expect(list.toPrimitives().position).toBe(4);

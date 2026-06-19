@@ -8,6 +8,7 @@ export default class Comment extends Entity {
     private content;
     private mentions;
     private creator;
+    private task;
     private constructor();
     static create(idComment: IdComment, creator: IdEntity, task: IdEntity, content: Text, key: string, mentions?: Collection): Comment;
     static fromPrimitives(params: CommentParams): Comment;

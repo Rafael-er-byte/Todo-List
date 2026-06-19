@@ -6,6 +6,7 @@ import Url from '../../../shared/core/objects/URL';
 import type LinkParams from '../interfaces/LinkParams';
 import LinkId from '../objects/LinkId';
 export default class Link extends Entity {
+    private task;
     private url;
     private visibleText;
     private constructor();

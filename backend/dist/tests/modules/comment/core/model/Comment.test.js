@@ -17,7 +17,6 @@ const createCommentParams = (overrides) => ({
     idTask: TASK_ID,
     content: "This is a test comment",
     mentions: [],
-    version: 1,
     deletedAt: null,
     key: "test-key",
     ...overrides
@@ -42,7 +41,7 @@ describe("Comment Entity", () => {
         it("should set the creator correctly", () => {
             const comment = buildComment();
             expect(comment.getCreator().getID()).toBe(CREATOR_ID);
-            expect(comment.getOwner().getID()).toBe(TASK_ID);
+            expect(comment.getTask().getID()).toBe(TASK_ID);
         });
         it("should set the content correctly", () => {
             const comment = buildComment();
@@ -173,7 +172,6 @@ describe("Comment Entity", () => {
             expect(primitives.creator).toBe(params.creator);
             expect(primitives.content).toBe(params.content);
             expect(primitives.mentions).toEqual([]);
-            expect(primitives.version).toBe(1);
             expect(primitives.deletedAt).toBeNull();
         });
         it("should serialize comment with mentions", () => {
@@ -193,7 +191,7 @@ describe("Comment Entity", () => {
             const comment = Comment.fromPrimitives(params);
             expect(comment.getId().getID()).toBe(params.id);
             expect(comment.getCreator().getID()).toBe(params.creator);
-            expect(comment.getOwner().getID()).toBe(params.idTask);
+            expect(comment.getTask().getID()).toBe(params.idTask);
             expect(comment.getContent().getText()).toBe(params.content);
             expect(comment.getMentions().getItems().length).toBe(1);
         });
