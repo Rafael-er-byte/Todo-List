@@ -16,6 +16,7 @@ import MemberRoleChanged from '../events/MemberRoleChanged';
 export default class Member extends Entity {
   private status!: MemberStatus;
   private role!: MemberRole;
+  private idProject!: IdEntity;
   private idAccount!: IdEntity;
   private projectMetadata!: ProjectMetadata;
 
@@ -27,7 +28,8 @@ export default class Member extends Entity {
     role: MemberRole,
     projectMetadata: ProjectMetadata
   ) {
-    super(id, idProject);
+    super(id);
+    this.idProject = idProject;
     this.idAccount = idAccount;
     this.status = status;
     this.role = role;
@@ -116,13 +118,13 @@ export default class Member extends Entity {
   }
 
   public getIdProject(): IdEntity {
-    return super.getOwner() as IdEntity;
+    return this.idProject;
   }
 
   public toPrimitives(): MemberParams {
     return {
       id: super.getID().getID(),
-      idProject: (super.getOwner() as IdEntity).getID(),
+      idProject: this.idProject.getID(),
       idAccount: this.idAccount.getID(),
       status: this.status.getStatus(),
       role: this.role.getRole(),

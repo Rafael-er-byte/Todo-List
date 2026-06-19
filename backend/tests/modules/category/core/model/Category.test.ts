@@ -54,7 +54,7 @@ describe("Category Entity", () => {
       const category = buildCategory();
 
       expect(category.getID().getID()).toBe(DEFAULT_ID);
-      expect((category.getOwner() as IdEntity).getID()).toBe(DEFAULT_ID);
+      expect(category.getIdProject().getID()).toBe(DEFAULT_ID);
       expect(category.exists()).toBe(true);
     });
   });
@@ -99,7 +99,7 @@ describe("Category Entity", () => {
         createCategoryParams({ deletedAt: new Date() })
       );
 
-      expect((category.getOwner() as IdEntity).getID()).toBe(DEFAULT_ID);
+      expect(category.getIdProject().getID()).toBe(DEFAULT_ID);
       expect(category.exists()).toBe(false);
     });
 

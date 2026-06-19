@@ -5,7 +5,6 @@ export default interface CheckListParams {
     name: string;
     items: ChecklistItemParams[];
     completedPercentage: number;
-    version: number;
     deletedAt: Date | null;
 }
 //# sourceMappingURL=CheckListParams.d.ts.map

@@ -68,7 +68,7 @@ describe("Comment Entity", () => {
       const comment = buildComment();
 
       expect(comment.getCreator().getID()).toBe(CREATOR_ID);
-      expect((comment.getOwner() as IdEntity).getID()).toBe(TASK_ID);
+      expect(comment.getTask().getID()).toBe(TASK_ID);
     });
 
     it("should set the content correctly", () => {
@@ -274,7 +274,7 @@ describe("Comment Entity", () => {
 
       expect(comment.getId().getID()).toBe(params.id);
       expect(comment.getCreator().getID()).toBe(params.creator);
-      expect((comment.getOwner() as IdEntity).getID()).toBe(params.idTask);
+      expect(comment.getTask().getID()).toBe(params.idTask);
       expect(comment.getContent().getText()).toBe(params.content);
       expect(comment.getMentions().getItems().length).toBe(1);
     });

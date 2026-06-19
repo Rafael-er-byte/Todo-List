@@ -15,27 +15,29 @@ import type { AllowedAttachments } from '../../../shared/core/types/AllowedAttac
 
 export default class TaskAttachment extends Entity {
   private attachment!: Attachment;
+  private task!: IdEntity;
 
-  private constructor(attachment: Attachment, id: TaskAttachmentId, taskId: IdEntity) {
-    super(id, taskId);
+  private constructor(attachment: Attachment, id: TaskAttachmentId, task: IdEntity) {
+    super(id);
+    this.task = task;
     this.attachment = attachment;
   }
 
   public static create(
     attachment: Attachment,
     id: TaskAttachmentId,
-    taskId: IdEntity,
+    task: IdEntity,
     actor: IdEntity,
     key: string,
   ): TaskAttachment {
-    const taskAttachment = new TaskAttachment(attachment, id, taskId);
+    const taskAttachment = new TaskAttachment(attachment, id, task);
     taskAttachment.create();
     taskAttachment.addEvent(
       new TaskAttachmentCreated(
         key,
         DateTime.now(),
         actor,
-        taskId,
+        task,
         taskAttachment.getID(),
         attachment,
       ),
@@ -72,7 +74,7 @@ export default class TaskAttachment extends Entity {
         key,
         DateTime.now(),
         actor,
-        this.getTaskId(),
+        this.getTask(),
         super.getID(),
         name,
       ),
@@ -80,7 +82,7 @@ export default class TaskAttachment extends Entity {
   }
 
   public delete(actor: IdEntity, key: string): void {
-    this.addEvent(new TaskAttachmentDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID()));
+    this.addEvent(new TaskAttachmentDeleted(key, DateTime.now(), actor, this.getTask(), super.getID()));
     super.softDelete();
   }
 
@@ -104,14 +106,18 @@ export default class TaskAttachment extends Entity {
     return this.attachment.getSize();
   }
 
+  public getTask(): IdEntity {
+    return this.task;
+  }
+
   public getTaskId(): IdEntity {
-    return super.getOwner() as IdEntity;
+    return this.getTask();
   }
 
   public toPrimitives(): TaskAttachmentParams {
     return {
       id: super.getID().getID(),
-      idTask: this.getTaskId().getID(),
+      idTask: this.getTask().getID(),
       attachment: {
         url: this.attachment.getUrl().getUrl(),
         type: this.attachment.getType(),

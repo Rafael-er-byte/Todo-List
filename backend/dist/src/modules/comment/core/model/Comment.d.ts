@@ -8,6 +8,7 @@ export default class Comment extends Entity {
     private content;
     private mentions;
     private creator;
+    private task;
     private constructor();
     static create(idComment: IdComment, creator: IdEntity, task: IdEntity, content: Text, key: string, mentions?: Collection): Comment;
     static fromPrimitives(params: CommentParams): Comment;
@@ -15,6 +16,7 @@ export default class Comment extends Entity {
     getCreator(): IdEntity;
     getContent(): Text;
     getMentions(): Collection;
+    getTask(): IdEntity;
     updateContent(key: string, newContent: Text, actor: IdEntity): void;
     addMention(key: string, mentionedId: IdEntity, actor: IdEntity): void;
     deleteMention(mentionedId: IdEntity): void;

@@ -14,6 +14,7 @@ export default class Notification extends Entity {
   private eventKey!: string;
   private status!: NotificationStatus;
   private type!: NotificationTypes;
+  private idUser!: IdEntity;
 
   private constructor(
     idNotification: IdNotification,
@@ -22,7 +23,8 @@ export default class Notification extends Entity {
     type: NotificationTypes,
     idUser: IdEntity,
   ) {
-    super(idNotification, idUser);
+    super(idNotification);
+    this.idUser = idUser;
     this.eventKey = eventKey;
     this.status = status;
     this.type = type;
@@ -84,7 +86,7 @@ export default class Notification extends Entity {
   }
 
   public getIdUser(): IdEntity {
-    return super.getOwner() as IdEntity;
+    return this.idUser;
   }
 
   public getType(): NotificationTypes {
@@ -101,4 +103,5 @@ export default class Notification extends Entity {
       type: this.type,
     };
   }
+
 }

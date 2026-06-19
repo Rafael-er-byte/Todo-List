@@ -2,10 +2,7 @@ import ListId from "../object/ListId";
 import Text from "../../../shared/core/objects/Text";
 import Entity from "../../../shared/core/model/Entity";
 import DeletedAt from "../../../shared/core/objects/DeletedAt";
-import Version from "../../../shared/core/objects/Version";
 import IdEntity from "../../../shared/core/objects/IdEntity";
-import Task from "../../../task/core/model/Task";
-import None from "../../../shared/core/objects/None";
 import ListTitleUpdated from "../events/ListTitleUpdated";
 import DateTime from "../../../shared/core/objects/DateTime";
 import ListTitle from "../object/ListTitle";
@@ -19,14 +16,16 @@ import InvalidOperation from "../../../shared/core/errors/InvalidOperation";
 import CannotModifyArchivedList from "../errors/CannotModifyArchivedList";
 import InvalidPositionInList from "../errors/InvalidPositionInList";
 import PositiveInteger from "../../../shared/core/objects/PositiveInteger";
+import TaskList from "../object/TaskList";
 export default class List extends Entity {
     constructor(id, title, position, tasks, projectId) {
-        super(id, projectId);
+        super(id);
         this.archived = false;
         this.id = id;
         this.title = title;
         this.position = position;
         this.tasks = tasks;
+        this.projectId = projectId;
     }
     static create(id, title, position, tasks, projectId) {
         const list = new List(id, title, position, tasks, projectId);
@@ -35,86 +34,72 @@ export default class List extends Entity {
     }
     static fromPrimitives(params) {
         const list = new List(new ListId(params.id), new ListTitle(new Text(params.title)), new PositiveInteger(params.position), params.tasks, new IdEntity(params.projectId));
-        list.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+        list.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return list;
     }
-    static exportBetweenLists(from, to, task) {
-        from.removeTask(task);
-        to.addTask(task);
+    static exportBetweenLists(from, to, taskList) {
+        from.removeTask(taskList);
+        to.addTask(taskList);
     }
     //mutable actions 
     updateTitle(newTitle, key, actor) {
         if (this.archived)
             throw new CannotModifyArchivedList({ listId: this.getID().getID() });
         this.title = newTitle;
-        this.addEvent(new ListTitleUpdated(key, DateTime.now(), actor, super.getOwner(), this.id, newTitle.getValue()));
+        this.addEvent(new ListTitleUpdated(key, DateTime.now(), actor, this.projectId, this.id, newTitle.getValue()));
     }
     move(newPosition, key, actor) {
         if (this.archived)
             throw new CannotModifyArchivedList({ listId: this.getID().getID() });
         this.position = newPosition;
-        this.addEvent(new ListMoved(key, DateTime.now(), actor, super.getOwner(), this.id, newPosition));
+        this.addEvent(new ListMoved(key, DateTime.now(), actor, this.projectId, this.id, newPosition));
     }
     export(newProject, newPosition, key, actor) {
-        super.changeOwner(newProject);
+        this.projectId = newProject;
         this.position = newPosition;
-        if (!(this.tasks instanceof None)) {
-            this.tasks.forEach(task => task.changeOwner(newProject));
-        }
+        this.tasks.forEach(t => {
+            t.project = newProject;
+        });
         this.addEvent(new ListExported(key, DateTime.now(), actor, newProject, this.id, newPosition));
     }
     archive(key, actor) {
         this.archived = true;
-        this.tasks.forEach(task => {
-            task.archiveByOther();
-        });
-        this.addEvent(new ListArchived(key, DateTime.now(), actor, super.getOwner(), this.id));
+        this.addEvent(new ListArchived(key, DateTime.now(), actor, this.projectId, this.id));
     }
     unarchive(key, actor) {
         this.archived = false;
-        this.tasks.forEach(task => {
-            task.unarchiveByOther();
-        });
-        this.addEvent(new ListUnarchived(key, DateTime.now(), actor, super.getOwner(), this.id));
+        this.addEvent(new ListUnarchived(key, DateTime.now(), actor, this.projectId, this.id));
     }
     delete(key, actor) {
         if (!this.archived)
             throw new InvalidOperation(`List must be archived before being delete`, { listID: this.getID().getID() });
-        this.tasks.forEach(task => {
-            task.deleteByOther();
-        });
-        this.addEvent(new ListDeleted(key, DateTime.now(), actor, super.getOwner(), this.id));
+        this.addEvent(new ListDeleted(key, DateTime.now(), actor, this.projectId, this.id));
         super.softDelete();
     }
     //validations
-    addTask(task) {
+    addTask(taskList) {
         if (this.archived)
             throw new CannotModifyArchivedList({ listId: this.getID().getID() });
-        if (task.getPositionInList().getValue() > this.tasks.length + 1 ||
-            task.getPositionInList().getValue() <= 0)
-            throw new InvalidPositionInList({ positionToInsert: task.getPositionInList().getValue(), listId: this.getID().getID() });
-        if (this.tasks instanceof None) {
-            this.tasks = [task];
-        }
-        else {
-            const part1 = this.tasks.slice(0, task.getPositionInList().getValue() - 1);
-            const part2 = this.tasks.slice(task.getPositionInList().getValue() - 1);
-            part2.forEach(t => t.updatePosition(new PositiveInteger(t.getPositionInList().getValue() + 1)));
-            this.tasks = [...part1, task, ...part2];
-        }
+        if (taskList.position.getValue() > this.tasks.length + 1 ||
+            taskList.position.getValue() <= 0)
+            throw new InvalidPositionInList({ positionToInsert: taskList.position.getValue(), listId: this.getID().getID() });
+        const part1 = this.tasks.slice(0, taskList.position.getValue() - 1);
+        const part2 = this.tasks.slice(taskList.position.getValue() - 1);
+        part2.forEach(t => t.position = new PositiveInteger(t.position.getValue() + 1));
+        this.tasks = [...part1, taskList, ...part2];
     }
-    removeTask(task) {
+    removeTask(taskList) {
         if (this.archived)
             throw new CannotModifyArchivedList({ listId: this.getID().getID() });
-        if (!this.tasks.find(t => t.getID().getID() === task.getID().getID()))
-            throw new ResourceNotFound(`The task with id: ${task.getID().getID()} does not exists in list with id: ${this.getID()}`, {
-                taskId: task.getID().getID(),
+        if (!this.tasks.find(t => t.id.getID() === taskList.id.getID()))
+            throw new ResourceNotFound(`The taskList with id: ${taskList.id.getID()} does not exists in list with id: ${this.getID()}`, {
+                taskListId: taskList.id.getID(),
                 listId: this.getID().getID()
             });
-        this.tasks = this.tasks.filter(t => t.getID().getID() !== task.getID().getID());
-        for (let i = task.getPositionInList().getValue() - 1; i < this.tasks.length; i++) {
-            const nextTask = this.tasks[i];
-            nextTask.updatePosition(new PositiveInteger(nextTask.getPositionInList().getValue() - 1));
+        this.tasks = this.tasks.filter(t => t.id.getID() !== taskList.id.getID());
+        for (let i = taskList.position.getValue() - 1; i < this.tasks.length; i++) {
+            const nextTaskList = this.tasks[i];
+            nextTaskList.position = new PositiveInteger(nextTaskList.position.getValue() - 1);
         }
     }
     //getters
@@ -130,6 +115,9 @@ export default class List extends Entity {
     isArchived() {
         return this.archived;
     }
+    getProjectId() {
+        return this.projectId;
+    }
     toPrimitives() {
         return {
             id: this.id.toString(),
@@ -137,8 +125,7 @@ export default class List extends Entity {
             position: this.position.getValue(),
             archived: this.archived,
             tasks: this.tasks,
-            projectId: this.getOwner().toString(),
-            version: this.getVersion().valueOf(),
+            projectId: this.projectId.getID(),
             deletedAt: this.getDeletedAt().toPrimitive()
         };
     }

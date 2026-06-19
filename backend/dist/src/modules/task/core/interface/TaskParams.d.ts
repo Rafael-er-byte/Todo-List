@@ -4,7 +4,6 @@ export default interface TaskParams {
     positionInList: number;
     state: string;
     archived: boolean;
-    listArchived: boolean;
     id: string;
     idProject: string;
     assigned: string[];
@@ -14,7 +13,6 @@ export default interface TaskParams {
     dueDate: Date | null;
     isOverdue: boolean;
     isStarted: boolean;
-    version: number | null;
     deletedAt: Date | null;
 }
 //# sourceMappingURL=TaskParams.d.ts.map

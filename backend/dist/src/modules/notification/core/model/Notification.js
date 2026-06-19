@@ -2,27 +2,28 @@ import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import Version from '../../../shared/core/objects/Version';
 import NotificationCreated from '../events/NotificationCreated';
 import NotificationRead from '../events/NotificationRead';
 import NotificationAlreadyRead from '../error/NotificationAlreadyRead';
 import IdNotification from '../objects/IdNotification';
 import NotificationStatus from '../objects/NotificationStatus';
 export default class Notification extends Entity {
-    constructor(idNotification, eventKey, status, idUser) {
-        super(idNotification, idUser);
+    constructor(idNotification, eventKey, status, type, idUser) {
+        super(idNotification);
+        this.idUser = idUser;
         this.eventKey = eventKey;
         this.status = status;
+        this.type = type;
     }
-    static create(key, idNotification, eventKey, idUser, actor) {
-        const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), idUser);
+    static create(key, idNotification, eventKey, idUser, actor, type) {
+        const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), type, idUser);
         notification.create();
         notification.addEvent(new NotificationCreated(key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()));
         return notification;
     }
     static fromPrimitives(params) {
-        const notification = new Notification(new IdNotification(params.id), params.eventKey, NotificationStatus.create(params.status), new IdEntity(params.idUser));
-        notification.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+        const notification = new Notification(new IdNotification(params.id), params.eventKey, NotificationStatus.create(params.status), params.type, new IdEntity(params.idUser));
+        notification.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return notification;
     }
     markAsRead(key, actor) {
@@ -42,7 +43,10 @@ export default class Notification extends Entity {
         return this.status;
     }
     getIdUser() {
-        return super.getOwner();
+        return this.idUser;
+    }
+    getType() {
+        return this.type;
     }
     toPrimitives() {
         return {
@@ -50,8 +54,8 @@ export default class Notification extends Entity {
             eventKey: this.eventKey,
             status: this.status.getStatus(),
             idUser: this.getIdUser().getID(),
-            version: super.getVersion().valueOf(),
             deletedAt: super.getDeletedAt().toPrimitive(),
+            type: this.type,
         };
     }
 }

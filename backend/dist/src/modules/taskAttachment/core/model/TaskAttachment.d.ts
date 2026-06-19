@@ -9,8 +9,9 @@ import type TaskAttachmentParams from '../interface/TaskAttachmentParams';
 import type { AllowedAttachments } from '../../../shared/core/types/AllowedAttachment.types';
 export default class TaskAttachment extends Entity {
     private attachment;
+    private task;
     private constructor();
-    static create(attachment: Attachment, id: TaskAttachmentId, taskId: IdEntity, actor: IdEntity, key: string): TaskAttachment;
+    static create(attachment: Attachment, id: TaskAttachmentId, task: IdEntity, actor: IdEntity, key: string): TaskAttachment;
     static fromPrimitives(params: TaskAttachmentParams): TaskAttachment;
     changeName(name: Text, actor: IdEntity, key: string): void;
     delete(actor: IdEntity, key: string): void;
@@ -19,6 +20,7 @@ export default class TaskAttachment extends Entity {
     getType(): AllowedAttachments;
     getName(): Text;
     getSize(): IntNumber;
+    getTask(): IdEntity;
     getTaskId(): IdEntity;
     toPrimitives(): TaskAttachmentParams;
 }

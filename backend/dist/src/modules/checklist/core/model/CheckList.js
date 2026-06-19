@@ -2,7 +2,6 @@ import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
-import Version from '../../../shared/core/objects/Version';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import ChecklistItem from '../objects/ChecklistItem';
 import IdCheckList from '../objects/IdCheckList';
@@ -18,9 +17,10 @@ import ResourceNotFound from '../../../shared/core/errors/ResourceNotFound';
 import PercentageCompleted from '../objects/PercentageCompleted';
 import CheckListName from '../objects/CheckListName';
 export default class CheckList extends Entity {
-    constructor(id, owner, name, items, completedPercentage) {
-        super(id, owner);
+    constructor(id, task, name, items, completedPercentage) {
+        super(id);
         this.items = [];
+        this.task = task;
         this.name = name;
         this.items = items;
         this.completedPercentage = completedPercentage;
@@ -29,13 +29,13 @@ export default class CheckList extends Entity {
         const checklist = new CheckList(id, owner, name, items, new PercentageCompleted(0));
         checklist.create();
         checklist.recalculateCompletedPercentage();
-        checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getOwnerId(), id, checklist.toPrimitives()));
+        checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getTaskId(), id, checklist.toPrimitives()));
         return checklist;
     }
     static fromPrimitives(params) {
         const items = params.items.map((item) => ChecklistItem.fromPrimitives(item));
         const checklist = new CheckList(new IdCheckList(params.id), new IdEntity(params.idOwner), new CheckListName(params.name), items, new PercentageCompleted(params.completedPercentage));
-        checklist.build(new Version(params.version), DeletedAt.createFromPrimitive(params.deletedAt));
+        checklist.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return checklist;
     }
     getName() {
@@ -47,18 +47,18 @@ export default class CheckList extends Entity {
     getCompletedPercentage() {
         return this.completedPercentage;
     }
-    getOwnerId() {
-        return super.getOwner();
+    getTaskId() {
+        return this.task;
     }
     updateName(name, actor, key) {
         this.name = name;
-        this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getOwnerId(), super.getID(), { name: name.getName() }));
+        this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getID(), { name: name.getName() }));
     }
     addChecklistItem(title, actor, key) {
         const item = ChecklistItem.create(title);
         this.items = [...this.items, item];
         this.recalculateCompletedPercentage();
-        this.addEvent(new ChecklistItemCreated(key, DateTime.now(), actor, this.getOwnerId(), super.getID(), item.toPrimitives()));
+        this.addEvent(new ChecklistItemCreated(key, DateTime.now(), actor, this.getTaskId(), super.getID(), item.toPrimitives()));
     }
     deleteChecklistItem(itemId, actor, key) {
         const item = this.items.find((checklistItem) => checklistItem.getId().getID() === itemId);
@@ -66,7 +66,7 @@ export default class CheckList extends Entity {
             throw new ResourceNotFound(`Checklist item ${itemId} not found`);
         this.items = this.items.filter((checklistItem) => checklistItem.getId().getID() !== itemId);
         this.recalculateCompletedPercentage();
-        this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getOwnerId(), super.getID(), item.toPrimitives()));
+        this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID(), item.toPrimitives()));
     }
     completeChecklistItem(itemId, actor, key) {
         this.updateChecklistItemStatus(itemId, true, actor, key, ChecklistItemCompleted);
@@ -80,23 +80,22 @@ export default class CheckList extends Entity {
             throw new ResourceNotFound(`Checklist item ${itemId} not found`);
         const updatedItem = item.updateTitle(title);
         this.items = this.items.map((checklistItem) => checklistItem.getId().getID() === itemId ? updatedItem : checklistItem);
-        this.addEvent(new ChecklistItemTitleUpdated(key, DateTime.now(), actor, this.getOwnerId(), super.getID(), {
+        this.addEvent(new ChecklistItemTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getID(), {
             id: itemId,
             title: title.getText(),
         }));
     }
     delete(actor, key) {
-        this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getOwnerId(), super.getID()));
+        this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID()));
         super.softDelete();
     }
     toPrimitives() {
         return {
             id: super.getID().getID(),
-            idOwner: this.getOwnerId().getID(),
+            idOwner: this.getTaskId().getID(),
             name: this.name.getName(),
             items: this.items.map((item) => item.toPrimitives()),
             completedPercentage: this.completedPercentage.toPrimitive(),
-            version: super.getVersion().valueOf(),
             deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
@@ -107,7 +106,7 @@ export default class CheckList extends Entity {
         const updatedItem = isCompleted ? item.complete() : item.markAsPending();
         this.items = this.items.map((checklistItem) => checklistItem.getId().getID() === itemId ? updatedItem : checklistItem);
         this.recalculateCompletedPercentage();
-        this.addEvent(new EventClass(key, DateTime.now(), actor, this.getOwnerId(), super.getID(), updatedItem.toPrimitives()));
+        this.addEvent(new EventClass(key, DateTime.now(), actor, this.getTaskId(), super.getID(), updatedItem.toPrimitives()));
     }
     recalculateCompletedPercentage() {
         if (this.items.length === 0) {

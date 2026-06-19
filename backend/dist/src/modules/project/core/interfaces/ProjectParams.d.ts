@@ -1,5 +1,5 @@
-import type List from '../../../list/core/model/List';
 import type { AllowedColors } from '../../../shared/core/types/AllowedColors';
+import type ProjectList from '../objects/ProjectList';
 import type { AllowedBackgroundType } from '../types/AllowedBackgroundType';
 import type { AllowedProjectSetting } from '../types/AllowedProjectSetting';
 import type { AllowedProjectStatus } from '../types/AllowedProjectStatus';
@@ -11,13 +11,13 @@ export default interface ProjectParams {
     projectDescription: string | null;
     background: ProjectBackgroundImageParams | AllowedColors;
     backgroundType: AllowedBackgroundType;
-    lists: List[];
+    lists: ProjectList[];
     commentAuthorization: AllowedProjectSetting;
     inmutableComment: boolean;
     addMemberSettings: AllowedProjectSetting;
     createResourcesSettings: AllowedProjectSetting;
     showCompletedTasks: boolean;
-    version: number;
+    invitaionToken: string | null;
     deletedAt: Date | null;
 }
 //# sourceMappingURL=ProjectParams.d.ts.map

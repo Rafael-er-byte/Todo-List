@@ -3,7 +3,6 @@ export default interface LinkParams {
     idTask: string;
     url: string;
     visibleText: string | null;
-    version: number;
     deletedAt: Date | null;
 }
 //# sourceMappingURL=LinkParams.d.ts.map

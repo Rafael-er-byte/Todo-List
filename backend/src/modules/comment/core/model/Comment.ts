@@ -16,6 +16,7 @@ export default class Comment extends Entity {
     private content!: Text;
     private mentions!: Collection;
     private creator!: IdEntity;
+    private task!: IdEntity;
 
     private constructor(
         id: IdComment,
@@ -24,10 +25,11 @@ export default class Comment extends Entity {
         content: Text,
         mentions: Collection
     ) {
-        super(id, task);
+        super(id);
         this.content = content;
         this.mentions = mentions;
         this.creator = creator;
+        this.task = task;
     }
 
     public static create(
@@ -78,6 +80,10 @@ export default class Comment extends Entity {
         return this.mentions;
     }
 
+    public getTask(): IdEntity {
+        return this.task;
+    }
+
     public updateContent(
         key: string,
         newContent: Text,
@@ -88,7 +94,7 @@ export default class Comment extends Entity {
         }
         this.content = newContent;
         this.addEvent(
-            new CommentContentUpdated(key, DateTime.now(), actor, this.getOwner() as IdEntity, this.getId(), newContent)
+            new CommentContentUpdated(key, DateTime.now(), actor, this.getId(), this.task, newContent)
         );
     }
 
@@ -99,7 +105,7 @@ export default class Comment extends Entity {
     ): void {
         this.mentions = this.mentions.addItem(mentionedId);
         this.addEvent(
-            new CommentMentionAdded(key, DateTime.now(), actor, this.getOwner() as IdEntity, this.getId(), mentionedId)
+            new CommentMentionAdded(key, DateTime.now(), actor, this.getId(), this.task, mentionedId)
         );
     }
 
@@ -108,7 +114,7 @@ export default class Comment extends Entity {
     }
 
     public delete(key: string, actor: IdEntity): void {
-        this.addEvent(new CommentDeleted(key, DateTime.now(), actor, this.getOwner() as IdEntity,  this.getId()));
+        this.addEvent(new CommentDeleted(key, DateTime.now(), actor, this.task, this.getId()));
         super.softDelete();
     }
 
@@ -118,8 +124,9 @@ export default class Comment extends Entity {
             creator: this.getCreator().getID(),
             content: this.content.getText(),
             mentions: this.mentions.getPrimitives(),
-            idTask: (super.getOwner() as IdEntity).getID(),
+            idTask: this.task.getID(),
             deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
+
 }

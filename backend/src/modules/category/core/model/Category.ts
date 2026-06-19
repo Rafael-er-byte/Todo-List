@@ -15,6 +15,7 @@ import type { AllowedColors } from '../../../shared/core/types/AllowedColors';
 export default class Category extends Entity {
   private name!: CategoryName;
   private color!: CategoryColor;
+  private idProject!: IdEntity;
 
   private constructor(
     name: CategoryName,
@@ -22,9 +23,10 @@ export default class Category extends Entity {
     idProject: IdEntity,
     idEntity: IdCategory,
   ) {
-    super(idEntity, idProject);
+    super(idEntity);
     this.name = name;
     this.color = color;
+    this.idProject = idProject;
   }
 
   public static create(
@@ -84,7 +86,7 @@ export default class Category extends Entity {
   }
 
   public getIdProject(): IdEntity {
-    return super.getOwner() as IdEntity;
+    return this.idProject;
   }
 
   public toPrimitives(): CategoryParams {

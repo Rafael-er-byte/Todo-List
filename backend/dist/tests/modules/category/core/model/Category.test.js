@@ -13,7 +13,6 @@ const createCategoryParams = (overrides) => ({
     idProject: DEFAULT_ID,
     name: "Backlog",
     color: AllowedColors.BLACK,
-    version: 1,
     deletedAt: null,
     key: "test-key",
     ...overrides
@@ -30,7 +29,7 @@ describe("Category Entity", () => {
         it("should create a valid category", () => {
             const category = buildCategory();
             expect(category.getID().getID()).toBe(DEFAULT_ID);
-            expect(category.getOwner().getID()).toBe(DEFAULT_ID);
+            expect(category.getIdProject().getID()).toBe(DEFAULT_ID);
             expect(category.exists()).toBe(true);
         });
     });
@@ -58,7 +57,7 @@ describe("Category Entity", () => {
     describe("Existence", () => {
         it("should return false when status is deleted", () => {
             const category = Category.fromPrimitives(createCategoryParams({ deletedAt: new Date() }));
-            expect(category.getOwner().getID()).toBe(DEFAULT_ID);
+            expect(category.getIdProject().getID()).toBe(DEFAULT_ID);
             expect(category.exists()).toBe(false);
         });
         it("should delete a category", () => {
@@ -82,7 +81,6 @@ describe("Category Entity", () => {
                 idProject: params.idProject,
                 name: params.name,
                 color: params.color,
-                version: params.version,
                 deletedAt: params.deletedAt
             });
         });
