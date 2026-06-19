@@ -1,4 +1,3 @@
-import List from '../../../list/core/model/List';
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import DeletedAt from '../../../shared/core/objects/DeletedAt';
@@ -123,25 +122,32 @@ export default class Project extends Entity {
         this.showCompletedTasks = false;
         this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
     }
-    addList(list) {
-        if (this.lists.find((existingList) => existingList.getID().getID() === list.getID().getID())) {
-            throw new ConflictDuplicateResource(`A list with ID ${list.getID().getID()} already exists in the project.`);
+    addProjectList(Projectlist) {
+        if (this.lists.find((existingProjectList) => existingProjectList.idList.getID() === Projectlist.idList.getID())) {
+            throw new ConflictDuplicateResource(`A Projectlist with ID ${Projectlist.idList.getID()} already exists in the project.`);
         }
-        if (list.getPosition().getValue() > this.lists.length + 1 || list.getPosition().getValue() < 1) {
+        if (Projectlist.position.getValue() > this.lists.length + 1 || Projectlist.position.getValue() < 1) {
             throw new InvalidPositionInProject(this.id.getID());
         }
-        const list1 = this.lists.slice(0, list.getPosition().getValue() - 1);
-        const list2 = this.lists.slice(list.getPosition().getValue() - 1);
-        list2.forEach(l => l.moveByOther(new PositiveInteger(l.getPosition().getValue() + 1)));
-        this.lists = [...list1, list, ...list2];
+        const Projectlist1 = this.lists.slice(0, Projectlist.position.getValue() - 1);
+        const Projectlist2 = this.lists.slice(Projectlist.position.getValue() - 1);
+        Projectlist2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
+        this.lists = [...Projectlist1, Projectlist, ...Projectlist2];
+    }
+    removeProjectList(list) {
+        if (!this.lists.find(l => l.idList.getID() === list.idList.getID())) {
+            throw new ResourceNotFound(`The list with id: ${list.idList.getID()} does not exists in project with id: ${this.getID()}`, { listId: list.idList.getID(), projectId: this.getID() });
+        }
+        let ProjectlistToReorganize = this.lists.slice(list.position.getValue() - 1);
+        ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
+        this.lists = this.lists.filter(l => l.idList.getID() !== list.idList.getID());
+    }
+    // Backwards-compatible wrappers
+    addList(list) {
+        this.addProjectList(list);
     }
     removeList(list) {
-        if (!this.lists.find(l => l.getID().getID() === list.getID().getID())) {
-            throw new ResourceNotFound(`The list with id: ${list.getID().getID()} does not exists in project with id: ${this.getID().getID()}`, { listID: list.getID().getID(), projectId: this.getID().getID() });
-        }
-        let listToReorganize = this.lists.slice(list.getPosition().getValue() - 1);
-        listToReorganize.forEach(l => l.moveByOther(new PositiveInteger(l.getPosition().getValue() - 1)));
-        this.lists = this.lists.filter(l => l.getID().getID() !== list.getID().getID());
+        this.removeProjectList(list);
     }
     generateInvitationToken() {
         this.invitaionToken = ID.generateId();
@@ -171,7 +177,7 @@ export default class Project extends Entity {
     getBackgroundType() {
         return (this.background instanceof ProjectBackGroundColor) ? AllowedBackgroundType.color : AllowedBackgroundType.image;
     }
-    getLists() {
+    getlists() {
         return [...this.lists];
     }
     getCommentAuthorization() {

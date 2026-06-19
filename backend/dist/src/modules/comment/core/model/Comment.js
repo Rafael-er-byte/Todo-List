@@ -45,6 +45,9 @@ export default class Comment extends Entity {
     getMentions() {
         return this.mentions;
     }
+    getTask() {
+        return this.task;
+    }
     updateContent(key, newContent, actor) {
         if (actor.getID() !== this.getCreator().getID()) {
             throw new Unauthorized('Only the creator can update the comment content');

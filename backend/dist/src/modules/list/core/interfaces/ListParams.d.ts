@@ -1,10 +1,10 @@
-import type Task from "../../../task/core/model/Task";
+import type TaskList from "../object/TaskList";
 export default interface ListParams {
     id: string;
     title: string;
     position: number;
     archived: boolean;
-    tasks: Task[];
+    tasks: TaskList[];
     projectId: string;
     deletedAt: Date | null;
 }

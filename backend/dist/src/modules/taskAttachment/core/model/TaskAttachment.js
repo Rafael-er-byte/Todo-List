@@ -53,6 +53,9 @@ export default class TaskAttachment extends Entity {
     getTask() {
         return this.task;
     }
+    getTaskId() {
+        return this.getTask();
+    }
     toPrimitives() {
         return {
             id: super.getID().getID(),

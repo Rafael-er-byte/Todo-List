@@ -1,4 +1,3 @@
-import List from '../../../list/core/model/List';
 import Entity from '../../../shared/core/model/Entity';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import None from '../../../shared/core/objects/None';
@@ -11,6 +10,7 @@ import ProjectName from '../objects/ProjectName';
 import ProjectSetting from '../objects/ProjectSetting';
 import ProjectStatus from '../objects/ProjectStatus';
 import { AllowedBackgroundType } from '../types/AllowedBackgroundType';
+import type ProjectList from '../objects/ProjectList';
 export default class Project extends Entity {
     private readonly id;
     private status;
@@ -25,7 +25,7 @@ export default class Project extends Entity {
     private showCompletedTasks;
     private invitaionToken;
     private constructor();
-    static create(id: ProjectId, projectName: ProjectName, projectDescription: ProjectDescription | None, background: ProjectBackGroundImage | ProjectBackGroundColor, lists: List[], commentAuthorization: ProjectSetting, inmutableComment: boolean, addMemberSettings: ProjectSetting, createResourcesSettings: ProjectSetting, showCompletedTasks: boolean, actor: IdEntity, key: string): Project;
+    static create(id: ProjectId, projectName: ProjectName, projectDescription: ProjectDescription | None, background: ProjectBackGroundImage | ProjectBackGroundColor, lists: ProjectList[], commentAuthorization: ProjectSetting, inmutableComment: boolean, addMemberSettings: ProjectSetting, createResourcesSettings: ProjectSetting, showCompletedTasks: boolean, actor: IdEntity, key: string): Project;
     static fromPrimitives(params: ProjectParams): Project;
     close(key: string, actor: IdEntity): void;
     delete(key: string, actor: IdEntity): void;
@@ -39,8 +39,10 @@ export default class Project extends Entity {
     changeImmutableCommentSettings(inmutableComment: boolean, key: string, actor: IdEntity): void;
     showCompletedTaskEvents(key: string, actor: IdEntity): void;
     unshowCompletedTaskEvents(key: string, actor: IdEntity): void;
-    addList(list: List): void;
-    removeList(list: List): void;
+    addProjectList(Projectlist: ProjectList): void;
+    removeProjectList(list: ProjectList): void;
+    addList(list: ProjectList): void;
+    removeList(list: ProjectList): void;
     generateInvitationToken(): string;
     invalidateInvitationToken(): void;
     shouldShowCompletedTasks(): boolean;
@@ -50,7 +52,7 @@ export default class Project extends Entity {
     getProjectDescription(): ProjectDescription | None;
     getBackground(): ProjectBackGroundImage | ProjectBackGroundColor;
     getBackgroundType(): AllowedBackgroundType;
-    getLists(): List[];
+    getlists(): ProjectList[];
     getCommentAuthorization(): ProjectSetting;
     isCommentInmutable(): boolean;
     getAddMemberSettings(): ProjectSetting;

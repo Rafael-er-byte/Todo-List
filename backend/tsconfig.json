@@ -2,6 +2,7 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     "outDir" : "dist",
+    "rootDir": "src",
     "module": "ESNext",
     "target": "es2020",
     "types": ["vitest/globals"],
@@ -22,6 +23,8 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  }
+    "emitDecoratorMetadata": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"]
 }

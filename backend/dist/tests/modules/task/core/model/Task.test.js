@@ -15,6 +15,7 @@ import InvalidDueDate from '../../../../../src/modules/task/core/error/InvalidDu
 import ResourceNotFound from '../../../../../src/modules/shared/core/errors/ResourceNotFound';
 import RelationshipAlreadyExists from '../../../../../src/modules/shared/core/errors/RelationshipAlreadyExists';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
+import InvalidOperation from '../../../../../src/modules/shared/core/errors/InvalidOperation';
 const buildTask = () => {
     const title = new TaskTitle('Initial task title');
     const listContainer = new IdEntity('0143c815-7220-7d64-8c42-6f2af4f9fd37');
@@ -194,11 +195,11 @@ describe('Task', () => {
         task.pullEvents();
         const categoryId = new IdEntity('0e43c815-7220-7d64-8c42-6f2af4f9fd37');
         const assignedId = new IdEntity('0f43c815-7220-7d64-8c42-6f2af4f9fd37');
-        expect(() => task.addCategory(categoryId, actor, 'add-cat-key')).not.toThrow();
-        expect(() => task.assignMember(actor, 'assign-key', assignedId)).not.toThrow();
-        expect(() => task.updateTitle(new TaskTitle('New Title'), actor, 'update-title-key')).not.toThrow();
-        expect(() => task.move(new IdEntity('1043c815-7220-7d64-8c42-6f2af4f9fd37'), new PositiveInteger(3), actor, 'move-key')).not.toThrow();
-        expect(() => task.markAsFinished(actor, 'finish-key')).not.toThrow();
+        expect(() => task.addCategory(categoryId, actor, 'add-cat-key')).toThrow(InvalidOperation);
+        expect(() => task.assignMember(actor, 'assign-key', assignedId)).toThrow(InvalidOperation);
+        expect(() => task.updateTitle(new TaskTitle('New Title'), actor, 'update-title-key')).toThrow(InvalidOperation);
+        expect(() => task.move(new IdEntity('1043c815-7220-7d64-8c42-6f2af4f9fd37'), new PositiveInteger(3), actor, 'move-key')).toThrow(InvalidOperation);
+        expect(() => task.markAsFinished(actor, 'finish-key')).toThrow(InvalidOperation);
     });
     it('marks task as started and emits a TaskStarted event', () => {
         const { task } = buildTask();

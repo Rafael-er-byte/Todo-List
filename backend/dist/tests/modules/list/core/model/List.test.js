@@ -2,18 +2,13 @@ import { describe, expect, it } from 'vitest';
 import List from '../../../../../src/modules/list/core/model/List';
 import ListId from '../../../../../src/modules/list/core/object/ListId';
 import ListTitle from '../../../../../src/modules/list/core/object/ListTitle';
-import Task from '../../../../../src/modules/task/core/model/Task';
-import TaskTitle from '../../../../../src/modules/task/core/objects/TaskTitle';
-import TaskState from '../../../../../src/modules/task/core/objects/TaskState';
-import TaskId from '../../../../../src/modules/task/core/objects/TaskId';
+import TaskList from '../../../../../src/modules/list/core/object/TaskList';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
-import None from '../../../../../src/modules/shared/core/objects/None';
-import Collection from '../../../../../src/modules/shared/core/objects/Collection';
 import PositiveInteger from '../../../../../src/modules/shared/core/objects/PositiveInteger';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 const buildList = () => List.create(new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'), new ListTitle(new Text('Backlog')), new PositiveInteger(1), [], new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'));
-const buildTask = (position, id) => Task.create(new TaskTitle('Task title'), new IdEntity('0143c815-7220-7d64-8c42-6f2af4f9fd37'), new PositiveInteger(position), TaskState.pending(), false, new TaskId(id), new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'), new None(), new None(), new None(), new Collection([], [], []), new Collection([], [], []), new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37'), `task-created-${id}`);
+const buildTask = (position, id, projectId = '0343c815-7220-7d64-8c42-6f2af4f9fd37') => new TaskList(new IdEntity(id), new PositiveInteger(position), new IdEntity(projectId));
 describe('List', () => {
     it('creates a list with a positive integer position', () => {
         const list = buildList();
@@ -74,12 +69,12 @@ describe('List', () => {
         list.addTask(secondTask);
         list.addTask(insertedTask);
         const tasks = list.getTasks();
-        expect(tasks.map((task) => task.getID().getID())).toEqual([
-            insertedTask.getID().getID(),
-            firstTask.getID().getID(),
-            secondTask.getID().getID(),
+        expect(tasks.map((task) => task.id.getID())).toEqual([
+            insertedTask.id.getID(),
+            firstTask.id.getID(),
+            secondTask.id.getID(),
         ]);
-        expect(tasks.map((task) => task.getPositionInList().getValue())).toEqual([1, 2, 3]);
+        expect(tasks.map((task) => task.position.getValue())).toEqual([1, 2, 3]);
     });
     it('removes a task and reorders subsequent tasks', () => {
         const list = buildList();
@@ -91,11 +86,11 @@ describe('List', () => {
         list.addTask(thirdTask);
         list.removeTask(secondTask);
         const tasks = list.getTasks();
-        expect(tasks.map((task) => task.getID().getID())).toEqual([
-            firstTask.getID().getID(),
-            thirdTask.getID().getID(),
+        expect(tasks.map((task) => task.id.getID())).toEqual([
+            firstTask.id.getID(),
+            thirdTask.id.getID(),
         ]);
-        expect(tasks.map((task) => task.getPositionInList().getValue())).toEqual([1, 2]);
+        expect(tasks.map((task) => task.position.getValue())).toEqual([1, 2]);
     });
     it('archives and unarchives a list with events', () => {
         const list = buildList();

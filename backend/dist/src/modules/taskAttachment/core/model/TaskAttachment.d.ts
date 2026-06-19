@@ -21,6 +21,7 @@ export default class TaskAttachment extends Entity {
     getName(): Text;
     getSize(): IntNumber;
     getTask(): IdEntity;
+    getTaskId(): IdEntity;
     toPrimitives(): TaskAttachmentParams;
 }
 //# sourceMappingURL=TaskAttachment.d.ts.map

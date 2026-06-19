@@ -16,6 +16,7 @@ export default class Comment extends Entity {
     getCreator(): IdEntity;
     getContent(): Text;
     getMentions(): Collection;
+    getTask(): IdEntity;
     updateContent(key: string, newContent: Text, actor: IdEntity): void;
     addMention(key: string, mentionedId: IdEntity, actor: IdEntity): void;
     deleteMention(mentionedId: IdEntity): void;
