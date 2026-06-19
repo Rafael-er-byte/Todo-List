@@ -76,4 +76,5 @@ export default abstract class Entity {
   }
 
   abstract toPrimitives(): unknown;
+  abstract available(): boolean;
 }

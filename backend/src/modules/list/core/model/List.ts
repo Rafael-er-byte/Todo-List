@@ -180,6 +180,17 @@ export default class List extends Entity{
     }
 
     public moveByOther(newPosition: PositiveInteger): void{
+        this.canBeModified();
         this.position = newPosition;
+    }
+
+    private canBeModified(): boolean{
+        if(!this.archived){
+            throw new CannotModifyArchivedList({idList: this.id});
+        }if(!this.exists()){
+            throw new ResourceNotFound(`The list with id : ${this.id} doesnt exists`);
+        }
+
+        return true;
     }
 }

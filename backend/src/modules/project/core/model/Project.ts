@@ -8,7 +8,6 @@ import Attachment from '../../../shared/core/objects/Attachment';
 import IntNumber from '../../../shared/core/objects/IntNumber';
 import Text from '../../../shared/core/objects/Text';
 import Url from '../../../shared/core/objects/URL';
-import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
 import ProjectAddMemberSettingsUpdated from '../events/ProjectAddMemberSettingsUpdated';
 import ProjectBackgroundImageUpdated from '../events/ProjectBackgroundImageUpdated';
 import ProjectClosed from '../events/ProjectClosed';
@@ -24,7 +23,6 @@ import ProjectNameUpdated from '../events/ProjectNameUpdated';
 import CannotModifyClosedProject from '../errors/CannotModifyClosedProject';
 import ProjectNeedsToBeClosedBeforeDeleteIt from '../errors/ProjectNeedsToBeClosedBeforeDeleteIt';
 import type ProjectParams from '../interfaces/ProjectParams';
-import BackgroundType from '../objects/BackgroundType';
 import ProjectBackGroundColor from '../objects/ProjectBackGroundColor';
 import ProjectBackGroundImage from '../objects/ProjectBackGroundImage';
 import ProjectDescription from '../objects/ProjectDescription';
@@ -40,6 +38,8 @@ import ConflictDuplicateResource from '../../../shared/core/errors/ConflictDupli
 import PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 import ResourceNotFound from '../../../shared/core/errors/ResourceNotFound';
 import ID from '../../../shared/core/objects/ID';
+import { AllowedBackgroundType } from '../types/AllowedBackgroundType';
+import Unauthorized from '../../../shared/core/errors/Unauthorized';
 
 export default class Project extends Entity {
   private readonly id!: ProjectId;
@@ -47,7 +47,6 @@ export default class Project extends Entity {
   private projectName!: ProjectName;
   private projectDescription!: ProjectDescription | None;
   private background!: ProjectBackGroundImage | ProjectBackGroundColor;
-  private backgroundType!: BackgroundType;
   private lists!: List[];
   private commentAuthorization!: ProjectSetting;
   private inmutableComment!: boolean;
@@ -62,7 +61,6 @@ export default class Project extends Entity {
     projectName: ProjectName,
     projectDescription: ProjectDescription | None,
     background: ProjectBackGroundImage | ProjectBackGroundColor,
-    backgroundType: BackgroundType,
     lists: List[],
     commentAuthorization: ProjectSetting,
     inmutableComment: boolean,
@@ -77,7 +75,9 @@ export default class Project extends Entity {
     this.projectName = projectName;
     this.projectDescription = projectDescription;
     this.background = background;
-    this.backgroundType = backgroundType;
+    lists.forEach(l => {
+      this.listOwnership(l);
+    });
     this.lists = lists;
     this.commentAuthorization = commentAuthorization;
     this.inmutableComment = inmutableComment;
@@ -85,7 +85,6 @@ export default class Project extends Entity {
     this.createResourcesSettings = createResourcesSettings;
     this.showCompletedTasks = showCompletedTasks;
     this.invitaionToken = invitaionToken;
-    this.ensureBackgroundMatchesType();
   }
 
   public static create(
@@ -93,7 +92,6 @@ export default class Project extends Entity {
     projectName: ProjectName,
     projectDescription: ProjectDescription | None,
     background: ProjectBackGroundImage | ProjectBackGroundColor,
-    backgroundType: BackgroundType,
     lists: List[],
     commentAuthorization: ProjectSetting,
     inmutableComment: boolean,
@@ -109,7 +107,6 @@ export default class Project extends Entity {
       projectName,
       projectDescription,
       background,
-      backgroundType,
       lists,
       commentAuthorization,
       inmutableComment,
@@ -125,9 +122,8 @@ export default class Project extends Entity {
 
   public static fromPrimitives(params: ProjectParams): Project {
     const id = new ProjectId(params.id);
-    const backgroundType = BackgroundType.create(params.backgroundType);
     const imageParams = params.background as ProjectBackgroundImageParams;
-    const background = backgroundType.isImage()
+    const background = params.backgroundType === AllowedBackgroundType.image
       ? new ProjectBackGroundImage(new Attachment(
         new Url(imageParams.url),
         imageParams.type as AllowedAttachments,
@@ -142,7 +138,6 @@ export default class Project extends Entity {
       new ProjectName(params.projectName),
       params.projectDescription ? new ProjectDescription(params.projectDescription) : new None(),
       background,
-      backgroundType,
       params.lists,
       new ProjectSetting(params.commentAuthorization),
       params.inmutableComment,
@@ -169,71 +164,61 @@ export default class Project extends Entity {
   }
 
   public updateProjectName(projectName: ProjectName, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.projectName = projectName;
     this.addEvent(new ProjectNameUpdated(key, DateTime.now(), actor, this.id, projectName));
   }
 
   public updateProjectDescription(projectDescription: ProjectDescription | None, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.projectDescription = projectDescription;
     this.addEvent(new ProjectDescriptionUpdated(key, DateTime.now(), actor, this.id, projectDescription));
   }
 
   public updateProjectImage(background: ProjectBackGroundImage, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.background = background;
-    this.backgroundType = BackgroundType.image();
     this.addEvent(new ProjectBackgroundImageUpdated(key, DateTime.now(), actor, this.id, background));
   }
 
   public updateProjectColor(background: ProjectBackGroundColor, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.background = background;
-    this.backgroundType = BackgroundType.color();
     this.addEvent(new ProjectColorUpdated(key, DateTime.now(), actor, this.id, background));
   }
 
   public changeCommentSettings(commentAuthorization: ProjectSetting, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.commentAuthorization = commentAuthorization;
     this.addEvent(new ProjectCommentSettingsUpdated(key, DateTime.now(), actor, this.id, commentAuthorization));
   }
 
   public changeAddMemberSettings(addMemberSettings: ProjectSetting, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.addMemberSettings = addMemberSettings;
     this.addEvent(new ProjectAddMemberSettingsUpdated(key, DateTime.now(), actor, this.id, addMemberSettings));
   }
 
   public changeResourceCreationSettings(createResourcesSettings: ProjectSetting, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.createResourcesSettings = createResourcesSettings;
     this.addEvent(new ProjectCreateResourceSettingUpdated(key, DateTime.now(), actor, this.id, createResourcesSettings));
   }
 
   public changeImmutableCommentSettings(inmutableComment: boolean, key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     this.inmutableComment = inmutableComment;
     this.addEvent(new ProjectCommentImmutableSetupTo(key, DateTime.now(), actor, this.id, inmutableComment));
   }
 
   public showCompletedTaskEvents(key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     if (this.showCompletedTasks) return;
     this.showCompletedTasks = true;
     this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
   }
 
   public unshowCompletedTaskEvents(key: string, actor: IdEntity): void {
-    this.ensureCanBeModified();
     if (!this.showCompletedTasks) return;
     this.showCompletedTasks = false;
     this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
   }
 
   public addList(list: List): void {
-    this.ensureCanBeModified();
+    this.available();
+    this.listOwnership(list);
+
     if(this.lists.find((existingList) => existingList.getID().getID() === list.getID().getID())) {
       throw new ConflictDuplicateResource(`A list with ID ${list.getID().getID()} already exists in the project.`);
     }
@@ -249,7 +234,8 @@ export default class Project extends Entity {
   }
 
   public removeList(list: List): void {
-    this.ensureCanBeModified();
+    this.available();
+    this.listOwnership(list);
     if(!this.lists.find(l => l.getID().getID() === list.getID().getID())) {
       throw new ResourceNotFound(`The list with id: ${list.getID().getID()} does not exists in project with id: ${this.getID().getID()}`, {listID: list.getID().getID(), projectId: this.getID().getID()});
     }
@@ -261,17 +247,18 @@ export default class Project extends Entity {
   }
 
   public generateInvitationToken(): string {
-    this.ensureCanBeModified();
-    if(this.invitaionToken instanceof ID) {
-      return this.invitaionToken.getId();
-    }
+    this.available();
     this.invitaionToken = ID.generateId();
     return (this.invitaionToken as ID).getId();
   }
 
   public invalidateInvitationToken(): void {
-    this.ensureCanBeModified();
+    this.available();
     this.invitaionToken = new None();
+  }
+
+  public shouldShowCompletedTasks(): boolean {
+    return this.showCompletedTasks;
   }
 
   public getId(): ProjectId {
@@ -294,8 +281,8 @@ export default class Project extends Entity {
     return this.background;
   }
 
-  public getBackgroundType(): BackgroundType {
-    return this.backgroundType;
+  public getBackgroundType(): AllowedBackgroundType {
+    return (this.background instanceof ProjectBackGroundColor)? AllowedBackgroundType.color: AllowedBackgroundType.image;
   }
 
   public getLists(): List[] {
@@ -318,8 +305,8 @@ export default class Project extends Entity {
     return this.createResourcesSettings;
   }
 
-  public shouldShowCompletedTasks(): boolean {
-    return this.showCompletedTasks;
+  public getToken(): string | None{
+    return this.invitaionToken instanceof ID? this.invitaionToken.getId(): new None();
   }
 
   public toPrimitives(): ProjectParams {
@@ -334,7 +321,7 @@ export default class Project extends Entity {
         name: this.background.getImage().getName().getText(),
         size: this.background.getImage().getSize().getValue(),
       } : this.background.getColor(),
-      backgroundType: this.backgroundType.getType(),
+      backgroundType: this.background instanceof ProjectBackGroundImage? AllowedBackgroundType.image: AllowedBackgroundType.color,
       lists: this.lists,
       commentAuthorization: this.commentAuthorization.getSetting(),
       inmutableComment: this.inmutableComment,
@@ -346,17 +333,15 @@ export default class Project extends Entity {
     };
   }
 
-  private ensureCanBeModified(): void {
-    if (this.status.isClosed() || !this.exists()) throw new CannotModifyClosedProject(this.id.getID());
+  public available(): boolean {
+    if(!this.exists())throw new ResourceNotFound(`The project with id: ${this.id.getID()} doesnt exists`);
+    if (this.status.isClosed()) throw new CannotModifyClosedProject(this.id.getID());
+    return true;
   }
 
-  private ensureBackgroundMatchesType(): void {
-    if (this.backgroundType.isImage() && !(this.background instanceof ProjectBackGroundImage)) {
-      throw new InvalidOperation('Project background must be an image when background type is IMAGE');
-    }
-
-    if (this.backgroundType.isColor() && !(this.background instanceof ProjectBackGroundColor)) {
-      throw new InvalidOperation('Project background must be a color when background type is COLOR');
+  private listOwnership(list: List): void{
+    if(!((list.getOwner() as IdEntity).getID() === this.id.getID())){
+      throw new Unauthorized(`The list with id: ${list.getID().getID()} doesnt belongs to project with id: ${this.id.getID()}`);
     }
   }
 }
