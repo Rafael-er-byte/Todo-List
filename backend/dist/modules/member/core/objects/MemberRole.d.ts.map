@@ -1,0 +1,1 @@
+{"version":3,"file":"MemberRole.d.ts","sourceRoot":"","sources":["../../../../../src/modules/member/core/objects/MemberRole.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,MAAM,0CAA0C,CAAC;AAEnE,OAAO,EAAwB,kBAAkB,EAAE,MAAM,6BAA6B,CAAC;AAEvF,MAAM,CAAC,OAAO,OAAO,UAAW,SAAQ,WAAW;IACjD,OAAO,CAAC,IAAI,CAAsB;gBAEtB,IAAI,EAAE,kBAAkB;IAM7B,OAAO,IAAI,kBAAkB;CAIrC"}

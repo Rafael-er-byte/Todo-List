@@ -6,6 +6,5 @@ export default interface ListParams{
     position: number,
     archived: boolean,
     tasks: TaskList[],
-    projectId: string,
-    deletedAt: Date | null
+    projectId: string
 }

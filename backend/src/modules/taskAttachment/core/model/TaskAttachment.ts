@@ -31,7 +31,6 @@ export default class TaskAttachment extends Entity {
     key: string,
   ): TaskAttachment {
     const taskAttachment = new TaskAttachment(attachment, id, task);
-    taskAttachment.create();
     taskAttachment.addEvent(
       new TaskAttachmentCreated(
         key,
@@ -58,7 +57,6 @@ export default class TaskAttachment extends Entity {
       new IdEntity(params.idTask),
     );
 
-    taskAttachment.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return taskAttachment;
   }
 
@@ -83,7 +81,6 @@ export default class TaskAttachment extends Entity {
 
   public delete(actor: IdEntity, key: string): void {
     this.addEvent(new TaskAttachmentDeleted(key, DateTime.now(), actor, this.getTask(), super.getID()));
-    super.softDelete();
   }
 
   public getAttachment(): Attachment {
@@ -124,7 +121,6 @@ export default class TaskAttachment extends Entity {
         name: this.attachment.getName().getText(),
         size: this.attachment.getSize().getValue(),
       },
-      deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }
 }

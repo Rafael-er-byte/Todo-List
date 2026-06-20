@@ -26,12 +26,11 @@ export default class ProjectMetadata extends ValueObject{
         return new ProjectMetadata(false, this.watch);
     }
 
-    public IsWatching(): boolean{
+    public isWatching(): boolean{
         return this.watch;
     }
 
     public favorite(): boolean{
         return this.isFavorite;
     }
-
 }

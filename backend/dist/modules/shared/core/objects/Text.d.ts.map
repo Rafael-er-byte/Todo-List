@@ -1,0 +1,1 @@
+{"version":3,"file":"Text.d.ts","sourceRoot":"","sources":["../../../../../src/modules/shared/core/objects/Text.ts"],"names":[],"mappings":"AACA,OAAO,WAAW,MAAM,eAAe,CAAC;AAExC,MAAM,CAAC,OAAO,OAAO,IAAK,SAAQ,WAAW;IAC3C,OAAO,CAAC,IAAI,CAAU;gBAEV,IAAI,EAAE,MAAM;IAOjB,OAAO,IAAI,MAAM;IAIjB,IAAI,IAAI,MAAM;CAGtB"}

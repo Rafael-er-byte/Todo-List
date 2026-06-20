@@ -3,5 +3,4 @@ export default interface CategoryParams {
   idProject: string;
   name: string;
   color: string;
-  deletedAt: Date | null;
 }

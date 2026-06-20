@@ -10,7 +10,6 @@ import MemberDeleted from '../events/MemberDeleted';
 import ProjectMetadata from '../objects/ProjectMetadata';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import type MemberParams from '../interfaces/MemberParams';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import MemberRoleChanged from '../events/MemberRoleChanged';
 
 export default class Member extends Entity {
@@ -56,7 +55,6 @@ export default class Member extends Entity {
       new ProjectMetadata(false, false)
     );
 
-    member.create();
     member.addEvent(
       new MemberAddedToProject(key, DateTime.now(), modifier, idProject, idMember, member.toPrimitives()),
     );
@@ -70,10 +68,8 @@ export default class Member extends Entity {
       new IdEntity(params.idAccount),
       MemberStatus.create(params.status),
       new MemberRole(params.role),
-      new ProjectMetadata()  
+      new ProjectMetadata(params.projectMetadata.isFavorite, params.projectMetadata.watch)  
     );
-
-    member.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return member;
   }
 
@@ -94,7 +90,6 @@ export default class Member extends Entity {
 
   public delete(key: string, actor: IdEntity): void {
     this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
-    super.softDelete();
   }
 
   public isBlocked(): boolean {
@@ -128,7 +123,10 @@ export default class Member extends Entity {
       idAccount: this.idAccount.getID(),
       status: this.status.getStatus(),
       role: this.role.getRole(),
-      deletedAt: super.getDeletedAt().toPrimitive()
+      projectMetadata:{
+        isFavorite: this.projectMetadata.favorite(),
+        watch: this.projectMetadata.isWatching()
+      }    
     };
   }
 }

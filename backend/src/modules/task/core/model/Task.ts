@@ -25,7 +25,6 @@ import TaskContributorDeleted from '../events/TaskMemberDeleted';
 import TaskMemberAdded from '../events/TaskMemberAdded';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import type TaskParams from '../interface/TaskParams';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import Text from '../../../shared/core/objects/Text';
 import type { AllowedTaskState } from '../types/AllowedTaskState';
 import Collection from '../../../shared/core/objects/Collection';
@@ -116,8 +115,6 @@ export default class Task extends Entity {
       new Collection(categories, [], []),
       new Collection(assigned, [], [])
     );
-
-    task.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return task;
   }
 
@@ -156,7 +153,6 @@ export default class Task extends Entity {
         assigned
     );
 
-    task.create();
     task.addEvent(
       new TaskCreated(key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()),
     );
@@ -168,7 +164,6 @@ export default class Task extends Entity {
       throw new TaskNeedsToBeArchivedBeforeDeleteIt(super.getID());
     }
     this.addEvent(new TaskDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
-    super.softDelete();
   }
 
   public removeCategory(category: IdEntity, actor: IdEntity, key: string): void {
@@ -298,7 +293,6 @@ export default class Task extends Entity {
   }
 
   public exportToProject(newProject: IdEntity, idList: IdEntity, positionInList: PositiveInteger, actor: IdEntity, key: string): void {
-    this.ensureNotArchived();
     this.listContainer = idList;
     this.positionInList = positionInList;
     this.idProject = newProject;
@@ -409,7 +403,6 @@ export default class Task extends Entity {
       isOverdue: this.isOverdue,
       isStarted: this.isStarted,
       dueDate: this.dueDate instanceof DateTime ? this.dueDate.getDate() : null,
-      deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }
 }

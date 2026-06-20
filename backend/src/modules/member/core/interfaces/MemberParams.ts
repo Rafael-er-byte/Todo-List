@@ -7,5 +7,8 @@ export default interface MemberParams {
   idAccount: string;
   status: AllowedMemberStatus;
   role: AllowedMemberRoles;
-  deletedAt: Date | null;
+  projectMetadata: {
+    isFavorite: boolean;
+    watch: boolean;
+  }
 }

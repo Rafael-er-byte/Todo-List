@@ -4,7 +4,6 @@ import Text from "../../../shared/core/objects/Text";
 import IdComment from "../objects/IdComment";
 import Collection from "../../../shared/core/objects/Collection";
 import DateTime from "../../../shared/core/objects/DateTime";
-import DeletedAt from "../../../shared/core/objects/DeletedAt";
 import type CommentParams from "../interfaces/CommentParams";
 import CommentCreated from "../events/CommentCreated";
 import CommentContentUpdated from "../events/CommentContentUpdated";
@@ -42,7 +41,6 @@ export default class Comment extends Entity {
     ): Comment {
         const mentionsCollection = mentions || new Collection([], [], []);
         const comment = new Comment(idComment, creator, task ,content, mentionsCollection);
-        comment.create();
         comment.addEvent(new CommentCreated(key, DateTime.now(), creator, task, idComment, comment.toPrimitives()));
         return comment;
     }
@@ -60,7 +58,6 @@ export default class Comment extends Entity {
             new Collection(mentions, [], [])
         );
 
-        comment.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return comment;
     }
 
@@ -115,7 +112,6 @@ export default class Comment extends Entity {
 
     public delete(key: string, actor: IdEntity): void {
         this.addEvent(new CommentDeleted(key, DateTime.now(), actor, this.task, this.getId()));
-        super.softDelete();
     }
 
     public toPrimitives(): CommentParams {
@@ -125,7 +121,6 @@ export default class Comment extends Entity {
             content: this.content.getText(),
             mentions: this.mentions.getPrimitives(),
             idTask: this.task.getID(),
-            deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
 

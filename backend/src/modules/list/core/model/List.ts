@@ -1,7 +1,6 @@
 import ListId from "../object/ListId";
 import Text from "../../../shared/core/objects/Text";
 import Entity from "../../../shared/core/model/Entity";
-import DeletedAt from "../../../shared/core/objects/DeletedAt";
 import IdEntity from "../../../shared/core/objects/IdEntity";
 import type ListParams from "../interfaces/ListParams";
 import ListTitleUpdated from "../events/ListTitleUpdated";
@@ -50,7 +49,6 @@ export default class List extends Entity{
         projectId: IdEntity
     ){
         const list = new List(id, title, position, tasks, projectId);
-        list.create();
         return list;
     }
 
@@ -63,7 +61,6 @@ export default class List extends Entity{
             params.tasks,
             new IdEntity(params.projectId)
         );
-        list.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return list;
     }
 
@@ -74,13 +71,13 @@ export default class List extends Entity{
 
     //mutable actions 
     public updateTitle(newTitle: ListTitle, key: string, actor: IdEntity): void{
-        if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
+        this.ensureCanBeModified();
         this.title = newTitle;
         this.addEvent(new ListTitleUpdated(key, DateTime.now(), actor, this.projectId, this.id, newTitle.getValue()));
     }
 
     public move(newPosition: PositiveInteger, key: string, actor: IdEntity): void{
-        if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
+        this.ensureCanBeModified();
         this.position = newPosition;
         this.addEvent(new ListMoved(key, DateTime.now(), actor, this.projectId, this.id, newPosition));
     }
@@ -107,12 +104,11 @@ export default class List extends Entity{
     public delete(key: string, actor: IdEntity): void{
         if(!this.archived) throw new InvalidOperation(`List must be archived before being delete`, {listID:this.getID().getID()});
         this.addEvent(new ListDeleted(key, DateTime.now(), actor, this.projectId, this.id));
-        super.softDelete();
     }
 
     //validations
     public addTask(taskList: TaskList): void{
-        if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
+        this.ensureCanBeModified();
 
         if(taskList.position.getValue()  > this.tasks.length + 1 || 
             taskList.position.getValue() <= 0)throw new InvalidPositionInList({positionToInsert: taskList.position.getValue(), listId: this.getID().getID()});
@@ -123,7 +119,7 @@ export default class List extends Entity{
     }
 
     public removeTask(taskList: TaskList): void{
-        if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
+        this.ensureCanBeModified();
         
         if(!this.tasks.find(t => t.id.getID() === taskList.id.getID())) throw new ResourceNotFound(
                         `The taskList with id: ${taskList.id.getID()} does not exists in list with id: ${this.getID()}`, 
@@ -159,6 +155,10 @@ export default class List extends Entity{
         return this.projectId;
     }
 
+    private ensureCanBeModified():void{
+        if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().getID()});
+    }
+
     public toPrimitives(): ListParams{
         return {
             id: this.id.toString(),
@@ -166,8 +166,7 @@ export default class List extends Entity{
             position: this.position.getValue(),
             archived: this.archived,
             tasks: this.tasks,
-            projectId: this.projectId.getID(),
-            deletedAt: this.getDeletedAt().toPrimitive()
+            projectId: this.projectId.getID()
         }
     }
 }
