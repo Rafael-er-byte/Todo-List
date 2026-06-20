@@ -39,9 +39,7 @@ export default class Project extends Entity {
     changeImmutableCommentSettings(inmutableComment: boolean, key: string, actor: IdEntity): void;
     showCompletedTaskEvents(key: string, actor: IdEntity): void;
     unshowCompletedTaskEvents(key: string, actor: IdEntity): void;
-    addProjectList(Projectlist: ProjectList): void;
-    removeProjectList(list: ProjectList): void;
-    addList(list: ProjectList): void;
+    addList(Projectlist: ProjectList): void;
     removeList(list: ProjectList): void;
     generateInvitationToken(): string;
     invalidateInvitationToken(): void;
@@ -58,6 +56,7 @@ export default class Project extends Entity {
     getAddMemberSettings(): ProjectSetting;
     getCreateResourcesSettings(): ProjectSetting;
     getToken(): string | None;
+    private ensureCanBeModified;
     toPrimitives(): ProjectParams;
 }
 //# sourceMappingURL=Project.d.ts.map

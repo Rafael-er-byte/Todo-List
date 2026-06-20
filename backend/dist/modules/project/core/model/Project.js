@@ -1,6 +1,5 @@
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import None from '../../../shared/core/objects/None';
 import Attachment from '../../../shared/core/objects/Attachment';
@@ -34,6 +33,7 @@ import PositiveInteger from '../../../shared/core/objects/PositiveInteger';
 import ResourceNotFound from '../../../shared/core/errors/ResourceNotFound';
 import ID from '../../../shared/core/objects/ID';
 import { AllowedBackgroundType } from '../types/AllowedBackgroundType';
+import CannotModifyClosedProject from '../errors/CannotModifyClosedProject';
 export default class Project extends Entity {
     constructor(id, status, projectName, projectDescription, background, lists, commentAuthorization, inmutableComment, addMemberSettings, createResourcesSettings, showCompletedTasks, invitaionToken = new None()) {
         super(id);
@@ -52,7 +52,6 @@ export default class Project extends Entity {
     }
     static create(id, projectName, projectDescription, background, lists, commentAuthorization, inmutableComment, addMemberSettings, createResourcesSettings, showCompletedTasks, actor, key) {
         const project = new Project(id, ProjectStatus.open(), projectName, projectDescription, background, lists, commentAuthorization, inmutableComment, addMemberSettings, createResourcesSettings, showCompletedTasks);
-        project.create();
         project.addEvent(new ProjectCreated(key, DateTime.now(), actor, id, project.toPrimitives()));
         return project;
     }
@@ -63,7 +62,6 @@ export default class Project extends Entity {
             ? new ProjectBackGroundImage(new Attachment(new Url(imageParams.url), imageParams.type, new Text(imageParams.name), new IntNumber(imageParams.size)))
             : new ProjectBackGroundColor(params.background);
         const project = new Project(id, ProjectStatus.create(params.status), new ProjectName(params.projectName), params.projectDescription ? new ProjectDescription(params.projectDescription) : new None(), background, params.lists, new ProjectSetting(params.commentAuthorization), params.inmutableComment, new ProjectSetting(params.addMemberSettings), new ProjectSetting(params.createResourcesSettings), params.showCompletedTasks, params.invitaionToken ? ID.fromString(params.invitaionToken) : new None());
-        project.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return project;
     }
     close(key, actor) {
@@ -76,53 +74,63 @@ export default class Project extends Entity {
         if (!this.status.isClosed())
             throw new ProjectNeedsToBeClosedBeforeDeleteIt(this.id.getID());
         this.addEvent(new ProjectDeleted(key, DateTime.now(), actor, this.id));
-        super.softDelete();
     }
     updateProjectName(projectName, key, actor) {
+        this.ensureCanBeModified();
         this.projectName = projectName;
         this.addEvent(new ProjectNameUpdated(key, DateTime.now(), actor, this.id, projectName));
     }
     updateProjectDescription(projectDescription, key, actor) {
+        this.ensureCanBeModified();
         this.projectDescription = projectDescription;
         this.addEvent(new ProjectDescriptionUpdated(key, DateTime.now(), actor, this.id, projectDescription));
     }
     updateProjectImage(background, key, actor) {
+        this.ensureCanBeModified();
         this.background = background;
         this.addEvent(new ProjectBackgroundImageUpdated(key, DateTime.now(), actor, this.id, background));
     }
     updateProjectColor(background, key, actor) {
+        this.ensureCanBeModified();
         this.background = background;
         this.addEvent(new ProjectColorUpdated(key, DateTime.now(), actor, this.id, background));
     }
     changeCommentSettings(commentAuthorization, key, actor) {
+        this.ensureCanBeModified();
         this.commentAuthorization = commentAuthorization;
         this.addEvent(new ProjectCommentSettingsUpdated(key, DateTime.now(), actor, this.id, commentAuthorization));
     }
     changeAddMemberSettings(addMemberSettings, key, actor) {
+        this.ensureCanBeModified();
         this.addMemberSettings = addMemberSettings;
         this.addEvent(new ProjectAddMemberSettingsUpdated(key, DateTime.now(), actor, this.id, addMemberSettings));
     }
     changeResourceCreationSettings(createResourcesSettings, key, actor) {
+        this.ensureCanBeModified();
         this.createResourcesSettings = createResourcesSettings;
         this.addEvent(new ProjectCreateResourceSettingUpdated(key, DateTime.now(), actor, this.id, createResourcesSettings));
     }
     changeImmutableCommentSettings(inmutableComment, key, actor) {
+        this.ensureCanBeModified();
         this.inmutableComment = inmutableComment;
         this.addEvent(new ProjectCommentImmutableSetupTo(key, DateTime.now(), actor, this.id, inmutableComment));
     }
     showCompletedTaskEvents(key, actor) {
         if (this.showCompletedTasks)
             return;
+        this.ensureCanBeModified();
         this.showCompletedTasks = true;
         this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
     }
     unshowCompletedTaskEvents(key, actor) {
         if (!this.showCompletedTasks)
             return;
+        this.ensureCanBeModified();
         this.showCompletedTasks = false;
         this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
     }
-    addProjectList(Projectlist) {
+    addList(Projectlist) {
+        this.ensureCanBeModified();
         if (this.lists.find((existingProjectList) => existingProjectList.idList.getID() === Projectlist.idList.getID())) {
             throw new ConflictDuplicateResource(`A Projectlist with ID ${Projectlist.idList.getID()} already exists in the project.`);
         }
@@ -134,20 +142,14 @@ export default class Project extends Entity {
         Projectlist2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
         this.lists = [...Projectlist1, Projectlist, ...Projectlist2];
     }
-    removeProjectList(list) {
+    removeList(list) {
+        this.ensureCanBeModified();
         if (!this.lists.find(l => l.idList.getID() === list.idList.getID())) {
             throw new ResourceNotFound(`The list with id: ${list.idList.getID()} does not exists in project with id: ${this.getID()}`, { listId: list.idList.getID(), projectId: this.getID() });
         }
         let ProjectlistToReorganize = this.lists.slice(list.position.getValue() - 1);
         ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
         this.lists = this.lists.filter(l => l.idList.getID() !== list.idList.getID());
-    }
-    // Backwards-compatible wrappers
-    addList(list) {
-        this.addProjectList(list);
-    }
-    removeList(list) {
-        this.removeProjectList(list);
     }
     generateInvitationToken() {
         this.invitaionToken = ID.generateId();
@@ -193,7 +195,12 @@ export default class Project extends Entity {
         return this.createResourcesSettings;
     }
     getToken() {
+        this.ensureCanBeModified();
         return this.invitaionToken instanceof ID ? this.invitaionToken.getId() : new None();
+    }
+    ensureCanBeModified() {
+        if (this.status.isClosed())
+            throw new CannotModifyClosedProject(this.id.getID());
     }
     toPrimitives() {
         return {
@@ -215,7 +222,6 @@ export default class Project extends Entity {
             createResourcesSettings: this.createResourcesSettings.getSetting(),
             showCompletedTasks: this.showCompletedTasks,
             invitaionToken: this.invitaionToken instanceof None ? null : this.invitaionToken.getId(),
-            deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
 }

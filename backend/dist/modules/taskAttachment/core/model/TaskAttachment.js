@@ -18,13 +18,11 @@ export default class TaskAttachment extends Entity {
     }
     static create(attachment, id, task, actor, key) {
         const taskAttachment = new TaskAttachment(attachment, id, task);
-        taskAttachment.create();
         taskAttachment.addEvent(new TaskAttachmentCreated(key, DateTime.now(), actor, task, taskAttachment.getID(), attachment));
         return taskAttachment;
     }
     static fromPrimitives(params) {
         const taskAttachment = new TaskAttachment(new Attachment(new Url(params.attachment.url), params.attachment.type, new Text(params.attachment.name), new IntNumber(params.attachment.size)), new TaskAttachmentId(params.id), new IdEntity(params.idTask));
-        taskAttachment.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return taskAttachment;
     }
     changeName(name, actor, key) {
@@ -33,7 +31,6 @@ export default class TaskAttachment extends Entity {
     }
     delete(actor, key) {
         this.addEvent(new TaskAttachmentDeleted(key, DateTime.now(), actor, this.getTask(), super.getID()));
-        super.softDelete();
     }
     getAttachment() {
         return this.attachment;
@@ -66,7 +63,6 @@ export default class TaskAttachment extends Entity {
                 name: this.attachment.getName().getText(),
                 size: this.attachment.getSize().getValue(),
             },
-            deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
 }

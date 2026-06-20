@@ -24,7 +24,6 @@ import TaskCategoryDeleted from '../events/TaskCategoryDeleted';
 import TaskContributorDeleted from '../events/TaskMemberDeleted';
 import TaskMemberAdded from '../events/TaskMemberAdded';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import Text from '../../../shared/core/objects/Text';
 import Collection from '../../../shared/core/objects/Collection';
 import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
@@ -69,13 +68,11 @@ export default class Task extends Entity {
             return new IdEntity(assign);
         });
         const task = new Task(new TaskTitle(params.title), new IdEntity(params.listContainer), new PositiveInteger(params.positionInList), TaskState.create(params.state), params.archived, new TaskId(params.id), new IdEntity(params.idProject), params.description ? new Text(params.description) : new None(), params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(), params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(), params.isOverdue, params.isStarted, new Collection(categories, [], []), new Collection(assigned, [], []));
-        task.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return task;
     }
     //mutable methods
     static create(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, categories, assigned, actor, key) {
         const task = new Task(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, false, false, categories, assigned);
-        task.create();
         task.addEvent(new TaskCreated(key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()));
         return task;
     }
@@ -84,7 +81,6 @@ export default class Task extends Entity {
             throw new TaskNeedsToBeArchivedBeforeDeleteIt(super.getID());
         }
         this.addEvent(new TaskDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
-        super.softDelete();
     }
     removeCategory(category, actor, key) {
         this.ensureNotArchived();
@@ -166,7 +162,6 @@ export default class Task extends Entity {
         this.addEvent(new TaskMarkedAsPending(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
     }
     exportToProject(newProject, idList, positionInList, actor, key) {
-        this.ensureNotArchived();
         this.listContainer = idList;
         this.positionInList = positionInList;
         this.idProject = newProject;
@@ -259,7 +254,6 @@ export default class Task extends Entity {
             isOverdue: this.isOverdue,
             isStarted: this.isStarted,
             dueDate: this.dueDate instanceof DateTime ? this.dueDate.getDate() : null,
-            deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
 }

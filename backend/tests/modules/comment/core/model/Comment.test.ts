@@ -20,7 +20,6 @@ const createCommentParams = (
     idTask: string;
     content: string;
     mentions: string[];
-    deletedAt: Date | null;
     key: string;
   }>
 ) => ({
@@ -29,7 +28,6 @@ const createCommentParams = (
   idTask: TASK_ID,
   content: "This is a test comment",
   mentions: [],
-  deletedAt: null,
   key: "test-key",
   ...overrides
 });
@@ -61,7 +59,6 @@ describe("Comment Entity", () => {
       const comment = buildComment();
 
       expect(comment.getId().getID()).toBe(DEFAULT_ID);
-      expect(comment.exists()).toBe(true);
     });
 
     it("should set the creator correctly", () => {
@@ -200,31 +197,6 @@ describe("Comment Entity", () => {
   });
 
   describe("Existence", () => {
-    it("should return true when comment is not deleted", () => {
-      const comment = buildComment();
-
-      expect(comment.exists()).toBe(true);
-    });
-
-    it("should return false when comment is deleted", () => {
-      const comment = Comment.fromPrimitives(
-        createCommentParams({ deletedAt: new Date() })
-      );
-
-      expect(comment.exists()).toBe(false);
-    });
-
-    it("should delete a comment", () => {
-      const comment = buildComment();
-      comment.pullEvents();
-
-      expect(comment.exists()).toBe(true);
-
-      comment.delete("test-key-11", CreatorMock);
-
-      expect(comment.exists()).toBe(false);
-    });
-
     it("should emit CommentDeleted event on deletion", () => {
       const comment = buildComment();
       comment.pullEvents();
@@ -248,7 +220,7 @@ describe("Comment Entity", () => {
       expect(primitives.creator).toBe(params.creator);
       expect(primitives.content).toBe(params.content);
       expect(primitives.mentions).toEqual([]);
-      expect(primitives.deletedAt).toBeNull();
+      expect(primitives.deletedAt).toBeUndefined();
     });
 
     it("should serialize comment with mentions", () => {
@@ -296,7 +268,7 @@ describe("Comment Entity", () => {
 
       const primitives = comment.toPrimitives();
 
-      expect(primitives.deletedAt).not.toBeNull();
+      expect(primitives.deletedAt).toBeUndefined();
     });
   });
 

@@ -6,18 +6,18 @@ describe("ProjectMetadata Value Object", () => {
     const metadata = new ProjectMetadata();
 
     expect(metadata.favorite()).toBe(false);
-    expect(metadata.IsWatching()).toBe(false);
+    expect(metadata.isWatching()).toBe(false);
   });
 
   it("should watch and unwatch a project", () => {
     const metadata = new ProjectMetadata();
     const watching = metadata.watchProject();
 
-    expect(watching.IsWatching()).toBe(true);
-    expect(metadata.IsWatching()).toBe(false);
+    expect(watching.isWatching()).toBe(true);
+    expect(metadata.isWatching()).toBe(false);
 
     const unwatched = watching.unwatchProject();
-    expect(unwatched.IsWatching()).toBe(false);
+    expect(unwatched.isWatching()).toBe(false);
   });
 
   it("should mark and unmark a project as favorite", () => {
@@ -36,6 +36,6 @@ describe("ProjectMetadata Value Object", () => {
     const favorite = metadata.markAsFavorite();
 
     expect(favorite.favorite()).toBe(true);
-    expect(favorite.IsWatching()).toBe(true);
+    expect(favorite.isWatching()).toBe(true);
   });
 });

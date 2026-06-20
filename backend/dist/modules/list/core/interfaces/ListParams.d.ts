@@ -6,6 +6,5 @@ export default interface ListParams {
     archived: boolean;
     tasks: TaskList[];
     projectId: string;
-    deletedAt: Date | null;
 }
 //# sourceMappingURL=ListParams.d.ts.map

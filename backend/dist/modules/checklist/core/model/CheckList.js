@@ -2,7 +2,6 @@ import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import ChecklistItem from '../objects/ChecklistItem';
 import IdCheckList from '../objects/IdCheckList';
 import CheckListCreated from '../events/CheckListCreated';
@@ -27,7 +26,6 @@ export default class CheckList extends Entity {
     }
     static create(id, owner, name, actor, key, items = []) {
         const checklist = new CheckList(id, owner, name, items, new PercentageCompleted(0));
-        checklist.create();
         checklist.recalculateCompletedPercentage();
         checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getTaskId(), id, checklist.toPrimitives()));
         return checklist;
@@ -35,7 +33,6 @@ export default class CheckList extends Entity {
     static fromPrimitives(params) {
         const items = params.items.map((item) => ChecklistItem.fromPrimitives(item));
         const checklist = new CheckList(new IdCheckList(params.id), new IdEntity(params.idOwner), new CheckListName(params.name), items, new PercentageCompleted(params.completedPercentage));
-        checklist.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return checklist;
     }
     getName() {
@@ -87,7 +84,6 @@ export default class CheckList extends Entity {
     }
     delete(actor, key) {
         this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID()));
-        super.softDelete();
     }
     toPrimitives() {
         return {
@@ -96,7 +92,6 @@ export default class CheckList extends Entity {
             name: this.name.getName(),
             items: this.items.map((item) => item.toPrimitives()),
             completedPercentage: this.completedPercentage.toPrimitive(),
-            deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
     updateChecklistItemStatus(itemId, isCompleted, actor, key, EventClass) {

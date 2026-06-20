@@ -1,6 +1,5 @@
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import NotificationCreated from '../events/NotificationCreated';
 import NotificationRead from '../events/NotificationRead';
@@ -17,13 +16,11 @@ export default class Notification extends Entity {
     }
     static create(key, idNotification, eventKey, idUser, actor, type) {
         const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), type, idUser);
-        notification.create();
         notification.addEvent(new NotificationCreated(key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()));
         return notification;
     }
     static fromPrimitives(params) {
         const notification = new Notification(new IdNotification(params.id), params.eventKey, NotificationStatus.create(params.status), params.type, new IdEntity(params.idUser));
-        notification.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return notification;
     }
     markAsRead(key, actor) {
@@ -54,7 +51,6 @@ export default class Notification extends Entity {
             eventKey: this.eventKey,
             status: this.status.getStatus(),
             idUser: this.getIdUser().getID(),
-            deletedAt: super.getDeletedAt().toPrimitive(),
             type: this.type,
         };
     }

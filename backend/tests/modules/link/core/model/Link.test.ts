@@ -21,7 +21,6 @@ const createLinkParams = (
   idTask: TASK_ID,
   url: URL_VALUE,
   visibleText: INITIAL_TEXT,
-  deletedAt: null,
   ...overrides,
 });
 
@@ -87,7 +86,6 @@ describe('Link', () => {
 
     expect(events).toHaveLength(1);
     expect(events[0]!.getEvent()).toBe('LINK_DELETED');
-    expect(link.exists()).toBe(false);
   });
 
   it('reconstructs from primitives and preserves visible text when present', () => {

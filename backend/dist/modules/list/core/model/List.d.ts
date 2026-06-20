@@ -29,6 +29,7 @@ export default class List extends Entity {
     getTasks(): TaskList[];
     isArchived(): boolean;
     getProjectId(): IdEntity;
+    private ensureCanBeModified;
     toPrimitives(): ListParams;
 }
 //# sourceMappingURL=List.d.ts.map

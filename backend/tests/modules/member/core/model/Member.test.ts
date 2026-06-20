@@ -54,7 +54,6 @@ describe("Member Entity", () => {
 
       expect(member.getID().getID()).toBe(DEFAULT_ID);
       expect(member.getIdProject().getID()).toBe(DEFAULT_ID);
-      expect(member.exists()).toBe(true);
       expect(member.isBlocked()).toBe(false);
       expect(member.pullEvents()[0]).toBeInstanceOf(MemberAddedToProject);
     });
@@ -109,7 +108,6 @@ describe("Member Entity", () => {
 
       member.delete("delete-key", createModifier());
 
-      expect(member.exists()).toBe(false);
       const events = member.pullEvents();
       expect(events[0]).toBeInstanceOf(MemberAddedToProject);
       expect(events[1]).toBeInstanceOf(MemberDeleted);
@@ -122,12 +120,19 @@ describe("Member Entity", () => {
     it("should reconstruct a member from primitives", () => {
       const primitives = {
         ...createParams({ role: AllowedMemberRoles.member }),
-        deletedAt: null,
+        projectMetadata: { isFavorite: false, watch: false }
       };
 
-      const member = Member.fromPrimitives(primitives);
+      const member = Member.fromPrimitives(primitives as any);
 
-      expect(member.toPrimitives()).toEqual(primitives);
+      expect(member.toPrimitives()).toEqual({
+        id: primitives.id,
+        idProject: primitives.idProject,
+        idAccount: primitives.idAccount,
+        status: primitives.status,
+        role: primitives.role,
+        projectMetadata: primitives.projectMetadata,
+      });
       expect(member.getIdProject().getID()).toBe(primitives.idProject);
       expect(member.isBlocked()).toBe(false);
     });
@@ -147,7 +152,7 @@ describe("Member Entity", () => {
         idAccount: DEFAULT_ID,
         status: AllowedMemberStatus.active,
         role: AllowedMemberRoles.admin,
-        deletedAt: null,
+        projectMetadata: { isFavorite: false, watch: false }
       });
     });
 

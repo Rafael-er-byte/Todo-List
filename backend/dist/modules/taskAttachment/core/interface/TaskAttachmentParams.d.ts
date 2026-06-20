@@ -7,6 +7,5 @@ export default interface TaskAttachmentParams {
         name: string;
         size: number;
     };
-    deletedAt: Date | null;
 }
 //# sourceMappingURL=TaskAttachmentParams.d.ts.map

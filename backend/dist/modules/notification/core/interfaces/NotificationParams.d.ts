@@ -4,7 +4,6 @@ export default interface NotificationParams {
     eventKey: string;
     status: AllowedNotificationStatus;
     idUser: string;
-    deletedAt: Date | null;
     type: string;
 }
 //# sourceMappingURL=NotificationParams.d.ts.map

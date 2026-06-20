@@ -51,8 +51,6 @@ describe('Task', () => {
   it('creates a task and emits a TaskCreated event', () => {
     const { task } = buildTask();
 
-    expect(task.exists()).toBe(true);
-
     const primitives = task.toPrimitives();
     expect(primitives.title).toBe('Initial task title');
     expect(primitives.archived).toBe(false);
@@ -211,7 +209,6 @@ describe('Task', () => {
     expect(archiveEvents[0]!.getEvent()).toBe('TASK_ARCHIVED');
 
     task.delete(actor, 'delete-key');
-    expect(task.exists()).toBe(false);
 
     const deleteEvents = task.pullEvents();
     expect(deleteEvents).toHaveLength(1);
@@ -336,8 +333,6 @@ describe('Task', () => {
 
     expect(() => task.delete(actor, 'delete-key')).not.toThrow();
     task.pullEvents();
-
-    expect(task.exists()).toBe(false);
   });
 
   it('throws error when trying to archive a deleted task', () => {
@@ -349,7 +344,6 @@ describe('Task', () => {
     task.delete(actor, 'delete-key');
     task.pullEvents(); 
 
-    expect(task.exists()).toBe(false);
     expect(() => task.archive(actor, 'archive-again-key')).toThrow();
   });
 
@@ -384,7 +378,7 @@ describe('Task', () => {
     expect(primitives.id).toBe('0243c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.idProject).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(task.getIdProject().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
-    expect(primitives.deletedAt).toBeNull();
+    expect(primitives.deletedAt).toBeUndefined();
   });
 
   it('throws InvalidStartDate when start date is not before due date', () => {

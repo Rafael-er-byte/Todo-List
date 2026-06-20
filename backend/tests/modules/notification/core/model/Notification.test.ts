@@ -19,7 +19,6 @@ const createNotificationParams = (
     status: AllowedNotificationStatus;
     idUser: string;
     type: NotificationTypes;
-    deletedAt: Date | null;
     key: string;
   }>,
 ) => ({
@@ -28,7 +27,6 @@ const createNotificationParams = (
   status: AllowedNotificationStatus.unread,
   idUser: USER_ID,
   type: NotificationTypes.info,
-  deletedAt: null,
   key: 'test-key',
   ...overrides,
 });
@@ -56,7 +54,6 @@ describe('Notification Entity', () => {
       expect(notification.getIdUser().getID()).toBe(USER_ID);
       expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.unread);
       expect(notification.getType()).toBe(NotificationTypes.info);
-      expect(notification.exists()).toBe(true);
     });
 
     it('should emit NotificationCreated event on creation', () => {
@@ -130,7 +127,6 @@ describe('Notification Entity', () => {
         status: params.status,
         idUser: params.idUser,
         type: params.type,
-        deletedAt: params.deletedAt,
       });
     });
 

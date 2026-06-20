@@ -6,7 +6,6 @@ import CategoryColor from '../objects/CategoryColor';
 import CategoryCreated from '../events/CategoryCreated';
 import CategoryNameChanged from '../events/CategoryNameChanged';
 import CategoryColorChanged from '../events/CategoryColorChanged';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import CategoryDeleted from '../events/CategoryDeleted';
 export default class Category extends Entity {
@@ -18,13 +17,11 @@ export default class Category extends Entity {
     }
     static create(key, id, name, color, actorId, projectID) {
         const category = new Category(name, color, projectID, id);
-        category.create();
         category.addEvent(new CategoryCreated(key, DateTime.now(), actorId, projectID, id));
         return category;
     }
     static fromPrimitives(params) {
         const category = new Category(new CategoryName(params.name), new CategoryColor(params.color), new IdEntity(params.idProject), new IdCategory(params.id));
-        category.build(DeletedAt.createFromPrimitive(params.deletedAt));
         return category;
     }
     updateName(key, name, actor) {
@@ -37,7 +34,6 @@ export default class Category extends Entity {
     }
     delete(key, actor) {
         super.addEvent(new CategoryDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
-        super.softDelete();
     }
     getIdProject() {
         return this.idProject;
@@ -48,7 +44,6 @@ export default class Category extends Entity {
             idProject: this.getIdProject().getID(),
             name: this.name.getName(),
             color: this.color.getColor(),
-            deletedAt: super.getDeletedAt().toPrimitive(),
         };
     }
 }

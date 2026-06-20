@@ -43,7 +43,6 @@ describe('TaskAttachment entity tests', () => {
         name: 'file.png',
         size: 128,
       },
-      deletedAt: null,
     });
 
     const restored = TaskAttachment.fromPrimitives(primitives);

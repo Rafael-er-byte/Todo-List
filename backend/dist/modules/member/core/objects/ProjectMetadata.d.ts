@@ -7,7 +7,7 @@ export default class ProjectMetadata extends ValueObject {
     unwatchProject(): ProjectMetadata;
     markAsFavorite(): ProjectMetadata;
     unmarkAsFavorite(): ProjectMetadata;
-    IsWatching(): boolean;
+    isWatching(): boolean;
     favorite(): boolean;
 }
 //# sourceMappingURL=ProjectMetadata.d.ts.map

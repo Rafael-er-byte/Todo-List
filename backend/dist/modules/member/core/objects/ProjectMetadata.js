@@ -19,7 +19,7 @@ export default class ProjectMetadata extends ValueObject {
     unmarkAsFavorite() {
         return new ProjectMetadata(false, this.watch);
     }
-    IsWatching() {
+    isWatching() {
         return this.watch;
     }
     favorite() {

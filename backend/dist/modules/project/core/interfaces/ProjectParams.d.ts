@@ -18,6 +18,5 @@ export default interface ProjectParams {
     createResourcesSettings: AllowedProjectSetting;
     showCompletedTasks: boolean;
     invitaionToken: string | null;
-    deletedAt: Date | null;
 }
 //# sourceMappingURL=ProjectParams.d.ts.map

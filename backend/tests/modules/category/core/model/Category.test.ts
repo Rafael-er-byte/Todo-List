@@ -16,7 +16,6 @@ const createCategoryParams = (
     idProject: string;
     name: string;
     color: AllowedColors;
-    deletedAt: Date | null;
     idActor: string;
     key: string;
   }>
@@ -25,7 +24,6 @@ const createCategoryParams = (
   idProject: DEFAULT_ID,
   name: "Backlog",
   color: AllowedColors.BLACK,
-  deletedAt: null,
   key: "test-key",
   ...overrides
 });
@@ -55,7 +53,6 @@ describe("Category Entity", () => {
 
       expect(category.getID().getID()).toBe(DEFAULT_ID);
       expect(category.getIdProject().getID()).toBe(DEFAULT_ID);
-      expect(category.exists()).toBe(true);
     });
   });
 
@@ -94,34 +91,20 @@ describe("Category Entity", () => {
 
   describe("Existence", () => {
 
-    it("should return false when status is deleted", () => {
-      const category = Category.fromPrimitives(
-        createCategoryParams({ deletedAt: new Date() })
-      );
-
-      expect(category.getIdProject().getID()).toBe(DEFAULT_ID);
-      expect(category.exists()).toBe(false);
-    });
-
-    it("should delete a category", () => {
-      const category = Category.fromPrimitives(
-        createCategoryParams({ deletedAt: null })
-      );
+    it("should delete a category by emitting an event", () => {
+      const category = Category.fromPrimitives(createCategoryParams());
 
       category.pullEvents();
 
-      expect(category.exists()).toBe(true);
-
       category.delete("test-key-4", IDMock);
-
-      expect(category.exists()).toBe(false);
 
       const [event] = category.pullEvents();
       expect(event!.getEvent()).toBe("CATEGORY_DELETED");
 
+      // since soft-delete logic was removed, updates should still be allowed
       expect(() =>
         category.updateName("test-key-5", new CategoryName("New Name"), IDMock)
-      ).toThrow(ResourceNotFound);
+      ).not.toThrow();
     });
 
   });
@@ -139,7 +122,6 @@ describe("Category Entity", () => {
         idProject: params.idProject,
         name: params.name,
         color: params.color,
-        deletedAt: params.deletedAt
       });
     });
 
