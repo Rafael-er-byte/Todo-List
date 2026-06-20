@@ -1,6 +1,5 @@
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import NotificationCreated from '../events/NotificationCreated';
 import NotificationRead from '../events/NotificationRead';
@@ -39,7 +38,6 @@ export default class Notification extends Entity {
     type: NotificationTypes,
   ): Notification {
     const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), type, idUser);
-    notification.create();
     notification.addEvent(
       new NotificationCreated(key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()),
     );
@@ -53,10 +51,6 @@ export default class Notification extends Entity {
       NotificationStatus.create(params.status),
       params.type as NotificationTypes, 
       new IdEntity(params.idUser),
-    );
-
-    notification.build(
-      DeletedAt.createFromPrimitive(params.deletedAt),
     );
 
     return notification;
@@ -99,7 +93,6 @@ export default class Notification extends Entity {
       eventKey: this.eventKey,
       status: this.status.getStatus(),
       idUser: this.getIdUser().getID(),
-      deletedAt: super.getDeletedAt().toPrimitive(),
       type: this.type,
     };
   }

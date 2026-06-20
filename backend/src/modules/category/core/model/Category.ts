@@ -6,7 +6,6 @@ import CategoryColor from '../objects/CategoryColor';
 import CategoryCreated from '../events/CategoryCreated';
 import CategoryNameChanged from '../events/CategoryNameChanged';
 import CategoryColorChanged from '../events/CategoryColorChanged';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import type CategoryParams from '../interfaces/CategoryParams';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import CategoryDeleted from '../events/CategoryDeleted';
@@ -44,7 +43,6 @@ export default class Category extends Entity {
       id
     );
 
-    category.create();
     category.addEvent(new CategoryCreated(key, DateTime.now(), actorId, projectID, id));
     return category;
   }
@@ -55,10 +53,6 @@ export default class Category extends Entity {
         new CategoryColor(params.color as AllowedColors),
         new IdEntity(params.idProject),
         new IdCategory(params.id),
-      );
-
-      category.build(
-        DeletedAt.createFromPrimitive(params.deletedAt)
       );
 
       return category;
@@ -82,7 +76,6 @@ export default class Category extends Entity {
     super.addEvent(
       new CategoryDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID())
     );
-    super.softDelete();
   }
 
   public getIdProject(): IdEntity {
@@ -95,7 +88,6 @@ export default class Category extends Entity {
       idProject: this.getIdProject().getID(),
       name: this.name.getName(),
       color: this.color.getColor(),
-      deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }
 }

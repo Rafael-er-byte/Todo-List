@@ -1,5 +1,3 @@
-import List from "../../../../../src/modules/list/core/model/List";
-import ListId from "../../../../../src/modules/list/core/object/ListId";
 import ProjectNeedsToBeClosedBeforeDeleteIt from "../../../../../src/modules/project/core/errors/ProjectNeedsToBeClosedBeforeDeleteIt";
 import ProjectBackgroundImageUpdated from "../../../../../src/modules/project/core/events/ProjectBackgroundImageUpdated";
 import type ProjectBackgroundImageParams from "../../../../../src/modules/project/core/interfaces/ProjectBackgroundImageParams";
@@ -8,6 +6,7 @@ import ProjectBackGroundColor from "../../../../../src/modules/project/core/obje
 import ProjectBackGroundImage from "../../../../../src/modules/project/core/objects/ProjectBackGroundImage";
 import ProjectDescription from "../../../../../src/modules/project/core/objects/ProjectDescription";
 import ProjectId from "../../../../../src/modules/project/core/objects/ProjectId";
+import ProjectList from "../../../../../src/modules/project/core/objects/ProjectList";
 import ProjectName from "../../../../../src/modules/project/core/objects/ProjectName";
 import ProjectSetting from "../../../../../src/modules/project/core/objects/ProjectSetting";
 import ProjectStatus from "../../../../../src/modules/project/core/objects/ProjectStatus";
@@ -19,6 +18,7 @@ import ID from "../../../../../src/modules/shared/core/objects/ID";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 import IntNumber from "../../../../../src/modules/shared/core/objects/IntNumber";
 import None from "../../../../../src/modules/shared/core/objects/None";
+import PositiveInteger from "../../../../../src/modules/shared/core/objects/PositiveInteger";
 import Text from "../../../../../src/modules/shared/core/objects/Text";
 import Url from "../../../../../src/modules/shared/core/objects/URL";
 import { AllowedAttachments } from "../../../../../src/modules/shared/core/types/AllowedAttachment.types";
@@ -36,14 +36,13 @@ describe("Project tests", () => {
         projectDescription: string | null;
         background: ProjectBackgroundImageParams | AllowedColors;
         backgroundType: AllowedBackgroundType;
-        lists: List[];
+        lists: ProjectList[];
         commentAuthorization: AllowedProjectSetting;
         inmutableComment: boolean;
         addMemberSettings: AllowedProjectSetting;
         createResourcesSettings: AllowedProjectSetting;
         showCompletedTasks: boolean;
         invitaionToken: string | null;
-        deletedAt: Date | null;
     }>) => ({
         id: DEFAULT_ID,
         status: AllowedProjectStatus.open,
@@ -58,29 +57,16 @@ describe("Project tests", () => {
         createResourcesSettings: AllowedProjectSetting.admins,
         showCompletedTasks: true,
         invitaionToken: null,
-        deletedAt: null,
+        
         ...overrides
     });
 
-    const listParams = (overrides? : Partial<{     
-      id: string,
-      title: string,
-      position: number,
-      archived: boolean,
-      tasks: [],
-      projectId: string,
-      deletedAt: null
-    }>) => ({
-        id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
-        title: 'Backlog',
-        position: 1,
-        archived: false,
-        tasks: [],
-        projectId: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
-        deletedAt: null,
-        ...overrides
-        }
-    );
+    const buildList = (
+        idList: IdEntity = new IdEntity('01978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'), 
+        position: PositiveInteger = new PositiveInteger(1)) => {
+
+        return new ProjectList(idList, position);
+    }
 
     let project: Project | null;
     const DEFAULT_KEY = 'default-key';
@@ -146,7 +132,7 @@ describe("Project tests", () => {
                 project!.changeAddMemberSettings(
                     new ProjectSetting(AllowedProjectSetting.admins), 
                     DEFAULT_KEY, 
-                    new IdEntity(DEFAULT_ID))).not.toThrow();
+                    new IdEntity(DEFAULT_ID))).toThrow();
 
             expect(project!.getStatus().getStatus()).toBe(AllowedProjectStatus.closed);
         }
@@ -212,48 +198,63 @@ describe("Project tests", () => {
             createResourcesSettings: 'ADMINS',
             showCompletedTasks: true,
             invitaionToken: null,
-            deletedAt: null
+            
             }
         );
     });
 
-    it("Should validate and maintain correct structure of lists when add or remove ones", () => {
+    it("Should validate and maintain correct order of listsOrder when add or remove ones", () => {
         const params = buildParams();
         project = Project.fromPrimitives(params);
 
-        const list1 = List.fromPrimitives(listParams({
-            id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
-            title: 'Backlog',
-            position: 1
-        }));
+        const list1 = buildList();
 
-        const list2 = List.fromPrimitives(listParams({
-            id: '0243c815-7220-7d64-8c42-6f2af4f9fd37',
-            title: 'En progreso',
-            position: 2,
-        }));
+        const list2 = buildList(new IdEntity('01978b74-7c3e-76d1-b1f8-3a4c5d6e7f99'), new PositiveInteger(2));
 
-        const list3 = List.fromPrimitives(listParams({
-            id: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
-            title: 'Revisión',
-            position: 3,
-            archived: true,
-        }));
+        const list3 = buildList(new IdEntity('01978b74-7c3d-7d8f-a3c2-9b7e1d4f8a22'), new PositiveInteger(3));
 
-        const list4 = List.fromPrimitives(listParams({
-            id: '0443c815-7220-7d64-8c42-6f2af4f9fd37',
-            title: 'Testing',
-            position: 4,
-        }));
+        const list4 = buildList(new IdEntity('01978b74-7c3e-70a1-b5d4-2c8f7e1a9b33'), new PositiveInteger(4));
 
-        const list5 = List.fromPrimitives(listParams({
-            id: '0543c815-7220-7d64-8c42-6f2af4f9fd37',
-            title: 'Completado',
-            position: 5,
-            deletedAt: null,
-        }));
+        const listNewInTwoPos = buildList(new IdEntity('01978b74-7c3e-71f2-8a9b-5d6e7f1c2d44'), new PositiveInteger(2));
 
         project.addList(list1);
+        project.addList(list2);
+        project.addList(list3);
+        project.addList(list4);
 
+        let expectedOrder = [1, 2, 3, 4];
+        let idsExpectedOrder = [
+            '01978b74-7c3d-7b2a-8f71-3d7f6a8c2e11', 
+            '01978b74-7c3e-76d1-b1f8-3a4c5d6e7f99', 
+            '01978b74-7c3d-7d8f-a3c2-9b7e1d4f8a22',
+            '01978b74-7c3e-70a1-b5d4-2c8f7e1a9b33'
+        ];
+
+        let listsOrder = project.getlists().map(l => l.position.getValue());
+        let listIdsOrder = project.getlists().map(l => l.idList.getID());
+
+        expect(listsOrder).toStrictEqual(expectedOrder);
+        expect(listIdsOrder).toStrictEqual(idsExpectedOrder);
+
+        project.addList(listNewInTwoPos);
+        expectedOrder = [1, 2, 3, 4, 5];
+        idsExpectedOrder.splice(1, 0, '01978b74-7c3e-71f2-8a9b-5d6e7f1c2d44');
+
+        listsOrder = project.getlists().map(l => l.position.getValue());
+        listIdsOrder = project.getlists().map(l => l.idList.getID());
+
+        expect(listsOrder).toStrictEqual(expectedOrder);
+        expect(listIdsOrder).toStrictEqual(idsExpectedOrder);
+
+        project.removeList(list3.idList);
+
+        listsOrder = project.getlists().map(l => l.position.getValue());
+        listIdsOrder = project.getlists().map(l => l.idList.getID());
+
+        expectedOrder = [1, 2, 3, 4];
+        idsExpectedOrder = idsExpectedOrder.filter(i => i !== list3.idList.getID());
+
+        expect(listsOrder).toStrictEqual(expectedOrder);
+        expect(listIdsOrder).toStrictEqual(idsExpectedOrder);
     });
 });

@@ -3,5 +3,4 @@ export default interface LinkParams {
   idTask: string;
   url: string;
   visibleText: string | null;
-  deletedAt: Date | null;
 }

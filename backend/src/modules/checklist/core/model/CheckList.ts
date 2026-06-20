@@ -2,7 +2,6 @@ import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import type CheckListParams from '../interfaces/CheckListParams';
 import ChecklistItem from '../objects/ChecklistItem';
 import IdCheckList from '../objects/IdCheckList';
@@ -41,7 +40,6 @@ export default class CheckList extends Entity {
     items: ChecklistItem[] = [],
   ): CheckList {
     const checklist = new CheckList(id, owner, name, items, new PercentageCompleted(0));
-    checklist.create();
     checklist.recalculateCompletedPercentage();
     checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getTaskId(), id, checklist.toPrimitives()));
     return checklist;
@@ -57,7 +55,6 @@ export default class CheckList extends Entity {
       new PercentageCompleted(params.completedPercentage),
     );
 
-    checklist.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return checklist;
   }
 
@@ -122,7 +119,6 @@ export default class CheckList extends Entity {
 
   public delete(actor: IdEntity, key: string): void {
     this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList));
-    super.softDelete();
   }
 
   public toPrimitives(): CheckListParams {
@@ -132,7 +128,6 @@ export default class CheckList extends Entity {
       name: this.name.getName(),
       items: this.items.map((item) => item.toPrimitives()),
       completedPercentage: this.completedPercentage.toPrimitive(),
-      deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }
 

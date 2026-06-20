@@ -6,5 +6,4 @@ export default interface CheckListParams {
   name: string;
   items: ChecklistItemParams[];
   completedPercentage: number;
-  deletedAt: Date | null;
 }

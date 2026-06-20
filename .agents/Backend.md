@@ -28,7 +28,7 @@
 - From primitives and to primitives are methods that export or import data from json to abstract logic and dont emmit events
 - Factory method to build objects and emit events or apply logic, private constructors
 - Shared module contain useful objects, errors and the primary entitties or classes to dont repeat logic and maintain the strucutre
-- Softdelete instead of hard delete
+- Hard delete in DB
 - Uses uuid v7 to have better distribution, dont depend from database and dont use secuential ids that easily can de gessed
 - Dont use try-catch inside domain
 - Key from event is used as an indepotency key, is provided by client
@@ -55,7 +55,7 @@
 - CheckList item can not be bigger than 1000 characters
 - Attachment name can not be bigger than 1000 characters
 - Category name can not be bigger than 1000 characters
-- Oncascade actions does not generate an event for each change, generate a global event that describes that was performed
+- Oncascade actions does not generate an event for each change, generate a global event that describes that was performed, the on cascade actions are move a list or a task to another position and reorganize
 
 ## Allowed Attachments
 

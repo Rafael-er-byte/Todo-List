@@ -70,7 +70,6 @@ describe('List', () => {
       archived: false,
       tasks: [],
       projectId: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
-      deletedAt: null,
     });
 
     expect(list.toPrimitives().position).toBe(4);
@@ -163,7 +162,6 @@ describe('List', () => {
 
     list.delete('list-deleted-key', actor);
 
-    expect(list.exists()).toBe(false);
     const events = list.pullEvents();
     expect(events).toHaveLength(1);
     expect(events[0]!.getEvent()).toBe('LIST_DELETED');

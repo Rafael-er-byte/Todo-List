@@ -4,7 +4,6 @@ import None from '../../../shared/core/objects/None';
 import Text from '../../../shared/core/objects/Text';
 import Url from '../../../shared/core/objects/URL';
 import DateTime from '../../../shared/core/objects/DateTime';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import type LinkParams from '../interfaces/LinkParams';
 import LinkId from '../objects/LinkId';
 import LinkCreated from '../events/LinkCreated';
@@ -32,7 +31,6 @@ export default class Link extends Entity {
     visibleText?: Text,
   ): Link {
     const link = new Link(id, task, url, visibleText ?? new None());
-    link.create();
     link.addEvent(new LinkCreated(key, DateTime.now(), actor, task, id, link.toPrimitives()));
     return link;
   }
@@ -45,7 +43,6 @@ export default class Link extends Entity {
       params.visibleText ? new Text(params.visibleText) : new None(),
     );
 
-    link.build(DeletedAt.createFromPrimitive(params.deletedAt));
     return link;
   }
 
@@ -74,7 +71,6 @@ export default class Link extends Entity {
 
   public delete(key: string, actor: IdEntity): void {
     this.addEvent(new LinkDeleted(key, DateTime.now(), actor, this.getTaskId(), this.getId()));
-    super.softDelete();
   }
 
   public toPrimitives(): LinkParams {
@@ -83,7 +79,6 @@ export default class Link extends Entity {
       idTask: this.getTaskId().getID(),
       url: this.url.getUrl(),
       visibleText: this.visibleText instanceof None ? null : this.visibleText.getText(),
-      deletedAt: super.getDeletedAt().toPrimitive(),
     };
   }
 }

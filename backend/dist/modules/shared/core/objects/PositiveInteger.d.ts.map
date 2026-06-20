@@ -1,0 +1,1 @@
+{"version":3,"file":"PositiveInteger.d.ts","sourceRoot":"","sources":["../../../../../src/modules/shared/core/objects/PositiveInteger.ts"],"names":[],"mappings":"AAEA,OAAO,WAAW,MAAM,eAAe,CAAC;AAExC,MAAM,CAAC,OAAO,OAAO,eAAgB,SAAQ,WAAW;IACpD,OAAO,CAAC,KAAK,CAAY;gBAEb,KAAK,EAAE,MAAM;IAMlB,QAAQ,IAAI,MAAM;CAG5B"}
