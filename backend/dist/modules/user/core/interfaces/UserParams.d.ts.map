@@ -1,0 +1,1 @@
+{"version":3,"file":"UserParams.d.ts","sourceRoot":"","sources":["../../../../../src/modules/user/core/interfaces/UserParams.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,WAAW,UAAU;IACjC,EAAE,EAAE,MAAM,CAAC;IACX,QAAQ,CAAC,EAAE,MAAM,EAAE,CAAC;IACpB,cAAc,CAAC,EAAE,MAAM,GAAG,IAAI,CAAC;CAChC"}

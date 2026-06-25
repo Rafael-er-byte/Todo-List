@@ -1,0 +1,1 @@
+{"version":3,"file":"UnsupportedLanguage.js","sourceRoot":"","sources":["../../../../../src/modules/user/core/errors/UnsupportedLanguage.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,uCAAuC,CAAC;AAE9D,MAAM,CAAC,OAAO,OAAO,mBAAoB,SAAQ,SAAS;IACxD,YAAY,IAAc;QACxB,KAAK,CAAC,sBAAsB,EAAE,IAAI,CAAC,CAAC;QACpC,MAAM,CAAC,cAAc,CAAC,IAAI,EAAE,mBAAmB,CAAC,SAAS,CAAC,CAAC;IAC7D,CAAC;CACF"}

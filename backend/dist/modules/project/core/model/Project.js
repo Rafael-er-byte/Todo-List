@@ -142,10 +142,11 @@ export default class Project extends Entity {
         Projectlist2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
         this.lists = [...Projectlist1, Projectlist, ...Projectlist2];
     }
-    removeList(list) {
+    removeList(listId) {
         this.ensureCanBeModified();
-        if (!this.lists.find(l => l.idList.getID() === list.idList.getID())) {
-            throw new ResourceNotFound(`The list with id: ${list.idList.getID()} does not exists in project with id: ${this.getID()}`, { listId: list.idList.getID(), projectId: this.getID() });
+        const list = this.lists.find(l => l.idList.getID() === listId.getID());
+        if (!list) {
+            throw new ResourceNotFound(`The list with id: ${listId.getID()} does not exists in project with id: ${this.getID()}`, { listId: listId.getID(), projectId: this.getID() });
         }
         let ProjectlistToReorganize = this.lists.slice(list.position.getValue() - 1);
         ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
