@@ -13,35 +13,17 @@ export default class UserSettings extends Entity {
   private timezone: Timezone;
   private notificationSettings: NotificationSettings;
 
-  private constructor(
-    id: IdEntity,
-    userId: IdEntity,
-    language: Language,
-    theme: Theme,
-    timezone: Timezone,
-    notificationSettings: NotificationSettings,
-  ) {
-    super(id);
-    this.userId = userId;
-    this.language = language;
-    this.theme = theme;
-    this.timezone = timezone;
-    this.notificationSettings = notificationSettings;
-  }
-
-  public static create(params: UserSettingsParams): UserSettings {
-    return new UserSettings(
-      new IdEntity(params.id),
-      new IdEntity(params.userId),
-      new Language(params.language),
-      new Theme(params.theme),
-      new Timezone(params.timezone),
-      NotificationSettings.create(
-        params.notificationSettings!.type,
-        params.notificationSettings!.projectType,
-        params.notificationSettings!.channel,
-        params.notificationSettings!.active,
-      ),
+  public constructor(params: UserSettingsParams) {
+    super(new IdEntity(params.id));
+    this.userId = new IdEntity(params.userId);
+    this.language = new Language(params.language);
+    this.theme = new Theme(params.theme);
+    this.timezone = new Timezone(params.timezone);
+    this.notificationSettings = NotificationSettings.create(
+      params.notificationSettings!.type,
+      params.notificationSettings!.projectType,
+      params.notificationSettings!.channel,
+      params.notificationSettings!.active,
     );
   }
 

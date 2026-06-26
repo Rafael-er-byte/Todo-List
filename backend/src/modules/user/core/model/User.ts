@@ -7,15 +7,17 @@ import AccountDoesntExist from '../errors/AccountDoesntExist';
 import type UserParams from '../interfaces/UserParams';
 import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
 import ID from '../../../shared/core/objects/ID';
+import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 
 export default class User extends Entity {
   private accounts: IdEntity[] = [];
   private primaryAccount!: IdEntity;
 
-  private constructor(id: IdEntity, accounts: IdEntity[] = [], primary: IdEntity) {
+  private constructor(id: IdEntity, accounts: IdEntity[], primary: IdEntity) {
     super(id);
+    if(accounts.length <= 0)throw new InvalidParameters("User must contain at least one account");
     this.accounts = accounts;
-    this.addAccount(primary);
+    this.primaryAccount = primary;
   }
 
   public static fromPrimitives(params: UserParams): User {
@@ -29,11 +31,10 @@ export default class User extends Entity {
     const exists = this.accounts.find((a) => a.getID() === account.getID());
     if (exists) throw new DuplicateAccount(account.getID());
     this.accounts.push(account);
-    if (!this.primaryAccount) this.primaryAccount = account;
   }
 
   public changePrimaryAccount(newPrimary: IdEntity): void {
-    const previous = this.primaryAccount ? this.primaryAccount.getID() : null;
+    const previous = this.primaryAccount.getID();
     const found = this.accounts.find((a) => a.getID() === newPrimary.getID());
     if (!found) {
       throw new AccountDoesntExist(newPrimary.getID());
@@ -59,7 +60,7 @@ export default class User extends Entity {
     return this.accounts;
   }
 
-  public getPrimaryAccount(): IdEntity | null {
+  public getPrimaryAccount(): IdEntity {
     return this.primaryAccount;
   }
 
