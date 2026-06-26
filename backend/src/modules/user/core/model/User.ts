@@ -7,7 +7,6 @@ import AccountDoesntExist from '../errors/AccountDoesntExist';
 import type UserParams from '../interfaces/UserParams';
 import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
 import ID from '../../../shared/core/objects/ID';
-import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 
 export default class User extends Entity {
   private accounts: IdEntity[] = [];
@@ -15,7 +14,6 @@ export default class User extends Entity {
 
   private constructor(id: IdEntity, accounts: IdEntity[], primary: IdEntity) {
     super(id);
-    if(accounts.length <= 0)throw new InvalidParameters("User must contain at least one account");
     this.accounts = accounts;
     this.primaryAccount = primary;
   }
