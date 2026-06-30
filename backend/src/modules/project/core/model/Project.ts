@@ -83,34 +83,36 @@ export default class Project extends Entity {
   }
 
   public static create(
-    id: ProjectId,
-    projectName: ProjectName,
-    projectDescription: ProjectDescription | None,
-    background: ProjectBackGroundImage | ProjectBackGroundColor,
-    lists: ProjectList[],
-    commentAuthorization: ProjectSetting,
-    inmutableComment: boolean,
-    addMemberSettings: ProjectSetting,
-    createResourcesSettings: ProjectSetting,
-    showCompletedTasks: boolean,
-    actor: IdEntity,
-    key: string,
+    params: Omit<ProjectParams, 'status' | 'invitaionToken'> & { actor: string; key: string },
   ): Project {
+    const id = new ProjectId(params.id);
+    const projectName = new ProjectName(params.projectName);
+    const projectDescription = params.projectDescription ? new ProjectDescription(params.projectDescription) : new None();
+    const imageParams = params.background as ProjectBackgroundImageParams;
+    const background = params.backgroundType === AllowedBackgroundType.image
+      ? new ProjectBackGroundImage(new Attachment(
+        new Url(imageParams.url),
+        imageParams.type as AllowedAttachments,
+        new Text(imageParams.name),
+        new IntNumber(imageParams.size),
+      ))
+      : new ProjectBackGroundColor(params.background as AllowedColors);
+    const actor = new IdEntity(params.actor);
     const project = new Project(
       id,
       ProjectStatus.open(),
       projectName,
       projectDescription,
       background,
-      lists,
-      commentAuthorization,
-      inmutableComment,
-      addMemberSettings,
-      createResourcesSettings,
-      showCompletedTasks,
+      params.lists,
+      new ProjectSetting(params.commentAuthorization),
+      params.inmutableComment,
+      new ProjectSetting(params.addMemberSettings),
+      new ProjectSetting(params.createResourcesSettings),
+      params.showCompletedTasks,
     );
 
-    project.addEvent(new ProjectCreated(key, DateTime.now(), actor, id, project.toPrimitives()));
+    project.addEvent(new ProjectCreated(params.key, DateTime.now(), actor, id, project.toPrimitives()));
     return project;
   }
 

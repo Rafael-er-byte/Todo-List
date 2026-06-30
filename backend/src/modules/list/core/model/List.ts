@@ -42,12 +42,13 @@ export default class List extends Entity{
     }
 
     public static create(
-        id: ListId,
-        title: ListTitle,
-        position: PositiveInteger,
-        tasks: TaskList[],
-        projectId: IdEntity
+        params: Pick<ListParams, 'id' | 'title' | 'position' | 'tasks' | 'projectId'>
     ){
+        const id = new ListId(params.id);
+        const title = new ListTitle(new Text(params.title));
+        const position = new PositiveInteger(params.position);
+        const projectId = new IdEntity(params.projectId);
+        const tasks = params.tasks;
         const list = new List(id, title, position, tasks, projectId);
         return list;
     }

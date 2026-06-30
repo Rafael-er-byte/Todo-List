@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import Category from "../../../../../src/modules/category/core/model/Category";
 import CategoryColor from "../../../../../src/modules/category/core/objects/CategoryColor";
 import CategoryName from "../../../../../src/modules/category/core/objects/CategoryName";
-import IdCategory from "../../../../../src/modules/category/core/objects/IdCategory";
 import { AllowedColors } from "../../../../../src/modules/category/core/types/AllowedColors";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
@@ -32,12 +31,14 @@ const buildCategory = (overrides?: Parameters<typeof createCategoryParams>[0]) =
   const params = createCategoryParams(overrides);
 
   return Category.create(
-    params.key,
-    new IdCategory(params.id),
-    new CategoryName(params.name),
-    new CategoryColor(params.color),
-    new IdEntity(DEFAULT_ID),
-    new IdEntity(params.idProject)
+    {
+      id: params.id,
+      idProject: params.idProject,
+      name: params.name,
+      color: params.color,
+      key: params.key,
+      actorId: DEFAULT_ID,
+    }
   );
 };
 

@@ -32,16 +32,19 @@ export default class Comment extends Entity {
     }
 
     public static create(
-        idComment: IdComment,
-        creator: IdEntity,
-        task: IdEntity,
-        content: Text,
-        key: string,
-        mentions?: Collection
+        params: CommentParams & { key: string }
     ): Comment {
-        const mentionsCollection = mentions || new Collection([], [], []);
+        const idComment = new IdComment(params.id);
+        const creator = new IdEntity(params.creator);
+        const task = new IdEntity(params.idTask);
+        const content = new Text(params.content);
+        const mentionsCollection = new Collection(
+            params.mentions.map((mention) => new IdEntity(mention)),
+            [],
+            []
+        );
         const comment = new Comment(idComment, creator, task ,content, mentionsCollection);
-        comment.addEvent(new CommentCreated(key, DateTime.now(), creator, task, idComment, comment.toPrimitives()));
+        comment.addEvent(new CommentCreated(params.key, DateTime.now(), creator, task, idComment, comment.toPrimitives()));
         return comment;
     }
 

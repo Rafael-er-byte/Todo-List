@@ -1,27 +1,27 @@
 import Account from '../../../../../src/modules/account/core/model/Account';
-import IdAccount from '../../../../../src/modules/account/core/objects/IdAccount';
-import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import ID from '../../../../../src/modules/shared/core/objects/ID';
-import Email from '../../../../../src/modules/shared/core/objects/Email';
-import AccountName from '../../../../../src/modules/account/core/objects/AccountName';
-import Url from '../../../../../src/modules/shared/core/objects/URL';
 import None from '../../../../../src/modules/shared/core/objects/None';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
 import { describe, it, expect } from 'vitest';
 
 describe('Account model', () => {
-  it('create builds account with current signature', () => {
-    const id = new IdAccount(ID.generateId().toString());
-    const owner = new IdEntity(ID.generateId().toString());
-    const email = new Email('test@example.com');
-    const name = new AccountName('Test');
-    const profileImage = new Url('https://example.com/photo.png');
+  it('create builds account with primitive params', () => {
+    const id = ID.generateId().toString();
+    const userId = ID.generateId().toString();
 
-    const account = Account.create(id, email, name, 'google', profileImage, owner, true);
+    const account = Account.create({
+      id,
+      userId,
+      email: 'test@example.com',
+      name: 'Test',
+      provider: 'google',
+      profileImage: 'https://example.com/photo.png',
+      isPrimary: true,
+    });
     const primitives = account.toPrimitives();
 
-    expect(primitives.id).toBe(id.getID());
-    expect(primitives.userId).toBe(owner.getID());
+    expect(primitives.id).toBe(id);
+    expect(primitives.userId).toBe(userId);
     expect(primitives.email).toBe('test@example.com');
     expect(primitives.name).toBe('Test');
     expect(primitives.provider).toBe('google');

@@ -1,7 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import Invitation from "../../../../../src/modules/invitation/core/model/Invitation";
-import IdInvitation from "../../../../../src/modules/invitation/core/objects/IdInvitation";
-import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 import Email from "../../../../../src/modules/shared/core/objects/Email";
 import InvitationStatus, { AllowedInvitationStatus } from "../../../../../src/modules/invitation/core/objects/InvitationStatus";
 import InvitationCreated from "../../../../../src/modules/invitation/core/events/InvitationCreated";
@@ -15,11 +13,13 @@ const ACTOR_ID = '019df05a-8588-758c-b5e7-92af14bf85c2';
 
 const buildInvitation = () => {
   return Invitation.create(
-    'create-key',
-    new IdInvitation(DEFAULT_ID),
-    new IdEntity(HOST_ID),
-    new IdEntity(PROJECT_ID),
-    new Email(GUEST_EMAIL),
+    {
+      key: 'create-key',
+      id: DEFAULT_ID,
+      host: HOST_ID,
+      projectId: PROJECT_ID,
+      guest: GUEST_EMAIL,
+    }
   );
 };
 

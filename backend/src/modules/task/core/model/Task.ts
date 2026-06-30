@@ -120,21 +120,21 @@ export default class Task extends Entity {
 
   //mutable methods
   public static create(
-    title: TaskTitle,
-    listContainer: IdEntity,
-    positionInList: PositiveInteger,
-    state: TaskState,
-    archived: boolean,
-    id: TaskId,
-    idProject: IdEntity,
-    description: Text | None,
-    startDate: DateTime | None,
-    dueDate: DateTime | None,
-    categories: Collection,
-    assigned: Collection,
-    actor: IdEntity, 
-    key: string
+    params: Omit<TaskParams, 'isOverdue' | 'isStarted'> & { actor: string; key: string }
   ): Task {
+    const title = new TaskTitle(params.title);
+    const listContainer = new IdEntity(params.listContainer);
+    const positionInList = new PositiveInteger(params.positionInList);
+    const state = TaskState.create(params.state as AllowedTaskState);
+    const archived = params.archived;
+    const id = new TaskId(params.id);
+    const idProject = new IdEntity(params.idProject);
+    const description = params.description ? new Text(params.description) : new None();
+    const startDate = params.startDate instanceof Date ? DateTime.create(params.startDate) : new None();
+    const dueDate = params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None();
+    const categories = new Collection(params.categories.map((category) => new IdEntity(category)), [], []);
+    const assigned = new Collection(params.assigned.map((assign) => new IdEntity(assign)), [], []);
+    const actor = new IdEntity(params.actor);
   
     const task = new Task(
         title,
@@ -154,7 +154,7 @@ export default class Task extends Entity {
     );
 
     task.addEvent(
-      new TaskCreated(key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()),
+      new TaskCreated(params.key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()),
     );
     return task;
   }

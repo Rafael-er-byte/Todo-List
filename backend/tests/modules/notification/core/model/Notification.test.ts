@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import NotificationAlreadyRead from '../../../../../src/modules/notification/core/error/NotificationAlreadyRead';
 import Notification from '../../../../../src/modules/notification/core/model/Notification';
-import IdNotification from '../../../../../src/modules/notification/core/objects/IdNotification';
 import { AllowedNotificationStatus } from '../../../../../src/modules/notification/core/types/AllowedNotificationStatus';
 import { NotificationTypes } from '../../../../../src/modules/notification/core/types/NotificationTypes';
 import type DomainEvent from '../../../../../src/modules/shared/core/events/DomainEvent';
@@ -35,12 +34,14 @@ const buildNotification = (overrides?: Parameters<typeof createNotificationParam
   const params = createNotificationParams(overrides);
 
   return Notification.create(
-    params.key,
-    new IdNotification(params.id),
-    params.eventKey,
-    new IdEntity(params.idUser),
-    new IdEntity(ACTOR_ID),
-    params.type,
+    {
+      key: params.key,
+      id: params.id,
+      eventKey: params.eventKey,
+      idUser: params.idUser,
+      actor: ACTOR_ID,
+      type: params.type,
+    },
   );
 };
 

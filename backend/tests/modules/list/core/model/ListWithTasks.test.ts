@@ -11,11 +11,13 @@ import TaskList from '../../../../../src/modules/list/core/object/TaskList';
 
 const buildList = () =>
   List.create(
-    new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'),
-    new ListTitle(new Text('Backlog')),
-    new PositiveInteger(1),
-    [],
-    new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'),
+    {
+      id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
+      title: 'Backlog',
+      position: 1,
+      tasks: [],
+      projectId: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
+    },
   );
 
 const buildTask = (id = '0143c815-7220-7d64-8c42-6f2af4f9fd37', position = 1, project = '0343c815-7220-7d64-8c42-6f2af4f9fd37') => {
@@ -73,13 +75,15 @@ describe('List with tasks', () => {
     const originalProject = '0343c815-7220-7d64-8c42-6f2af4f9fd37';
     const newProject = new IdEntity('0543c815-7220-7d64-8c42-6f2af4f9fd37');
     const list = List.create(
-      new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'),
-      new ListTitle(new Text('Backlog')),
-      new PositiveInteger(1),
-      [
-        buildTask('0143c815-7220-7d64-8c42-6f2af4f9fd44', 1, originalProject),
-      ],
-      new IdEntity(originalProject),
+      {
+        id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
+        title: 'Backlog',
+        position: 1,
+        tasks: [
+          buildTask('0143c815-7220-7d64-8c42-6f2af4f9fd44', 1, originalProject),
+        ],
+        projectId: originalProject,
+      },
     );
 
     const task = list.getTasks()[0];

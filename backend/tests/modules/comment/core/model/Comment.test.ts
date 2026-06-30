@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import Comment from "../../../../../src/modules/comment/core/model/Comment";
-import IdComment from "../../../../../src/modules/comment/core/objects/IdComment";
 import Text from "../../../../../src/modules/shared/core/objects/Text";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
@@ -36,11 +35,14 @@ const buildComment = (overrides?: Parameters<typeof createCommentParams>[0]) => 
   const params = createCommentParams(overrides);
 
   return Comment.create(
-    new IdComment(params.id),
-    new IdEntity(params.creator),
-    new IdEntity(params.idTask),
-    new Text(params.content),
-    params.key
+    {
+      id: params.id,
+      creator: params.creator,
+      idTask: params.idTask,
+      content: params.content,
+      mentions: params.mentions,
+      key: params.key,
+    }
   );
 };
 

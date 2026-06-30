@@ -30,16 +30,15 @@ export default class Notification extends Entity {
   }
 
   public static create(
-    key: string,
-    idNotification: IdNotification,
-    eventKey: string,
-    idUser: IdEntity,
-    actor: IdEntity,
-    type: NotificationTypes,
+    params: Omit<NotificationParams, 'status'> & { key: string; actor: string },
   ): Notification {
-    const notification = new Notification(idNotification, eventKey, NotificationStatus.unread(), type, idUser);
+    const idNotification = new IdNotification(params.id);
+    const idUser = new IdEntity(params.idUser);
+    const actor = new IdEntity(params.actor);
+    const type = params.type as NotificationTypes;
+    const notification = new Notification(idNotification, params.eventKey, NotificationStatus.unread(), type, idUser);
     notification.addEvent(
-      new NotificationCreated(key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()),
+      new NotificationCreated(params.key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()),
     );
     return notification;
   }

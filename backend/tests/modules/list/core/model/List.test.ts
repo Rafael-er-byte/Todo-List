@@ -9,11 +9,13 @@ import PositiveInteger from '../../../../../src/modules/shared/core/objects/Posi
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 
 const buildList = () => List.create(
-  new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'),
-  new ListTitle(new Text('Backlog')),
-  new PositiveInteger(1),
-  [],
-  new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'),
+  {
+    id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
+    title: 'Backlog',
+    position: 1,
+    tasks: [],
+    projectId: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
+  },
 );
 
 const buildTask = (position: number, id: string, projectId: string = '0343c815-7220-7d64-8c42-6f2af4f9fd37') =>
@@ -77,21 +79,25 @@ describe('List', () => {
 
   it('does not allow negative list positions', () => {
     expect(() => List.create(
-      new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'),
-      new ListTitle(new Text('Backlog')),
-      new PositiveInteger(-1),
-      [],
-      new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'),
+      {
+        id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
+        title: 'Backlog',
+        position: -1,
+        tasks: [],
+        projectId: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
+      },
     )).toThrow(InvalidParameters);
   });
 
   it('does not allow zero list positions', () => {
     expect(() => List.create(
-      new ListId('0143c815-7220-7d64-8c42-6f2af4f9fd37'),
-      new ListTitle(new Text('Backlog')),
-      new PositiveInteger(0),
-      [],
-      new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37'),
+      {
+        id: '0143c815-7220-7d64-8c42-6f2af4f9fd37',
+        title: 'Backlog',
+        position: 0,
+        tasks: [],
+        projectId: '0343c815-7220-7d64-8c42-6f2af4f9fd37',
+      },
     )).toThrow(InvalidParameters);
   });
 

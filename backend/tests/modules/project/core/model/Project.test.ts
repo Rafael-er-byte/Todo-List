@@ -81,36 +81,47 @@ describe("Project tests", () => {
 
     it("Should create a project valid instance", () => {
         project = Project.create(
-            new ProjectId(DEFAULT_ID),
-            new ProjectName('Project 1'),
-            new ProjectDescription("A project example"),
-            new ProjectBackGroundColor(AllowedColors.BLUE), 
-            [],
-            new ProjectSetting(AllowedProjectSetting.admins),
-            false,
-            new ProjectSetting(AllowedProjectSetting.admins),
-            new ProjectSetting(AllowedProjectSetting.admins),
-            true,
-            new IdEntity(DEFAULT_ID),
-            'key-example'
+            {
+                id: DEFAULT_ID,
+                projectName: 'Project 1',
+                projectDescription: "A project example",
+                background: AllowedColors.BLUE,
+                backgroundType: AllowedBackgroundType.color,
+                lists: [],
+                commentAuthorization: AllowedProjectSetting.admins,
+                inmutableComment: false,
+                addMemberSettings: AllowedProjectSetting.admins,
+                createResourcesSettings: AllowedProjectSetting.admins,
+                showCompletedTasks: true,
+                actor: DEFAULT_ID,
+                key: 'key-example'
+            }
         );
 
         expect(project).toBeInstanceOf(Project);
         project = null;
 
         project = Project.create(
-            new ProjectId(DEFAULT_ID),
-            new ProjectName('Project 1'),
-            new None(),
-            new ProjectBackGroundImage(DEFAULT_IMAGE), 
-            [],
-            new ProjectSetting(AllowedProjectSetting.member),
-            false,
-            new ProjectSetting(AllowedProjectSetting.member),
-            new ProjectSetting(AllowedProjectSetting.member),
-            true,
-            new IdEntity(DEFAULT_ID),
-            'key-example'
+            {
+                id: DEFAULT_ID,
+                projectName: 'Project 1',
+                projectDescription: null,
+                background: {
+                    url: DEFAULT_IMAGE.getUrl().getUrl(),
+                    type: DEFAULT_IMAGE.getType(),
+                    name: DEFAULT_IMAGE.getName().getText(),
+                    size: DEFAULT_IMAGE.getSize().getValue(),
+                },
+                backgroundType: AllowedBackgroundType.image,
+                lists: [],
+                commentAuthorization: AllowedProjectSetting.member,
+                inmutableComment: false,
+                addMemberSettings: AllowedProjectSetting.member,
+                createResourcesSettings: AllowedProjectSetting.member,
+                showCompletedTasks: true,
+                actor: DEFAULT_ID,
+                key: 'key-example'
+            }
         );
 
         expect(project).toBeInstanceOf(Project);

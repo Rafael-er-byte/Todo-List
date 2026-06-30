@@ -29,13 +29,13 @@ export default class Category extends Entity {
   }
 
   public static create(
-    key: string,
-    id: IdCategory,
-    name: CategoryName,
-    color: CategoryColor,
-    actorId: IdEntity,
-    projectID: IdEntity,
+    params: CategoryParams & { key: string; actorId: string },
   ) {
+    const id = new IdCategory(params.id);
+    const name = new CategoryName(params.name);
+    const color = new CategoryColor(params.color as AllowedColors);
+    const projectID = new IdEntity(params.idProject);
+    const actorId = new IdEntity(params.actorId);
     const category = new Category(
       name,
       color,
@@ -43,7 +43,7 @@ export default class Category extends Entity {
       id
     );
 
-    category.addEvent(new CategoryCreated(key, DateTime.now(), actorId, projectID, id));
+    category.addEvent(new CategoryCreated(params.key, DateTime.now(), actorId, projectID, id));
     return category;
   }
 
