@@ -35,7 +35,7 @@ describe('User entity', () => {
 
   it('changePrimaryAccount emits ACCOUNT_CHANGED event with previous info', () => {
     const user = User.fromPrimitives(params as UserParams);
-    const newPrimary = new IdEntity(ID.generateId().getId());
+    const newPrimary = new IdEntity(ID.generateId().toString());
     user.addAccount(newPrimary);
     user.changePrimaryAccount(newPrimary);
 
@@ -47,7 +47,7 @@ describe('User entity', () => {
 
   it("Should remove an account", () => {
     const user = User.fromPrimitives(params as UserParams);
-    const acc = new IdEntity(ID.generateId().getId());
+    const acc = new IdEntity(ID.generateId().toString());
     user.addAccount(acc);
   
     expect(user.getAccounts().length === 2);
@@ -65,12 +65,12 @@ describe('User entity', () => {
   it("Should throw if the account tring to remove doesnt exists", () => {
     const user = User.fromPrimitives(params as UserParams);
 
-    expect(() => user.removeAccount(new IdEntity(ID.generateId().getId()))).toThrow(AccountDoesntExist)
+    expect(() => user.removeAccount(new IdEntity(ID.generateId().toString()))).toThrow(AccountDoesntExist)
   });
 
   it("Should take the first account as the primary in case that remove the primary account", () => {
     const user = User.fromPrimitives(params as UserParams);
-    const newPrimary = new IdEntity(ID.generateId().getId());
+    const newPrimary = new IdEntity(ID.generateId().toString());
     user.addAccount(newPrimary);
     user.changePrimaryAccount(newPrimary);
 

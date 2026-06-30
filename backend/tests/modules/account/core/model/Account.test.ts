@@ -11,8 +11,8 @@ import { describe, it, expect } from 'vitest';
 
 describe('Account model', () => {
   it('create builds account with current signature', () => {
-    const id = new IdAccount(ID.generateId().getId());
-    const owner = new IdEntity(ID.generateId().getId());
+    const id = new IdAccount(ID.generateId().toString());
+    const owner = new IdEntity(ID.generateId().toString());
     const email = new Email('test@example.com');
     const name = new AccountName('Test');
     const profileImage = new Url('https://example.com/photo.png');
@@ -32,12 +32,12 @@ describe('Account model', () => {
 
   it('fromPrimitives and toPrimitives roundtrip with null profile image', () => {
     const primitives = {
-      id: ID.generateId().getId(),
+      id: ID.generateId().toString(),
       email: 'test2@example.com',
       name: 'Test 2',
       provider: 'local',
       profileImage: null,
-      userId: ID.generateId().getId(),
+      userId: ID.generateId().toString(),
       createdAt: new Date(),
       isPrimary: false,
     };
@@ -60,12 +60,12 @@ describe('Account model', () => {
 
   it('fromPrimitives throws when provider is missing', () => {
     const primitives = {
-      id: ID.generateId().getId(),
+      id: ID.generateId().toString(),
       email: 'test3@example.com',
       name: 'Test 3',
       provider: '',
       profileImage: null,
-      userId: ID.generateId().getId(),
+      userId: ID.generateId().toString(),
       createdAt: new Date(),
       isPrimary: false,
     };
@@ -76,12 +76,12 @@ describe('Account model', () => {
 
   it('fromPrimitives throws when createdAt is missing', () => {
     const primitives = {
-      id: ID.generateId().getId(),
+      id: ID.generateId().toString(),
       email: 'test4@example.com',
       name: 'Test 4',
       provider: 'local',
       profileImage: null,
-      userId: ID.generateId().getId(),
+      userId: ID.generateId().toString(),
       isPrimary: true,
     };
 

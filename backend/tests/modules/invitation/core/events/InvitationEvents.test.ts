@@ -7,11 +7,11 @@ import ID from '../../../../../src/modules/shared/core/objects/ID';
 
 describe('Invitation events', () => {
   it('InvitationCreated contains expected data', () => {
-    const id = ID.generateId().getId();
+    const id = ID.generateId().toString();
     const date = DateTime.now();
-    const actor = new IdEntity(ID.generateId().getId());
-    const host = new IdEntity(ID.generateId().getId());
-    const invitationId = new IdEntity(ID.generateId().getId());
+    const actor = new IdEntity(ID.generateId().toString());
+    const host = new IdEntity(ID.generateId().toString());
+    const invitationId = new IdEntity(ID.generateId().toString());
 
     const ev = new InvitationCreated(id, date, actor, host, invitationId, { foo: 'bar' });
 
@@ -21,11 +21,11 @@ describe('Invitation events', () => {
   });
 
   it('InvitationCanceled contains expected data', () => {
-    const id = ID.generateId().getId();
+    const id = ID.generateId().toString();
     const date = DateTime.now();
-    const actor = new IdEntity(ID.generateId().getId());
-    const host = new IdEntity(ID.generateId().getId());
-    const invitationId = new IdEntity(ID.generateId().getId());
+    const actor = new IdEntity(ID.generateId().toString());
+    const host = new IdEntity(ID.generateId().toString());
+    const invitationId = new IdEntity(ID.generateId().toString());
 
     const ev = new InvitationCanceled(id, date, actor, host, invitationId);
 

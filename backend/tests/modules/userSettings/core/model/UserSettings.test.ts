@@ -11,8 +11,8 @@ import ID from '../../../../../src/modules/shared/core/objects/ID';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
 
 const buildParams = () => ({
-  id: ID.generateId().getId(),
-  userId: ID.generateId().getId(),
+  id: ID.generateId().toString(),
+  userId: ID.generateId().toString(),
   language: AllowedLanguage.en as AllowedLanguageType,
   theme: AllowedTheme.dark as AllowedThemeType,
   timezone: 'Europe/Madrid',

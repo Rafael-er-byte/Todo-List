@@ -249,7 +249,7 @@ export default class Project extends Entity {
 
   public generateInvitationToken(): string {
     this.invitaionToken = ID.generateId();
-    return (this.invitaionToken as ID).getId();
+    return (this.invitaionToken as ID).toString();
   }
 
   public invalidateInvitationToken(): void {
@@ -306,7 +306,7 @@ export default class Project extends Entity {
 
   public getToken(): string | None{
     this.ensureCanBeModified();
-    return this.invitaionToken instanceof ID? this.invitaionToken.getId(): new None();
+    return this.invitaionToken instanceof ID? this.invitaionToken.toString(): new None();
   }
 
   private ensureCanBeModified(): void{
@@ -332,7 +332,7 @@ export default class Project extends Entity {
       addMemberSettings: this.addMemberSettings.getSetting(),
       createResourcesSettings: this.createResourcesSettings.getSetting(),
       showCompletedTasks: this.showCompletedTasks,
-      invitaionToken: this.invitaionToken instanceof None ? null : (this.invitaionToken as ID).getId(),
+      invitaionToken: this.invitaionToken instanceof None ? null : (this.invitaionToken as ID).toString(),
     };
   }
 }
