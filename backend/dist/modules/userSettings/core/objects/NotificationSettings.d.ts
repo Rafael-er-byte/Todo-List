@@ -1,11 +1,11 @@
 import ValueObject from '../../../shared/core/objects/ValueObject';
-import { AllowedChannelType, AllowedNotificationType, AllowedProjectType } from '../types/NotificationSettings';
+import { type AllowedChannelType, type AllowedNotificationType, type AllowedProjectType } from '../types/NotificationSettings';
 export default class NotificationSettings extends ValueObject {
     private readonly type;
     private readonly projectType;
     private readonly channel;
     private readonly active;
-    constructor(type: AllowedNotificationType, projectType: AllowedProjectType, channel: AllowedChannelType, active: boolean);
+    private constructor();
     static create(type: AllowedNotificationType, projectType: AllowedProjectType, channel: AllowedChannelType, active: boolean): NotificationSettings;
     isActive(): boolean;
     toPrimitives(): {

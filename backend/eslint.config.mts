@@ -14,8 +14,11 @@ export default defineConfig([
     ignores: [
       "**/dist/**",
       "**/node_modules/**",
+      "**/tests/**",
       "jest.config.js",
       "prettier.config.js",
+      "eslint.config.mts",
+      "vitest.config.ts"
     ],
   },
 

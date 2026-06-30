@@ -8,19 +8,7 @@ export default class Language extends ValueObject {
             throw new UnsupportedLanguage(language);
         this.language = language;
     }
-    static create(language) {
-        return new Language(language);
-    }
-    static es() {
-        return new Language(AllowedLanguage.es);
-    }
-    static en() {
-        return new Language(AllowedLanguage.en);
-    }
     getLanguage() {
-        return this.language;
-    }
-    toPrimitives() {
         return this.language;
     }
 }

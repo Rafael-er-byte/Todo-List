@@ -7,10 +7,10 @@ export default class User extends Entity {
     private constructor();
     static fromPrimitives(params: UserParams): User;
     addAccount(account: IdEntity): void;
-    changePrimaryAccount(key: string, actor: IdEntity, newPrimary: IdEntity): void;
+    changePrimaryAccount(newPrimary: IdEntity): void;
     removeAccount(account: IdEntity): void;
     getAccounts(): IdEntity[];
-    getPrimaryAccount(): IdEntity | null;
+    getPrimaryAccount(): IdEntity;
     toPrimitives(): UserParams;
 }
 //# sourceMappingURL=User.d.ts.map

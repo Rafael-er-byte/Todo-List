@@ -148,7 +148,7 @@ export default class Project extends Entity {
         if (!list) {
             throw new ResourceNotFound(`The list with id: ${listId.getID()} does not exists in project with id: ${this.getID()}`, { listId: listId.getID(), projectId: this.getID() });
         }
-        let ProjectlistToReorganize = this.lists.slice(list.position.getValue() - 1);
+        const ProjectlistToReorganize = this.lists.slice(list.position.getValue() - 1);
         ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
         this.lists = this.lists.filter(l => l.idList.getID() !== list.idList.getID());
     }

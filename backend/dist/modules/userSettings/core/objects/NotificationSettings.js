@@ -1,6 +1,6 @@
 import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
 import ValueObject from '../../../shared/core/objects/ValueObject';
-import { ALLOWED_CHANNEL_TYPES, ALLOWED_NOTIFICATION_TYPES, ALLOWED_PROJECT_TYPES, AllowedChannelType, AllowedNotificationType, AllowedProjectType, } from '../types/NotificationSettings';
+import { ALLOWED_CHANNEL_TYPES, ALLOWED_NOTIFICATION_TYPES, ALLOWED_PROJECT_TYPES } from '../types/NotificationSettings';
 export default class NotificationSettings extends ValueObject {
     constructor(type, projectType, channel, active) {
         super();

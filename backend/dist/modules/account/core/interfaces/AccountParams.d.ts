@@ -3,9 +3,9 @@ export default interface AccountParams {
     email: string;
     isPrimary: boolean;
     name: string;
-    provider?: string | null;
+    userId: string;
+    provider: string;
     profileImage?: string | null;
-    userId?: string | null;
     createdAt?: Date;
 }
 //# sourceMappingURL=AccountParams.d.ts.map

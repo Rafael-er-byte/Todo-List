@@ -65,9 +65,9 @@ export default class Account extends Entity {
 			new Email(params.email),
 			params.isPrimary,
 			new AccountName(params.name),
-			provider as any,
-			profileImage as any,
-			owner as any,
+			provider,
+			profileImage,
+			owner,
 			createdAt,
 		);
 	}

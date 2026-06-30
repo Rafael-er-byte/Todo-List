@@ -1,6 +1,6 @@
 export default interface UserParams {
     id: string;
-    accounts?: string[];
-    primaryAccount?: string | null;
+    primaryAccount: string;
+    accounts: string[];
 }
 //# sourceMappingURL=UserParams.d.ts.map

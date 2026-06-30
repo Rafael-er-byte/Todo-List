@@ -4,6 +4,5 @@ export default class Timezone extends ValueObject {
     private readonly testTimeZone;
     constructor(tz: string);
     getTimezone(): string;
-    toPrimitives(): string;
 }
 //# sourceMappingURL=Timezone.d.ts.map

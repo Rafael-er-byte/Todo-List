@@ -8,19 +8,7 @@ export default class Theme extends ValueObject {
             throw new UnsupportedTheme(theme);
         this.theme = theme;
     }
-    static create(theme) {
-        return new Theme(theme);
-    }
-    static dark() {
-        return new Theme(AllowedTheme.dark);
-    }
-    static light() {
-        return new Theme(AllowedTheme.light);
-    }
     getTheme() {
-        return this.theme;
-    }
-    toPrimitives() {
         return this.theme;
     }
 }

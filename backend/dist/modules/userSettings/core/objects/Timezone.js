@@ -11,8 +11,5 @@ export default class Timezone extends ValueObject {
     getTimezone() {
         return this.tz;
     }
-    toPrimitives() {
-        return this.tz;
-    }
 }
 //# sourceMappingURL=Timezone.js.map
