@@ -22,17 +22,17 @@ describe('Entity abstract class', () => {
     }
 
     function createTestEntity(): TestEntity {
-        const idEntity = new IdEntity(ID.generateId().getId());
+        const idEntity = new IdEntity(ID.generateId().toString());
         return new TestEntity(idEntity);
     }
 
     function createDomainEvent(): DomainEvent {
         return new DomainEvent(
-            ID.generateId().getId(),
+            ID.generateId().toString(),
             DateTime.now(),
-            new IdEntity(ID.generateId().getId()),
-            new IdEntity(ID.generateId().getId()),
-            new IdEntity(ID.generateId().getId()),
+            new IdEntity(ID.generateId().toString()),
+            new IdEntity(ID.generateId().toString()),
+            new IdEntity(ID.generateId().toString()),
             "TEST_EVENT"
         );
     }

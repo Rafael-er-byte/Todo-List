@@ -28,8 +28,8 @@ const createParams = (overrides?: Partial<{
   ...overrides
 });
 
-const DEFAULT_ID = ID.generateId().getId();
-const createModifier = () => new IdEntity(ID.generateId().getId());
+const DEFAULT_ID = ID.generateId().toString();
+const createModifier = () => new IdEntity(ID.generateId().toString());
 
 const createMember = (overrides?: Parameters<typeof createParams>[0]) => {
   const params = createParams(overrides);

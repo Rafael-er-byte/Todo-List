@@ -8,12 +8,12 @@ import { describe, it, expect } from 'vitest';
 import type DomainEvent from '../../../../../src/modules/shared/core/events/DomainEvent';
 
 describe('CheckList', () => {
-  const owner = new IdEntity(ID.generateId().getId());
-  const actor = new IdEntity(ID.generateId().getId());
+  const owner = new IdEntity(ID.generateId().toString());
+  const actor = new IdEntity(ID.generateId().toString());
   const key = 'event-key';
 
   it('creates a checklist and emits a CheckListCreated event', () => {
-    const checklist = CheckList.create(new IdCheckList(ID.generateId().getId()), owner, new CheckListName('My checklist'), actor, key);
+    const checklist = CheckList.create(new IdCheckList(ID.generateId().toString()), owner, new CheckListName('My checklist'), actor, key);
     const events = checklist.pullEvents();
 
     expect(checklist.getName().getName()).toBe('My checklist');
@@ -24,7 +24,7 @@ describe('CheckList', () => {
   });
 
   it('adds an item and updates completed percentage', () => {
-    const checklist = CheckList.create(new IdCheckList(ID.generateId().getId()), owner, new CheckListName('Tasks'), actor, key);
+    const checklist = CheckList.create(new IdCheckList(ID.generateId().toString()), owner, new CheckListName('Tasks'), actor, key);
     checklist.pullEvents();
 
     checklist.addChecklistItem(new Text('Wash dishes'), actor, key);
@@ -37,7 +37,7 @@ describe('CheckList', () => {
   });
 
   it('completes an item and emits ChecklistItemCompleted', () => {
-    const checklist = CheckList.create(new IdCheckList(ID.generateId().getId()), owner, new CheckListName('Tasks'), actor, key);
+    const checklist = CheckList.create(new IdCheckList(ID.generateId().toString()), owner, new CheckListName('Tasks'), actor, key);
     checklist.addChecklistItem(new Text('Write tests'), actor, key);
     const itemId = checklist.getItems()[0]!.getId().getID();
     checklist.pullEvents();
@@ -51,7 +51,7 @@ describe('CheckList', () => {
   });
 
   it('marks an item as pending and recalculates percentage', () => {
-    const checklist = CheckList.create(new IdCheckList(ID.generateId().getId()), owner, new CheckListName('Tasks'), actor, key);
+    const checklist = CheckList.create(new IdCheckList(ID.generateId().toString()), owner, new CheckListName('Tasks'), actor, key);
     checklist.addChecklistItem(new Text('Build feature'), actor, key);
     const itemId = checklist.getItems()[0]!.getId().getID();
     checklist.completeChecklistItem(itemId, actor, key);
@@ -64,7 +64,7 @@ describe('CheckList', () => {
   });
 
   it('updates the checklist title and emits CheckListTitleUpdated', () => {
-    const checklist = CheckList.create(new IdCheckList(ID.generateId().getId()), owner, new CheckListName('Initial'), actor, key);
+    const checklist = CheckList.create(new IdCheckList(ID.generateId().toString()), owner, new CheckListName('Initial'), actor, key);
     checklist.pullEvents();
 
     checklist.updateName(new CheckListName('Updated name'), actor, key);

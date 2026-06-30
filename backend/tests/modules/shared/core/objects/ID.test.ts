@@ -6,20 +6,20 @@ describe("ID tests", () => {
     it('Should create a valid ID instance', () => {
         const id = ID.generateId();
         expect(id).toBeInstanceOf(ID);
-        expect(id.getId()).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+        expect(id.toString()).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
     });
 
     it("Should create a valid instance of ID from a string", () => {
         const id = ID.fromString('0195f3a2-7b4d-7e8f-9a1b-3c2d4e5f6a7b');
         expect(id).toBeInstanceOf(ID);
-        expect(id.getId()).toBe('0195f3a2-7b4d-7e8f-9a1b-3c2d4e5f6a7b');
+        expect(id.toString()).toBe('0195f3a2-7b4d-7e8f-9a1b-3c2d4e5f6a7b');
     });
 
     it("Should create and validate valid uuid v7", () => {
-        const validUuidV7 = ID.generateId().getId();
+        const validUuidV7 = ID.generateId().toString();
         const id = ID.fromString(validUuidV7);
         expect(id).toBeInstanceOf(ID);
-        expect(id.getId()).toBe(validUuidV7);
+        expect(id.toString()).toBe(validUuidV7);
     });
 
     it('Should throw if the ID string is not a valid UUIDv7', () => {

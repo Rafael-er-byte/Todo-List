@@ -8,6 +8,6 @@ export default class IdEntity {
   }
 
   public getID(): string {
-    return this.id.getId();
+    return this.id.toString();
   }
 }

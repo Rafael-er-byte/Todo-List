@@ -27,7 +27,7 @@ export default class ID extends ValueObject {
     return tmpID;
   }
 
-  public getId(): string {
+  public toString(): string {
     return this.id.getText();
   }
 }

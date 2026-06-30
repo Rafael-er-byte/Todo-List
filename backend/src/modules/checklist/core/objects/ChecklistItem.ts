@@ -17,7 +17,7 @@ export default class ChecklistItem extends ValueObject {
   }
 
   public static create(title: Text): ChecklistItem {
-    const itemId = new ChecklistItemId(ID.generateId().getId());
+    const itemId = new ChecklistItemId(ID.generateId().toString());
     return new ChecklistItem(itemId, title, false);
   }
 

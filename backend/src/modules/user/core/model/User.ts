@@ -40,7 +40,7 @@ export default class User extends Entity {
 
     this.primaryAccount = newPrimary;
     this.addEvent(
-      new AccountChanged(ID.generateId().getId(), DateTime.now(), this.getID(), super.getID(), newPrimary, { previousPrimary: previous }),
+      new AccountChanged(ID.generateId().toString(), DateTime.now(), this.getID(), super.getID(), newPrimary, { previousPrimary: previous }),
     );
   }
 
