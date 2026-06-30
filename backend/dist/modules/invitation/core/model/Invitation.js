@@ -23,7 +23,7 @@ export default class Invitation extends Entity {
         this.status = InvitationStatus.canceled();
         this.addEvent(new InvitationCanceled(key, DateTime.now(), this.host, this.host, super.getID()));
     }
-    accept(key) {
+    accept() {
         this.status = InvitationStatus.accepted();
     }
     delete(key) {

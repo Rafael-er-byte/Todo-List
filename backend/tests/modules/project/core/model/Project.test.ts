@@ -13,6 +13,8 @@ import ProjectStatus from "../../../../../src/modules/project/core/objects/Proje
 import { AllowedBackgroundType } from "../../../../../src/modules/project/core/types/AllowedBackgroundType";
 import { AllowedProjectSetting } from "../../../../../src/modules/project/core/types/AllowedProjectSetting";
 import { AllowedProjectStatus } from "../../../../../src/modules/project/core/types/AllowedProjectStatus";
+import ConflictDuplicateResource from "../../../../../src/modules/shared/core/errors/ConflictDuplicatedResource";
+import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import Attachment from "../../../../../src/modules/shared/core/objects/Attachment";
 import ID from "../../../../../src/modules/shared/core/objects/ID";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
@@ -256,5 +258,21 @@ describe("Project tests", () => {
 
         expect(listsOrder).toStrictEqual(expectedOrder);
         expect(listIdsOrder).toStrictEqual(idsExpectedOrder);
+    });
+
+    it("Should throw when the list to remove doesnt exists", () => {
+        const params = buildParams();
+        project = Project.fromPrimitives(params);
+        const list1 = buildList();
+        expect(() => project!.removeList(list1.idList)).toThrow(ResourceNotFound);
+    });
+
+    it("Shouldnt allow repeated lists", () => {
+        const params = buildParams();
+        project = Project.fromPrimitives(params);
+        const list1 = buildList();
+        project.addList(list1);
+        expect(project.getlists()).toHaveLength(1);
+        expect(() => project!.addList(list1)).toThrow(ConflictDuplicateResource);
     });
 });

@@ -12,7 +12,7 @@ export default class Invitation extends Entity {
     private constructor();
     static create(key: string, id: IdInvitation, host: IdEntity, projectId: IdEntity, guest: Email): Invitation;
     cancel(key: string): void;
-    accept(key: string): void;
+    accept(): void;
     delete(key: string): void;
     static fromPrimitives(params: InvitationParams): Invitation;
     toPrimitives(): InvitationParams;

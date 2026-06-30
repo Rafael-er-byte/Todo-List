@@ -1,7 +1,6 @@
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import IdEntity from '../../../shared/core/objects/IdEntity';
-import DeletedAt from '../../../shared/core/objects/DeletedAt';
 import Attachment from '../../../shared/core/objects/Attachment';
 import Url from '../../../shared/core/objects/URL';
 import Text from '../../../shared/core/objects/Text';

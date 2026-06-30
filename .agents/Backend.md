@@ -19,6 +19,24 @@
 ## Specifications
 - Dont use any in backend logic use unknown, use null instead of undefined
 - Just follow instructions in prompt
+- Domain contains logic, application cordinates this logic and infra and infra just provides services
+
+# Module structure
+**Each module contain at least the next structure** 
+- domain
+    - interfaces
+    - model
+    - repository
+    - objects
+    - types
+    - events
+    - errors
+- application
+    - services
+    - Dtos
+    - helpers
+- providers
+    -provider_name
 
 ## Domain specifications
 - All entities extends from Entity abstract class (Check Entity structure)
@@ -55,6 +73,7 @@
 - CheckList item can not be bigger than 1000 characters
 - Attachment name can not be bigger than 1000 characters
 - Category name can not be bigger than 1000 characters
+- If an invitation is accepted but the inviter doesnt have permissions to invite anymore then the invitation is invalid, if the project is closed or deleted also is invalid the invitation
 - Oncascade actions does not generate an event for each change, generate a global event that describes that was performed, the on cascade actions are move a list or a task to another position and reorganize
 
 ## Allowed Attachments
@@ -69,4 +88,7 @@
 - Member: Can create resources, comment or add member according to project config
 - Auditor: Just can observe a project
 
-
+# Pull request structure
+- Title: type header
+- Why: explain why is neede this changes
+- What was made: Explain what was made at current pull request

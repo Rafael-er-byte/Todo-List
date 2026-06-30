@@ -40,7 +40,7 @@ export default class Project extends Entity {
     showCompletedTaskEvents(key: string, actor: IdEntity): void;
     unshowCompletedTaskEvents(key: string, actor: IdEntity): void;
     addList(Projectlist: ProjectList): void;
-    removeList(list: ProjectList): void;
+    removeList(listId: IdEntity): void;
     generateInvitationToken(): string;
     invalidateInvitationToken(): void;
     shouldShowCompletedTasks(): boolean;
