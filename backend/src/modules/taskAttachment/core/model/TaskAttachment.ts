@@ -23,16 +23,21 @@ export default class TaskAttachment extends Entity {
   }
 
   public static create(
-    attachment: Attachment,
-    id: TaskAttachmentId,
-    task: IdEntity,
-    actor: IdEntity,
-    key: string,
+    params: TaskAttachmentParams & { actor: string; key: string },
   ): TaskAttachment {
+    const attachment = new Attachment(
+      new Url(params.attachment.url),
+      params.attachment.type as AllowedAttachments,
+      new Text(params.attachment.name),
+      new IntNumber(params.attachment.size),
+    );
+    const id = new TaskAttachmentId(params.id);
+    const task = new IdEntity(params.idTask);
+    const actor = new IdEntity(params.actor);
     const taskAttachment = new TaskAttachment(attachment, id, task);
     taskAttachment.addEvent(
       new TaskAttachmentCreated(
-        key,
+        params.key,
         DateTime.now(),
         actor,
         task,

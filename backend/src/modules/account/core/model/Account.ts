@@ -39,16 +39,20 @@ export default class Account extends Entity {
 	}
 
 	public static create(
-		id: IdAccount,
-		email: Email, 
-		name: AccountName, 
-		provider: string,
-		profileImage: Url | None,
-		owner: IdEntity,
-		isPrimary: boolean
+		params: Omit<AccountParams, 'createdAt'>,
 	): Account {
+		const profileImage = params.profileImage ? new Url(params.profileImage) : new None();
 		const createdAt = DateTime.now();
-		const account = new Account(id, email, isPrimary, name, provider, profileImage, owner, createdAt);
+		const account = new Account(
+			new IdAccount(params.id),
+			new Email(params.email),
+			params.isPrimary,
+			new AccountName(params.name),
+			params.provider,
+			profileImage,
+			new IdEntity(params.userId),
+			createdAt,
+		);
 		return account;
 	}
 

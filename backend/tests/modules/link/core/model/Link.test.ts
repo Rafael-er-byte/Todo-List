@@ -1,11 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import Link from '../../../../../src/modules/link/core/model/Link';
-import LinkId from '../../../../../src/modules/link/core/objects/LinkId';
 import type LinkParams from '../../../../../src/modules/link/core/interfaces/LinkParams';
-import Url from '../../../../../src/modules/shared/core/objects/URL';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
-import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import None from '../../../../../src/modules/shared/core/objects/None';
+import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 
 const LINK_ID = '019df05a-8588-758c-b5e7-92af14bf85d0';
 const TASK_ID = '019df05a-8588-758c-b5e7-92af14bf85d1';
@@ -27,12 +25,14 @@ const createLinkParams = (
 describe('Link', () => {
   it('creates a link and emits a LinkCreated event', () => {
     const link = Link.create(
-      new LinkId(LINK_ID),
-      new IdEntity(TASK_ID),
-      new Url(URL_VALUE),
-      'create-key',
-      new IdEntity(CREATOR_ID),
-      new Text(INITIAL_TEXT),
+      {
+        id: LINK_ID,
+        idTask: TASK_ID,
+        url: URL_VALUE,
+        visibleText: INITIAL_TEXT,
+        key: 'create-key',
+        actor: CREATOR_ID,
+      },
     );
 
     const events = link.pullEvents();
@@ -48,12 +48,14 @@ describe('Link', () => {
 
   it('updates visible text and emits LinkVisibleTextUpdated event', () => {
     const link = Link.create(
-      new LinkId(LINK_ID),
-      new IdEntity(TASK_ID),
-      new Url(URL_VALUE),
-      'create-key',
-      new IdEntity(CREATOR_ID),
-      new Text(INITIAL_TEXT),
+      {
+        id: LINK_ID,
+        idTask: TASK_ID,
+        url: URL_VALUE,
+        visibleText: INITIAL_TEXT,
+        key: 'create-key',
+        actor: CREATOR_ID,
+      },
     );
 
     link.pullEvents();
@@ -71,12 +73,14 @@ describe('Link', () => {
 
   it('deletes the link and emits LinkDeleted event', () => {
     const link = Link.create(
-      new LinkId(LINK_ID),
-      new IdEntity(TASK_ID),
-      new Url(URL_VALUE),
-      'create-key',
-      new IdEntity(CREATOR_ID),
-      new Text(INITIAL_TEXT),
+      {
+        id: LINK_ID,
+        idTask: TASK_ID,
+        url: URL_VALUE,
+        visibleText: INITIAL_TEXT,
+        key: 'create-key',
+        actor: CREATOR_ID,
+      },
     );
 
     link.pullEvents();

@@ -18,30 +18,27 @@ import InvalidParameters from '../../../../../src/modules/shared/core/errors/Inv
 import InvalidOperation from '../../../../../src/modules/shared/core/errors/InvalidOperation';
 
 const buildTask = () => {
-  const title = new TaskTitle('Initial task title');
   const listContainer = new IdEntity('0143c815-7220-7d64-8c42-6f2af4f9fd37');
-  const state = TaskState.pending();
-  const taskId = new TaskId('0243c815-7220-7d64-8c42-6f2af4f9fd37');
   const projectId = new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37');
   const actor = new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37');
-  const categories = new Collection([], [], []);
-  const assigned = new Collection([], [], []);
 
   const task = Task.create(
-    title,
-    listContainer,
-    new PositiveInteger(1),
-    state,
-    false,
-    taskId,
-    projectId,
-    new None(),
-    new None(),
-    new None(),
-    categories,
-    assigned,
-    actor,
-    'task-created-key',
+    {
+      title: 'Initial task title',
+      listContainer: listContainer.getID(),
+      positionInList: 1,
+      state: TaskState.pending().getState(),
+      archived: false,
+      id: '0243c815-7220-7d64-8c42-6f2af4f9fd37',
+      idProject: projectId.getID(),
+      description: null,
+      startDate: null,
+      dueDate: null,
+      categories: [],
+      assigned: [],
+      actor: actor.getID(),
+      key: 'task-created-key',
+    },
   );
 
   return { task, actor };
@@ -70,27 +67,27 @@ describe('Task', () => {
   });
 
   it('does not allow creating a task with negative position', () => {
-    const title = new TaskTitle('Initial task title');
     const listContainer = new IdEntity('0143c815-7220-7d64-8c42-6f2af4f9fd37');
-    const taskId = new TaskId('0243c815-7220-7d64-8c42-6f2af4f9fd37');
     const projectId = new IdEntity('0343c815-7220-7d64-8c42-6f2af4f9fd37');
     const actor = new IdEntity('0443c815-7220-7d64-8c42-6f2af4f9fd37');
 
     expect(() => Task.create(
-      title,
-      listContainer,
-      new PositiveInteger(-1),
-      TaskState.pending(),
-      false,
-      taskId,
-      projectId,
-      new None(),
-      new None(),
-      new None(),
-      new Collection([], [], []),
-      new Collection([], [], []),
-      actor,
-      'task-created-key',
+      {
+        title: 'Initial task title',
+        listContainer: listContainer.getID(),
+        positionInList: -1,
+        state: TaskState.pending().getState(),
+        archived: false,
+        id: '0243c815-7220-7d64-8c42-6f2af4f9fd37',
+        idProject: projectId.getID(),
+        description: null,
+        startDate: null,
+        dueDate: null,
+        categories: [],
+        assigned: [],
+        actor: actor.getID(),
+        key: 'task-created-key',
+      },
     )).toThrow(InvalidParameters);
   });
 

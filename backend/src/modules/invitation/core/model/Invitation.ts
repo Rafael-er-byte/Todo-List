@@ -22,9 +22,13 @@ export default class Invitation extends Entity {
     this.guest = guest;
   }
 
-  public static create(key: string, id: IdInvitation, host: IdEntity, projectId: IdEntity, guest: Email): Invitation {
+  public static create(params: Omit<InvitationParams, 'status'> & { key: string }): Invitation {
+    const id = new IdInvitation(params.id);
+    const host = new IdEntity(params.host);
+    const projectId = new IdEntity(params.projectId);
+    const guest = new Email(params.guest);
     const invitation = new Invitation(id, host, projectId, InvitationStatus.pending(), guest);
-    invitation.addEvent(new InvitationCreated(key, DateTime.now(), host, host, id, invitation.toPrimitives()));
+    invitation.addEvent(new InvitationCreated(params.key, DateTime.now(), host, host, id, invitation.toPrimitives()));
     return invitation;
   }
 

@@ -32,16 +32,20 @@ export default class CheckList extends Entity {
   }
 
   public static create(
-    id: IdCheckList,
-    owner: IdEntity,
-    name: CheckListName,
-    actor: IdEntity,
-    key: string,
-    items: ChecklistItem[] = [],
+    params: Pick<CheckListParams, 'id' | 'idOwner' | 'name'> & {
+      actor: string;
+      key: string;
+      items?: CheckListParams['items'];
+    },
   ): CheckList {
+    const id = new IdCheckList(params.id);
+    const owner = new IdEntity(params.idOwner);
+    const name = new CheckListName(params.name);
+    const actor = new IdEntity(params.actor);
+    const items = (params.items ?? []).map((item) => ChecklistItem.fromPrimitives(item));
     const checklist = new CheckList(id, owner, name, items, new PercentageCompleted(0));
     checklist.recalculateCompletedPercentage();
-    checklist.addEvent(new CheckListCreated(key, DateTime.now(), actor, checklist.getTaskId(), id, checklist.toPrimitives()));
+    checklist.addEvent(new CheckListCreated(params.key, DateTime.now(), actor, checklist.getTaskId(), id, checklist.toPrimitives()));
     return checklist;
   }
 

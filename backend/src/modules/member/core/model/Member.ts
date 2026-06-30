@@ -36,15 +36,14 @@ export default class Member extends Entity {
   }
 
   public static create(
-    idMember:IdMember,
-    idProject: IdEntity,
-    idAccount: IdEntity,
-    role: MemberRole,
-    status: MemberStatus,
-    modifier: IdEntity,
-    key: string
-
+    params: Omit<MemberParams, 'projectMetadata'> & { actor: string; key: string }
   ): Member {
+    const idMember = new IdMember(params.id);
+    const idProject = new IdEntity(params.idProject);
+    const idAccount = new IdEntity(params.idAccount);
+    const role = new MemberRole(params.role);
+    const status = MemberStatus.create(params.status);
+    const actor = new IdEntity(params.actor);
   
     const member = new Member(
       idMember,
@@ -56,7 +55,7 @@ export default class Member extends Entity {
     );
 
     member.addEvent(
-      new MemberAddedToProject(key, DateTime.now(), modifier, idProject, idMember, member.toPrimitives()),
+      new MemberAddedToProject(params.key, DateTime.now(), actor, idProject, idMember, member.toPrimitives()),
     );
     return member;
   }
