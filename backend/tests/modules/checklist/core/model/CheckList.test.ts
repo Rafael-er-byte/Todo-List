@@ -1,5 +1,5 @@
-import CheckList from '../../../../../src/modules/checklist/core/model/CheckList';
-import CheckListName from '../../../../../src/modules/checklist/core/objects/CheckListName';
+import CheckList from '../../../../../src/modules/project/checklist/core/model/CheckList';
+import CheckListName from '../../../../../src/modules/project/checklist/core/objects/CheckListName';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 import ID from '../../../../../src/modules/shared/core/objects/ID';
 import { describe, it, expect } from 'vitest';

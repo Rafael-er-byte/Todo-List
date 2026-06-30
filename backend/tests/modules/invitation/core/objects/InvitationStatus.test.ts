@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import InvitationStatus, { AllowedInvitationStatus } from '../../../../../src/modules/invitation/core/objects/InvitationStatus';
+import InvitationStatus, { AllowedInvitationStatus } from '../../../../../src/modules/project/invitation/core/objects/InvitationStatus';
 
 describe('InvitationStatus Value Object', () => {
   it('can be created with factories', () => {

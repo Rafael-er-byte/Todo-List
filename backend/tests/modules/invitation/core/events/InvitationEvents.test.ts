@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import InvitationCreated from '../../../../../src/modules/invitation/core/events/InvitationCreated';
-import InvitationCanceled from '../../../../../src/modules/invitation/core/events/InvitationCanceled';
+import InvitationCreated from '../../../../../src/modules/project/invitation/core/events/InvitationCreated';
+import InvitationCanceled from '../../../../../src/modules/project/invitation/core/events/InvitationCanceled';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import DateTime from '../../../../../src/modules/shared/core/objects/DateTime';
 import ID from '../../../../../src/modules/shared/core/objects/ID';

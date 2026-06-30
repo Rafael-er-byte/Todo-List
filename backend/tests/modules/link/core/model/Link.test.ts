@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import Link from '../../../../../src/modules/link/core/model/Link';
-import type LinkParams from '../../../../../src/modules/link/core/interfaces/LinkParams';
+import Link from '../../../../../src/modules/project/link/core/model/Link';
+import type LinkParams from '../../../../../src/modules/project/link/core/interfaces/LinkParams';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 import None from '../../../../../src/modules/shared/core/objects/None';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';

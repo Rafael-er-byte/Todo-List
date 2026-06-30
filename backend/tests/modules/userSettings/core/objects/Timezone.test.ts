@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import Timezone from '../../../../../src/modules/userSettings/core/objects/Timezone';
-import InvalidTimezone from '../../../../../src/modules/userSettings/core/errors/InvalidTimezone';
+import Timezone from '../../../../../src/modules/user/userSettings/core/objects/Timezone';
+import InvalidTimezone from '../../../../../src/modules/user/userSettings/core/errors/InvalidTimezone';
 
 describe('Timezone value object', () => {
   it('accepts valid timezone formats', () => {

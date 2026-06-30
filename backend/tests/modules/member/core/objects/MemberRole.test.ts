@@ -1,5 +1,5 @@
-import MemberRoleNotValid from "../../../../../src/modules/member/core/error/MemberRoleNotValid";
-import MemberRole from "../../../../../src/modules/member/core/objects/MemberRole";
+import MemberRoleNotValid from "../../../../../src/modules/project/member/core/error/MemberRoleNotValid";
+import MemberRole from "../../../../../src/modules/project/member/core/objects/MemberRole";
 import {describe, it, expect} from 'vitest';
 import { AllowedMemberRoles } from "../../../../../src/modules/shared/core/types/AllowedMemberRoles";
 

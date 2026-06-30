@@ -1,4 +1,4 @@
-import CategoryName from "../../../../../src/modules/category/core/objects/CategoryName";
+import CategoryName from "../../../../../src/modules/project/category/core/objects/CategoryName";
 import LimitExceeded from "../../../../../src/modules/shared/core/errors/LimitExceeded";
 import { describe, it, expect } from 'vitest';
 

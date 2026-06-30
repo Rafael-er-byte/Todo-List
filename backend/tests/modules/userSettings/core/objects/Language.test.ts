@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import Language from '../../../../../src/modules/userSettings/core/objects/Language';
-import UnsupportedLanguage from '../../../../../src/modules/userSettings/core/errors/UnsupportedLanguage';
-import { AllowedLanguage, type AllowedLanguage as AllowedLanguageType } from '../../../../../src/modules/userSettings/core/types/Language';
+import Language from '../../../../../src/modules/user/userSettings/core/objects/Language';
+import UnsupportedLanguage from '../../../../../src/modules/user/userSettings/core/errors/UnsupportedLanguage';
+import { AllowedLanguage, type AllowedLanguage as AllowedLanguageType } from '../../../../../src/modules/user/userSettings/core/types/Language';
 
 describe('Language value object', () => {
   it('accepts valid language values', () => {

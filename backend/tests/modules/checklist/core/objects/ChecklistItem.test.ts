@@ -1,4 +1,4 @@
-import ChecklistItem from '../../../../../src/modules/checklist/core/objects/ChecklistItem';
+import ChecklistItem from '../../../../../src/modules/project/checklist/core/objects/ChecklistItem';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 import { describe, it, expect } from 'vitest';
 

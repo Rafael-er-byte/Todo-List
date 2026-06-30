@@ -1,7 +1,7 @@
 import InvalidParameters from "../../../../../src/modules/shared/core/errors/InvalidParameters";
 import LimitExceeded from "../../../../../src/modules/shared/core/errors/LimitExceeded";
-import TaskRules from "../../../../../src/modules/task/core/constants/TaskRules";
-import TaskTitle from "../../../../../src/modules/task/core/objects/TaskTitle";
+import TaskRules from "../../../../../src/modules/project/task/core/constants/TaskRules";
+import TaskTitle from "../../../../../src/modules/project/task/core/objects/TaskTitle";
 import { describe, it, expect } from 'vitest';
 
 describe('TaskTitle Value Object', () => {

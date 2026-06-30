@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import UserSettings from '../../../../../src/modules/userSettings/core/model/UserSettings';
-import Language from '../../../../../src/modules/userSettings/core/objects/Language';
-import Theme from '../../../../../src/modules/userSettings/core/objects/Theme';
-import Timezone from '../../../../../src/modules/userSettings/core/objects/Timezone';
-import NotificationSettings from '../../../../../src/modules/userSettings/core/objects/NotificationSettings';
-import { AllowedChannelType, AllowedNotificationType, AllowedProjectType, type AllowedChannelType as AllowedChannelTypeType, type AllowedNotificationType as AllowedNotificationTypeType, type AllowedProjectType as AllowedProjectTypeType } from '../../../../../src/modules/userSettings/core/types/NotificationSettings';
-import { AllowedLanguage, type AllowedLanguage as AllowedLanguageType } from '../../../../../src/modules/userSettings/core/types/Language';
-import { AllowedTheme, type AllowedTheme as AllowedThemeType } from '../../../../../src/modules/userSettings/core/types/Theme';
+import UserSettings from '../../../../../src/modules/user/userSettings/core/model/UserSettings';
+import Language from '../../../../../src/modules/user/userSettings/core/objects/Language';
+import Theme from '../../../../../src/modules/user/userSettings/core/objects/Theme';
+import Timezone from '../../../../../src/modules/user/userSettings/core/objects/Timezone';
+import NotificationSettings from '../../../../../src/modules/user/userSettings/core/objects/NotificationSettings';
+import { AllowedChannelType, AllowedNotificationType, AllowedProjectType, type AllowedChannelType as AllowedChannelTypeType, type AllowedNotificationType as AllowedNotificationTypeType, type AllowedProjectType as AllowedProjectTypeType } from '../../../../../src/modules/user/userSettings/core/types/NotificationSettings';
+import { AllowedLanguage, type AllowedLanguage as AllowedLanguageType } from '../../../../../src/modules/user/userSettings/core/types/Language';
+import { AllowedTheme, type AllowedTheme as AllowedThemeType } from '../../../../../src/modules/user/userSettings/core/types/Theme';
 import ID from '../../../../../src/modules/shared/core/objects/ID';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
 

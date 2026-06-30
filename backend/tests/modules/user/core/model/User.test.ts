@@ -1,12 +1,12 @@
-import User from '../../../../../src/modules/user/core/model/User';
+import User from '../../../../../src/modules/user/user/core/model/User';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import ID from '../../../../../src/modules/shared/core/objects/ID';
 import { describe, it, expect } from 'vitest';
-import UserParams from '../../../../../src/modules/user/core/interfaces/UserParams';
-import DuplicateAccount from '../../../../../src/modules/user/core/errors/DuplicateAccount';
-import AccountChanged from '../../../../../src/modules/user/core/events/AccountChanged';
+import UserParams from '../../../../../src/modules/user/user/core/interfaces/UserParams';
+import DuplicateAccount from '../../../../../src/modules/user/user/core/errors/DuplicateAccount';
+import AccountChanged from '../../../../../src/modules/user/user/core/events/AccountChanged';
 import InvalidOperation from '../../../../../src/modules/shared/core/errors/InvalidOperation';
-import AccountDoesntExist from '../../../../../src/modules/user/core/errors/AccountDoesntExist';
+import AccountDoesntExist from '../../../../../src/modules/user/user/core/errors/AccountDoesntExist';
 
 describe('User entity', () => {
 

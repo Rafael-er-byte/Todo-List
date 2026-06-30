@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import List from '../../../../../src/modules/list/core/model/List';
-import ListId from '../../../../../src/modules/list/core/object/ListId';
-import ListTitle from '../../../../../src/modules/list/core/object/ListTitle';
+import List from '../../../../../src/modules/project/list/core/model/List';
+import ListId from '../../../../../src/modules/project/list/core/object/ListId';
+import ListTitle from '../../../../../src/modules/project/list/core/object/ListTitle';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
-import InvalidPositionInList from '../../../../../src/modules/list/core/errors/InvalidPositionInList';
+import InvalidPositionInList from '../../../../../src/modules/project/list/core/errors/InvalidPositionInList';
 import PositiveInteger from '../../../../../src/modules/shared/core/objects/PositiveInteger';
 import Text from '../../../../../src/modules/shared/core/objects/Text';
 import None from '../../../../../src/modules/shared/core/objects/None';
-import TaskList from '../../../../../src/modules/list/core/object/TaskList';
+import TaskList from '../../../../../src/modules/project/list/core/object/TaskList';
 
 const buildList = () =>
   List.create(

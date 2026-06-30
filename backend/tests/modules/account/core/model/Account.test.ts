@@ -1,4 +1,4 @@
-import Account from '../../../../../src/modules/account/core/model/Account';
+import Account from '../../../../../src/modules/user/account/core/model/Account';
 import ID from '../../../../../src/modules/shared/core/objects/ID';
 import None from '../../../../../src/modules/shared/core/objects/None';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';

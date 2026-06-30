@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import TaskAttachment from '../../../../../src/modules/taskAttachment/core/model/TaskAttachment';
+import TaskAttachment from '../../../../../src/modules/project/taskAttachment/core/model/TaskAttachment';
 import Attachment from '../../../../../src/modules/shared/core/objects/Attachment';
 import Url from '../../../../../src/modules/shared/core/objects/URL';
 import Text from '../../../../../src/modules/shared/core/objects/Text';

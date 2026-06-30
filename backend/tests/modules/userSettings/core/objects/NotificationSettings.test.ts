@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
-import NotificationSettings from '../../../../../src/modules/userSettings/core/objects/NotificationSettings';
-import { AllowedChannelType, AllowedNotificationType, AllowedProjectType, type AllowedChannelType as AllowedChannelTypeType, type AllowedNotificationType as AllowedNotificationTypeType, type AllowedProjectType as AllowedProjectTypeType } from '../../../../../src/modules/userSettings/core/types/NotificationSettings';
+import NotificationSettings from '../../../../../src/modules/user/userSettings/core/objects/NotificationSettings';
+import { AllowedChannelType, AllowedNotificationType, AllowedProjectType, type AllowedChannelType as AllowedChannelTypeType, type AllowedNotificationType as AllowedNotificationTypeType, type AllowedProjectType as AllowedProjectTypeType } from '../../../../../src/modules/user/userSettings/core/types/NotificationSettings';
 
 describe('NotificationSettings value object', () => {
   it('creates and serializes valid notification settings', () => {

@@ -1,4 +1,4 @@
-import ProjectMetadata from "../../../../../src/modules/member/core/objects/ProjectMetadata";
+import ProjectMetadata from "../../../../../src/modules/project/member/core/objects/ProjectMetadata";
 import { describe, it, expect } from 'vitest';
 
 describe("ProjectMetadata Value Object", () => {

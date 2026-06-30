@@ -1,4 +1,4 @@
-import CheckListName from '../../../../../src/modules/checklist/core/objects/CheckListName';
+import CheckListName from '../../../../../src/modules/project/checklist/core/objects/CheckListName';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
 import LimitExceeded from '../../../../../src/modules/shared/core/errors/LimitExceeded';
 import { describe, it, expect } from 'vitest';

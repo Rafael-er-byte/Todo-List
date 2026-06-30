@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import Comment from "../../../../../src/modules/comment/core/model/Comment";
+import Comment from "../../../../../src/modules/project/comment/core/model/Comment";
 import Text from "../../../../../src/modules/shared/core/objects/Text";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";

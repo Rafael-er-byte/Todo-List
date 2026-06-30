@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import Category from "../../../../../src/modules/category/core/model/Category";
-import CategoryColor from "../../../../../src/modules/category/core/objects/CategoryColor";
-import CategoryName from "../../../../../src/modules/category/core/objects/CategoryName";
-import { AllowedColors } from "../../../../../src/modules/category/core/types/AllowedColors";
+import Category from "../../../../../src/modules/project/category/core/model/Category";
+import CategoryColor from "../../../../../src/modules/project/category/core/objects/CategoryColor";
+import CategoryName from "../../../../../src/modules/project/category/core/objects/CategoryName";
+import { AllowedColors } from "../../../../../src/modules/project/category/core/types/AllowedColors";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
 import DomainEvent from "../../../../../src/modules/shared/core/events/DomainEvent";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";

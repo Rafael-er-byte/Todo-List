@@ -1,6 +1,6 @@
-import TaskState from "../../../../../src/modules/task/core/objects/TaskState";
-import TaskStateNotSupported from "../../../../../src/modules/task/core/error/TaskStateNotSupported";
-import { AllowedTaskState } from "../../../../../src/modules/task/core/types/AllowedTaskState";
+import TaskState from "../../../../../src/modules/project/task/core/objects/TaskState";
+import TaskStateNotSupported from "../../../../../src/modules/project/task/core/error/TaskStateNotSupported";
+import { AllowedTaskState } from "../../../../../src/modules/project/task/core/types/AllowedTaskState";
 import { describe, it, expect } from 'vitest';
 
 describe('TaskState Value Object', () => {

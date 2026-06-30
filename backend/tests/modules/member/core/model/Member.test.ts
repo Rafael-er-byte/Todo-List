@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import Member from "../../../../../src/modules/member/core/model/Member";
-import MemberRole from "../../../../../src/modules/member/core/objects/MemberRole";
+import Member from "../../../../../src/modules/project/member/core/model/Member";
+import MemberRole from "../../../../../src/modules/project/member/core/objects/MemberRole";
 import IdEntity from "../../../../../src/modules/shared/core/objects/IdEntity";
 import ID from "../../../../../src/modules/shared/core/objects/ID";
-import { AllowedMemberStatus } from "../../../../../src/modules/member/core/types/AllowedMemberStatus";
-import MemberAddedToProject from "../../../../../src/modules/member/core/events/MemberAddedToProject";
-import MemberBlocked from "../../../../../src/modules/member/core/events/MemberBlocked";
-import MemberActived from "../../../../../src/modules/member/core/events/MemberActived";
-import MemberRoleChanged from "../../../../../src/modules/member/core/events/MemberRoleChanged";
-import MemberDeleted from "../../../../../src/modules/member/core/events/MemberDeleted";
+import { AllowedMemberStatus } from "../../../../../src/modules/project/member/core/types/AllowedMemberStatus";
+import MemberAddedToProject from "../../../../../src/modules/project/member/core/events/MemberAddedToProject";
+import MemberBlocked from "../../../../../src/modules/project/member/core/events/MemberBlocked";
+import MemberActived from "../../../../../src/modules/project/member/core/events/MemberActived";
+import MemberRoleChanged from "../../../../../src/modules/project/member/core/events/MemberRoleChanged";
+import MemberDeleted from "../../../../../src/modules/project/member/core/events/MemberDeleted";
 import { AllowedMemberRoles } from '../../../../../src/modules/shared/core/types/AllowedMemberRoles';
 
 const createParams = (overrides?: Partial<{

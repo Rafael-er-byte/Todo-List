@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import Invitation from "../../../../../src/modules/invitation/core/model/Invitation";
+import Invitation from "../../../../../src/modules/project/invitation/core/model/Invitation";
 import Email from "../../../../../src/modules/shared/core/objects/Email";
-import InvitationStatus, { AllowedInvitationStatus } from "../../../../../src/modules/invitation/core/objects/InvitationStatus";
-import InvitationCreated from "../../../../../src/modules/invitation/core/events/InvitationCreated";
-import InvitationCanceled from "../../../../../src/modules/invitation/core/events/InvitationCanceled";
+import InvitationStatus, { AllowedInvitationStatus } from "../../../../../src/modules/project/invitation/core/objects/InvitationStatus";
+import InvitationCreated from "../../../../../src/modules/project/invitation/core/events/InvitationCreated";
+import InvitationCanceled from "../../../../../src/modules/project/invitation/core/events/InvitationCanceled";
 
 const DEFAULT_ID = '019df05a-8588-758c-b5e7-92af14bf85cf';
 const HOST_ID = '019df05a-8588-758c-b5e7-92af14bf85c0';

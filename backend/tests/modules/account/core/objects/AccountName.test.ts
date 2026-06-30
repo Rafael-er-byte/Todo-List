@@ -1,4 +1,4 @@
-import AccountName from '../../../../../src/modules/account/core/objects/AccountName';
+import AccountName from '../../../../../src/modules/user/account/core/objects/AccountName';
 import { describe, it, expect } from 'vitest';
 
 describe('AccountName value object', () => {

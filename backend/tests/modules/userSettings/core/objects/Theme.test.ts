@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import Theme from '../../../../../src/modules/userSettings/core/objects/Theme';
-import UnsupportedTheme from '../../../../../src/modules/userSettings/core/errors/UnsupportedTheme';
-import { AllowedTheme, type AllowedTheme as AllowedThemeType } from '../../../../../src/modules/userSettings/core/types/Theme';
+import Theme from '../../../../../src/modules/user/userSettings/core/objects/Theme';
+import UnsupportedTheme from '../../../../../src/modules/user/userSettings/core/errors/UnsupportedTheme';
+import { AllowedTheme, type AllowedTheme as AllowedThemeType } from '../../../../../src/modules/user/userSettings/core/types/Theme';
 
 describe('Theme value object', () => {
   it('accepts valid theme values', () => {
