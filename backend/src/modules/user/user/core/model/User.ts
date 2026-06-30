@@ -7,12 +7,13 @@ import AccountDoesntExist from '../errors/AccountDoesntExist';
 import type UserParams from '../interfaces/UserParams';
 import InvalidOperation from '../../../../shared/core/errors/InvalidOperation';
 import ID from '../../../../shared/core/objects/ID';
+import None from '../../../../shared/core/objects/None';
 
 export default class User extends Entity {
   private accounts: IdEntity[] = [];
-  private primaryAccount!: IdEntity;
+  private primaryAccount!: IdEntity | None;
 
-  private constructor(id: IdEntity, accounts: IdEntity[], primary: IdEntity) {
+  private constructor(id: IdEntity, accounts: IdEntity[], primary: IdEntity | None) {
     super(id);
     this.accounts = accounts;
     this.primaryAccount = primary;
@@ -21,7 +22,7 @@ export default class User extends Entity {
   public static fromPrimitives(params: UserParams): User {
     const id = new IdEntity(params.id);
     const accounts = (params.accounts || []).map((a) => new IdEntity(a));
-    const primary = new IdEntity(params.primaryAccount);
+    const primary = params.primaryAccount? new IdEntity(params.primaryAccount): new None();
     return new User(id, accounts, primary);
   }
 
@@ -32,6 +33,7 @@ export default class User extends Entity {
   }
 
   public changePrimaryAccount(newPrimary: IdEntity): void {
+    if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
     const previous = this.primaryAccount.getID();
     const found = this.accounts.find((a) => a.getID() === newPrimary.getID());
     if (!found) {
@@ -45,6 +47,7 @@ export default class User extends Entity {
   }
 
   public removeAccount(account: IdEntity): void {
+    if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
     const found = this.accounts.find((a) => a.getID() === account.getID());
     if (!found) throw new AccountDoesntExist(account.getID());
 
@@ -59,10 +62,12 @@ export default class User extends Entity {
   }
 
   public getPrimaryAccount(): IdEntity {
+    if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
     return this.primaryAccount;
   }
 
   public toPrimitives(): UserParams {
+    if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
     return {
       id: super.getID().getID(),
       primaryAccount:this.primaryAccount.getID(),
