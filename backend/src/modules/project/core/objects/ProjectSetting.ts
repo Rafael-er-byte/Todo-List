@@ -1,6 +1,6 @@
 import ValueObject from '../../../shared/core/objects/ValueObject';
+import { ALLOWED_PROJECT_SETTING, type AllowedProjectSetting } from '../../../shared/core/types/AllowedProjectSetting';
 import ProjectSettingNotSupported from '../errors/ProjectSettingNotSupported';
-import { ALLOWED_PROJECT_SETTING, AllowedProjectSetting } from '../types/AllowedProjectSetting';
 
 export default class ProjectSetting extends ValueObject {
   private setting!: AllowedProjectSetting;
