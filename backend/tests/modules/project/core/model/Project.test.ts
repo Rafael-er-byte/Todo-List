@@ -1,5 +1,4 @@
 import ProjectNeedsToBeClosedBeforeDeleteIt from "../../../../../src/modules/project/core/errors/ProjectNeedsToBeClosedBeforeDeleteIt";
-import ProjectBackgroundImageUpdated from "../../../../../src/modules/project/core/events/ProjectBackgroundImageUpdated";
 import type ProjectBackgroundImageParams from "../../../../../src/modules/project/core/interfaces/ProjectBackgroundImageParams";
 import Project from "../../../../../src/modules/project/core/model/Project";
 import ProjectBackGroundColor from "../../../../../src/modules/project/core/objects/ProjectBackGroundColor";
@@ -11,7 +10,6 @@ import ProjectName from "../../../../../src/modules/project/core/objects/Project
 import ProjectSetting from "../../../../../src/modules/project/core/objects/ProjectSetting";
 import ProjectStatus from "../../../../../src/modules/project/core/objects/ProjectStatus";
 import { AllowedBackgroundType } from "../../../../../src/modules/project/core/types/AllowedBackgroundType";
-import { AllowedProjectSetting } from "../../../../../src/modules/project/core/types/AllowedProjectSetting";
 import { AllowedProjectStatus } from "../../../../../src/modules/project/core/types/AllowedProjectStatus";
 import ConflictDuplicateResource from "../../../../../src/modules/shared/core/errors/ConflictDuplicatedResource";
 import ResourceNotFound from "../../../../../src/modules/shared/core/errors/ResourceNotFound";
@@ -26,6 +24,8 @@ import Url from "../../../../../src/modules/shared/core/objects/URL";
 import { AllowedAttachments } from "../../../../../src/modules/shared/core/types/AllowedAttachment.types";
 import { AllowedColors } from "../../../../../src/modules/shared/core/types/AllowedColors";
 import { describe, it, expect } from "vitest";
+import { AllowedProjectSetting } from "../../../../../src/modules/shared/core/types/AllowedProjectSetting";
+import { AllowedMemberRoles } from "../../../../../src/modules/shared/core/types/AllowedMemberRoles";
 
 describe("Project tests", () => {
 
@@ -53,10 +53,10 @@ describe("Project tests", () => {
         background: AllowedColors.BLUE,
         backgroundType: AllowedBackgroundType.color,
         lists: [],
-        commentAuthorization: AllowedProjectSetting.admins,
+        commentAuthorization: AllowedMemberRoles.admin,
         inmutableComment: false,
-        addMemberSettings: AllowedProjectSetting.admins,
-        createResourcesSettings: AllowedProjectSetting.admins,
+        addMemberSettings: AllowedMemberRoles.admin,
+        createResourcesSettings: AllowedMemberRoles.admin,
         showCompletedTasks: true,
         invitaionToken: null,
         
@@ -88,10 +88,10 @@ describe("Project tests", () => {
                 background: AllowedColors.BLUE,
                 backgroundType: AllowedBackgroundType.color,
                 lists: [],
-                commentAuthorization: AllowedProjectSetting.admins,
+                commentAuthorization: AllowedMemberRoles.admin,
                 inmutableComment: false,
-                addMemberSettings: AllowedProjectSetting.admins,
-                createResourcesSettings: AllowedProjectSetting.admins,
+                addMemberSettings: AllowedMemberRoles.admin,
+                createResourcesSettings: AllowedMemberRoles.admin,
                 showCompletedTasks: true,
                 actor: DEFAULT_ID,
                 key: 'key-example'
@@ -114,10 +114,10 @@ describe("Project tests", () => {
                 },
                 backgroundType: AllowedBackgroundType.image,
                 lists: [],
-                commentAuthorization: AllowedProjectSetting.member,
+                commentAuthorization: AllowedMemberRoles.member,
                 inmutableComment: false,
-                addMemberSettings: AllowedProjectSetting.member,
-                createResourcesSettings: AllowedProjectSetting.member,
+                addMemberSettings: AllowedMemberRoles.member,
+                createResourcesSettings: AllowedMemberRoles.member,
                 showCompletedTasks: true,
                 actor: DEFAULT_ID,
                 key: 'key-example'
@@ -143,7 +143,7 @@ describe("Project tests", () => {
         function validateStatus(){
             expect(() => 
                 project!.changeAddMemberSettings(
-                    new ProjectSetting(AllowedProjectSetting.admins), 
+                    new ProjectSetting(AllowedMemberRoles.admin), 
                     DEFAULT_KEY, 
                     new IdEntity(DEFAULT_ID))).toThrow();
 
@@ -205,10 +205,10 @@ describe("Project tests", () => {
             background: 'BLUE',
             backgroundType: 'COLOR',
             lists: [],
-            commentAuthorization: 'ADMINS',
+            commentAuthorization: 'ADMIN',
             inmutableComment: false,
-            addMemberSettings: 'ADMINS',
-            createResourcesSettings: 'ADMINS',
+            addMemberSettings: 'ADMIN',
+            createResourcesSettings: 'ADMIN',
             showCompletedTasks: true,
             invitaionToken: null,
             

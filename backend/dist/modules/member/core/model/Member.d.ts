@@ -1,5 +1,3 @@
-import IdMember from '../objects/IdMember';
-import MemberStatus from '../objects/MemberStatus';
 import MemberRole from '../objects/MemberRole';
 import Entity from '../../../shared/core/model/Entity';
 import IdEntity from '../../../shared/core/objects/IdEntity';
@@ -11,7 +9,10 @@ export default class Member extends Entity {
     private idAccount;
     private projectMetadata;
     private constructor();
-    static create(idMember: IdMember, idProject: IdEntity, idAccount: IdEntity, role: MemberRole, status: MemberStatus, modifier: IdEntity, key: string): Member;
+    static create(params: Omit<MemberParams, 'projectMetadata'> & {
+        actor: string;
+        key: string;
+    }): Member;
     static fromPrimitives(params: MemberParams): Member;
     block(key: string, actor: IdEntity): void;
     unBlock(key: string, actor: IdEntity): void;

@@ -3,7 +3,6 @@ import IdEntity from '../../../shared/core/objects/IdEntity';
 import Text from '../../../shared/core/objects/Text';
 import type CheckListParams from '../interfaces/CheckListParams';
 import ChecklistItem from '../objects/ChecklistItem';
-import IdCheckList from '../objects/IdCheckList';
 import PercentageCompleted from '../objects/PercentageCompleted';
 import CheckListName from '../objects/CheckListName';
 export default class CheckList extends Entity {
@@ -12,7 +11,11 @@ export default class CheckList extends Entity {
     private items;
     private completedPercentage;
     private constructor();
-    static create(id: IdCheckList, owner: IdEntity, name: CheckListName, actor: IdEntity, key: string, items?: ChecklistItem[]): CheckList;
+    static create(params: Pick<CheckListParams, 'id' | 'idOwner' | 'name'> & {
+        actor: string;
+        key: string;
+        items?: CheckListParams['items'];
+    }): CheckList;
     static fromPrimitives(params: CheckListParams): CheckList;
     getName(): CheckListName;
     getItems(): ChecklistItem[];

@@ -71,9 +71,22 @@ export default class Task extends Entity {
         return task;
     }
     //mutable methods
-    static create(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, categories, assigned, actor, key) {
+    static create(params) {
+        const title = new TaskTitle(params.title);
+        const listContainer = new IdEntity(params.listContainer);
+        const positionInList = new PositiveInteger(params.positionInList);
+        const state = TaskState.create(params.state);
+        const archived = params.archived;
+        const id = new TaskId(params.id);
+        const idProject = new IdEntity(params.idProject);
+        const description = params.description ? new Text(params.description) : new None();
+        const startDate = params.startDate instanceof Date ? DateTime.create(params.startDate) : new None();
+        const dueDate = params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None();
+        const categories = new Collection(params.categories.map((category) => new IdEntity(category)), [], []);
+        const assigned = new Collection(params.assigned.map((assign) => new IdEntity(assign)), [], []);
+        const actor = new IdEntity(params.actor);
         const task = new Task(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, false, false, categories, assigned);
-        task.addEvent(new TaskCreated(key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()));
+        task.addEvent(new TaskCreated(params.key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()));
         return task;
     }
     delete(actor, key) {

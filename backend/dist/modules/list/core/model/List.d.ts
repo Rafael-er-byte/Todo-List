@@ -1,4 +1,3 @@
-import ListId from "../object/ListId";
 import Entity from "../../../shared/core/model/Entity";
 import IdEntity from "../../../shared/core/objects/IdEntity";
 import type ListParams from "../interfaces/ListParams";
@@ -13,7 +12,7 @@ export default class List extends Entity {
     private tasks;
     private projectId;
     private constructor();
-    static create(id: ListId, title: ListTitle, position: PositiveInteger, tasks: TaskList[], projectId: IdEntity): List;
+    static create(params: Pick<ListParams, 'id' | 'title' | 'position' | 'tasks' | 'projectId'>): List;
     static fromPrimitives(params: ListParams): List;
     static exportBetweenLists(from: List, to: List, taskList: TaskList): void;
     updateTitle(newTitle: ListTitle, key: string, actor: IdEntity): void;

@@ -1,6 +1,4 @@
 import Entity from '../../../shared/core/model/Entity';
-import IdAccount from '../objects/IdAccount';
-import IdEntity from '../../../shared/core/objects/IdEntity';
 import None from '../../../shared/core/objects/None';
 import type AccountParams from '../interfaces/AccountParams';
 import Email from '../../../shared/core/objects/Email';
@@ -15,7 +13,7 @@ export default class Account extends Entity {
     private provider;
     private profileImage;
     private constructor();
-    static create(id: IdAccount, email: Email, name: AccountName, provider: string, profileImage: Url | None, owner: IdEntity, isPrimary: boolean): Account;
+    static create(params: Omit<AccountParams, 'createdAt'>): Account;
     static fromPrimitives(params: AccountParams): Account;
     toPrimitives(): AccountParams;
     getProfileImage(): Url | None;

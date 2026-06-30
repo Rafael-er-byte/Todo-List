@@ -19,9 +19,15 @@ export default class Member extends Entity {
         this.role = role;
         this.projectMetadata = projectMetadata;
     }
-    static create(idMember, idProject, idAccount, role, status, modifier, key) {
+    static create(params) {
+        const idMember = new IdMember(params.id);
+        const idProject = new IdEntity(params.idProject);
+        const idAccount = new IdEntity(params.idAccount);
+        const role = new MemberRole(params.role);
+        const status = MemberStatus.create(params.status);
+        const actor = new IdEntity(params.actor);
         const member = new Member(idMember, idProject, idAccount, status, role, new ProjectMetadata(false, false));
-        member.addEvent(new MemberAddedToProject(key, DateTime.now(), modifier, idProject, idMember, member.toPrimitives()));
+        member.addEvent(new MemberAddedToProject(params.key, DateTime.now(), actor, idProject, idMember, member.toPrimitives()));
         return member;
     }
     static fromPrimitives(params) {

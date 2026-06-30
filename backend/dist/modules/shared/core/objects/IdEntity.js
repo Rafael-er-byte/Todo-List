@@ -4,7 +4,7 @@ export default class IdEntity {
         this.id = ID.fromString(id);
     }
     getID() {
-        return this.id.getId();
+        return this.id.toString();
     }
 }
 //# sourceMappingURL=IdEntity.js.map

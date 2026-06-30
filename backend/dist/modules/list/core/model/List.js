@@ -26,7 +26,12 @@ export default class List extends Entity {
         this.tasks = tasks;
         this.projectId = projectId;
     }
-    static create(id, title, position, tasks, projectId) {
+    static create(params) {
+        const id = new ListId(params.id);
+        const title = new ListTitle(new Text(params.title));
+        const position = new PositiveInteger(params.position);
+        const projectId = new IdEntity(params.projectId);
+        const tasks = params.tasks;
         const list = new List(id, title, position, tasks, projectId);
         return list;
     }

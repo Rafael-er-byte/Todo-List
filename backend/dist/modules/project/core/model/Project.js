@@ -50,9 +50,17 @@ export default class Project extends Entity {
         this.showCompletedTasks = showCompletedTasks;
         this.invitaionToken = invitaionToken;
     }
-    static create(id, projectName, projectDescription, background, lists, commentAuthorization, inmutableComment, addMemberSettings, createResourcesSettings, showCompletedTasks, actor, key) {
-        const project = new Project(id, ProjectStatus.open(), projectName, projectDescription, background, lists, commentAuthorization, inmutableComment, addMemberSettings, createResourcesSettings, showCompletedTasks);
-        project.addEvent(new ProjectCreated(key, DateTime.now(), actor, id, project.toPrimitives()));
+    static create(params) {
+        const id = new ProjectId(params.id);
+        const projectName = new ProjectName(params.projectName);
+        const projectDescription = params.projectDescription ? new ProjectDescription(params.projectDescription) : new None();
+        const imageParams = params.background;
+        const background = params.backgroundType === AllowedBackgroundType.image
+            ? new ProjectBackGroundImage(new Attachment(new Url(imageParams.url), imageParams.type, new Text(imageParams.name), new IntNumber(imageParams.size)))
+            : new ProjectBackGroundColor(params.background);
+        const actor = new IdEntity(params.actor);
+        const project = new Project(id, ProjectStatus.open(), projectName, projectDescription, background, params.lists, new ProjectSetting(params.commentAuthorization), params.inmutableComment, new ProjectSetting(params.addMemberSettings), new ProjectSetting(params.createResourcesSettings), params.showCompletedTasks);
+        project.addEvent(new ProjectCreated(params.key, DateTime.now(), actor, id, project.toPrimitives()));
         return project;
     }
     static fromPrimitives(params) {
@@ -154,7 +162,7 @@ export default class Project extends Entity {
     }
     generateInvitationToken() {
         this.invitaionToken = ID.generateId();
-        return this.invitaionToken.getId();
+        return this.invitaionToken.toString();
     }
     invalidateInvitationToken() {
         this.invitaionToken = new None();
@@ -197,7 +205,7 @@ export default class Project extends Entity {
     }
     getToken() {
         this.ensureCanBeModified();
-        return this.invitaionToken instanceof ID ? this.invitaionToken.getId() : new None();
+        return this.invitaionToken instanceof ID ? this.invitaionToken.toString() : new None();
     }
     ensureCanBeModified() {
         if (this.status.isClosed())
@@ -222,7 +230,7 @@ export default class Project extends Entity {
             addMemberSettings: this.addMemberSettings.getSetting(),
             createResourcesSettings: this.createResourcesSettings.getSetting(),
             showCompletedTasks: this.showCompletedTasks,
-            invitaionToken: this.invitaionToken instanceof None ? null : this.invitaionToken.getId(),
+            invitaionToken: this.invitaionToken instanceof None ? null : this.invitaionToken.toString(),
         };
     }
 }

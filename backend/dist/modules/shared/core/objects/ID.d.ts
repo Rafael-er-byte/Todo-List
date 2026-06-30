@@ -5,6 +5,6 @@ export default class ID extends ValueObject {
     private validateId;
     static generateId(): ID;
     static fromString(id: string): ID;
-    getId(): string;
+    toString(): string;
 }
 //# sourceMappingURL=ID.d.ts.map

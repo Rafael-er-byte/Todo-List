@@ -1,7 +1,6 @@
 import Entity from '../../../shared/core/model/Entity';
 import DateTime from '../../../shared/core/objects/DateTime';
 import None from '../../../shared/core/objects/None';
-import TaskId from '../objects/TaskId';
 import TaskTitle from '../objects/TaskTitle';
 import TaskState from '../objects/TaskState';
 import IdEntity from '../../../shared/core/objects/IdEntity';
@@ -26,7 +25,10 @@ export default class Task extends Entity {
     private constructor();
     private ensureNotArchived;
     static fromPrimitives(params: TaskParams): Task;
-    static create(title: TaskTitle, listContainer: IdEntity, positionInList: PositiveInteger, state: TaskState, archived: boolean, id: TaskId, idProject: IdEntity, description: Text | None, startDate: DateTime | None, dueDate: DateTime | None, categories: Collection, assigned: Collection, actor: IdEntity, key: string): Task;
+    static create(params: Omit<TaskParams, 'isOverdue' | 'isStarted'> & {
+        actor: string;
+        key: string;
+    }): Task;
     delete(actor: IdEntity, key: string): void;
     removeCategory(category: IdEntity, actor: IdEntity, key: string): void;
     removeAssigned(assigned: IdEntity, actor: IdEntity, key: string): void;

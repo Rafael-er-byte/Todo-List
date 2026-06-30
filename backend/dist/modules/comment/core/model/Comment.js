@@ -17,10 +17,14 @@ export default class Comment extends Entity {
         this.creator = creator;
         this.task = task;
     }
-    static create(idComment, creator, task, content, key, mentions) {
-        const mentionsCollection = mentions || new Collection([], [], []);
+    static create(params) {
+        const idComment = new IdComment(params.id);
+        const creator = new IdEntity(params.creator);
+        const task = new IdEntity(params.idTask);
+        const content = new Text(params.content);
+        const mentionsCollection = new Collection(params.mentions.map((mention) => new IdEntity(mention)), [], []);
         const comment = new Comment(idComment, creator, task, content, mentionsCollection);
-        comment.addEvent(new CommentCreated(key, DateTime.now(), creator, task, idComment, comment.toPrimitives()));
+        comment.addEvent(new CommentCreated(params.key, DateTime.now(), creator, task, idComment, comment.toPrimitives()));
         return comment;
     }
     static fromPrimitives(params) {

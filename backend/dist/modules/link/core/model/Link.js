@@ -15,9 +15,14 @@ export default class Link extends Entity {
         this.url = url;
         this.visibleText = visibleText;
     }
-    static create(id, task, url, key, actor, visibleText) {
+    static create(params) {
+        const id = new LinkId(params.id);
+        const task = new IdEntity(params.idTask);
+        const url = new Url(params.url);
+        const actor = new IdEntity(params.actor);
+        const visibleText = params.visibleText ? new Text(params.visibleText) : undefined;
         const link = new Link(id, task, url, visibleText ?? new None());
-        link.addEvent(new LinkCreated(key, DateTime.now(), actor, task, id, link.toPrimitives()));
+        link.addEvent(new LinkCreated(params.key, DateTime.now(), actor, task, id, link.toPrimitives()));
         return link;
     }
     static fromPrimitives(params) {

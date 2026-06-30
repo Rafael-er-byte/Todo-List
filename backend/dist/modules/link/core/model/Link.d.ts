@@ -10,7 +10,10 @@ export default class Link extends Entity {
     private url;
     private visibleText;
     private constructor();
-    static create(id: LinkId, task: IdEntity, url: Url, key: string, actor: IdEntity, visibleText?: Text): Link;
+    static create(params: LinkParams & {
+        key: string;
+        actor: string;
+    }): Link;
     static fromPrimitives(params: LinkParams): Link;
     getId(): LinkId;
     getTaskId(): IdEntity;
