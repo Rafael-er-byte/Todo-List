@@ -1,4 +1,4 @@
-import type { AllowedMemberRoles } from '../types/AllowedMemberRoles';
+import type { AllowedMemberRoles } from '../../../shared/core/types/AllowedMemberRoles';
 import type { AllowedMemberStatus } from '../types/AllowedMemberStatus';
 
 export default interface MemberParams {

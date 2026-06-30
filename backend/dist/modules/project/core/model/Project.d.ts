@@ -25,7 +25,10 @@ export default class Project extends Entity {
     private showCompletedTasks;
     private invitaionToken;
     private constructor();
-    static create(id: ProjectId, projectName: ProjectName, projectDescription: ProjectDescription | None, background: ProjectBackGroundImage | ProjectBackGroundColor, lists: ProjectList[], commentAuthorization: ProjectSetting, inmutableComment: boolean, addMemberSettings: ProjectSetting, createResourcesSettings: ProjectSetting, showCompletedTasks: boolean, actor: IdEntity, key: string): Project;
+    static create(params: Omit<ProjectParams, 'status' | 'invitaionToken'> & {
+        actor: string;
+        key: string;
+    }): Project;
     static fromPrimitives(params: ProjectParams): Project;
     close(key: string, actor: IdEntity): void;
     delete(key: string, actor: IdEntity): void;

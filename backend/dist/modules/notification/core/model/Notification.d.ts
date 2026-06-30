@@ -10,7 +10,10 @@ export default class Notification extends Entity {
     private type;
     private idUser;
     private constructor();
-    static create(key: string, idNotification: IdNotification, eventKey: string, idUser: IdEntity, actor: IdEntity, type: NotificationTypes): Notification;
+    static create(params: Omit<NotificationParams, 'status'> & {
+        key: string;
+        actor: string;
+    }): Notification;
     static fromPrimitives(params: NotificationParams): Notification;
     markAsRead(key: string, actor: IdEntity): void;
     getId(): IdNotification;

@@ -10,7 +10,7 @@ export default class ChecklistItem extends ValueObject {
         this.completed = completed;
     }
     static create(title) {
-        const itemId = new ChecklistItemId(ID.generateId().getId());
+        const itemId = new ChecklistItemId(ID.generateId().toString());
         return new ChecklistItem(itemId, title, false);
     }
     static fromPrimitives(params) {

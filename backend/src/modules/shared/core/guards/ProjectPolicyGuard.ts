@@ -1,6 +1,6 @@
 import InvalidOperation from "../errors/InvalidOperation";
 import InvalidParameters from "../errors/InvalidParameters";
-import type DTO from "../handler/DTO";
+import type { DTO } from "../handler/DTO";
 import IdEntity from "../objects/IdEntity";
 import type ProjectAccessRepository from "../repository/ProjectPolicyRepository";
 import { AccessType } from "../types/AccessType";

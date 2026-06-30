@@ -15,9 +15,14 @@ export default class Category extends Entity {
         this.color = color;
         this.idProject = idProject;
     }
-    static create(key, id, name, color, actorId, projectID) {
+    static create(params) {
+        const id = new IdCategory(params.id);
+        const name = new CategoryName(params.name);
+        const color = new CategoryColor(params.color);
+        const projectID = new IdEntity(params.idProject);
+        const actorId = new IdEntity(params.actorId);
         const category = new Category(name, color, projectID, id);
-        category.addEvent(new CategoryCreated(key, DateTime.now(), actorId, projectID, id));
+        category.addEvent(new CategoryCreated(params.key, DateTime.now(), actorId, projectID, id));
         return category;
     }
     static fromPrimitives(params) {

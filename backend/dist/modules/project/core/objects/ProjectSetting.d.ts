@@ -1,5 +1,5 @@
 import ValueObject from '../../../shared/core/objects/ValueObject';
-import { AllowedProjectSetting } from '../types/AllowedProjectSetting';
+import { type AllowedProjectSetting } from '../../../shared/core/types/AllowedProjectSetting';
 export default class ProjectSetting extends ValueObject {
     private setting;
     constructor(setting: AllowedProjectSetting);

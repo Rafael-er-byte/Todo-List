@@ -32,7 +32,7 @@ export default class User extends Entity {
             throw new AccountDoesntExist(newPrimary.getID());
         }
         this.primaryAccount = newPrimary;
-        this.addEvent(new AccountChanged(ID.generateId().getId(), DateTime.now(), this.getID(), super.getID(), newPrimary, { previousPrimary: previous }));
+        this.addEvent(new AccountChanged(ID.generateId().toString(), DateTime.now(), this.getID(), super.getID(), newPrimary, { previousPrimary: previous }));
     }
     removeAccount(account) {
         const found = this.accounts.find((a) => a.getID() === account.getID());

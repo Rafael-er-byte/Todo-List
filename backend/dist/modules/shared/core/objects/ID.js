@@ -21,7 +21,7 @@ export default class ID extends ValueObject {
             throw new InvalidFormat('Invalid ID format. Expected a UUIDv7 string.', { id });
         return tmpID;
     }
-    getId() {
+    toString() {
         return this.id.getText();
     }
 }

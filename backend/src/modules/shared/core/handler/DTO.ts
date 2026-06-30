@@ -1,6 +1,12 @@
-export default interface DTO{
-    key?:string;
-    actor?: string;
+export type DTO = Record<string, unknown>;
+
+interface DomainActionDTO extends DTO{
+    idMember: string;
     idProject?: string;
-    idMember?: string;
 }
+
+export interface CommandDto extends DomainActionDTO{
+    key?:string;
+}
+
+export interface QueryDTO extends DomainActionDTO{}

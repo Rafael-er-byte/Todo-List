@@ -1,7 +1,7 @@
 import type { AllowedColors } from '../../../shared/core/types/AllowedColors';
+import type { AllowedProjectSetting } from '../../../shared/core/types/AllowedProjectSetting';
 import type ProjectList from '../objects/ProjectList';
 import type { AllowedBackgroundType } from '../types/AllowedBackgroundType';
-import type { AllowedProjectSetting } from '../types/AllowedProjectSetting';
 import type { AllowedProjectStatus } from '../types/AllowedProjectStatus';
 import type ProjectBackgroundImageParams from './ProjectBackgroundImageParams';
 

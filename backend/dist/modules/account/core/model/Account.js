@@ -20,9 +20,10 @@ export default class Account extends Entity {
         this.isPrimary = isPrimary;
         this.createdAt = createdAt;
     }
-    static create(id, email, name, provider, profileImage, owner, isPrimary) {
+    static create(params) {
+        const profileImage = params.profileImage ? new Url(params.profileImage) : new None();
         const createdAt = DateTime.now();
-        const account = new Account(id, email, isPrimary, name, provider, profileImage, owner, createdAt);
+        const account = new Account(new IdAccount(params.id), new Email(params.email), params.isPrimary, new AccountName(params.name), params.provider, profileImage, new IdEntity(params.userId), createdAt);
         return account;
     }
     static fromPrimitives(params) {
