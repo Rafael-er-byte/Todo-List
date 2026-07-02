@@ -50,9 +50,9 @@ describe('Notification Entity', () => {
     it('should create a valid unread notification', () => {
       const notification = buildNotification();
 
-      expect(notification.getId().getID()).toBe(DEFAULT_ID);
+      expect(notification.getId().toString()).toBe(DEFAULT_ID);
       expect(notification.getEventKey()).toBe(EVENT_ID);
-      expect(notification.getIdUser().getID()).toBe(USER_ID);
+      expect(notification.getIdUser().toString()).toBe(USER_ID);
       expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.unread);
       expect(notification.getType()).toBe(NotificationTypes.info);
     });
@@ -136,9 +136,9 @@ describe('Notification Entity', () => {
 
       const notification = Notification.fromPrimitives(params);
 
-      expect(notification.getId().getID()).toBe(params.id);
+      expect(notification.getId().toString()).toBe(params.id);
       expect(notification.getEventKey()).toBe(params.eventKey);
-      expect(notification.getIdUser().getID()).toBe(params.idUser);
+      expect(notification.getIdUser().toString()).toBe(params.idUser);
       expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.read);
       expect(notification.getType()).toBe(params.type);
     });

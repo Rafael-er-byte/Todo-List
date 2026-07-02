@@ -1,20 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import Invitation from "../../../../../src/modules/project/invitation/core/model/Invitation";
 import Email from "../../../../../src/modules/shared/core/objects/Email";
-import InvitationStatus, { AllowedInvitationStatus } from "../../../../../src/modules/project/invitation/core/objects/InvitationStatus";
-import InvitationCreated from "../../../../../src/modules/project/invitation/core/events/InvitationCreated";
-import InvitationCanceled from "../../../../../src/modules/project/invitation/core/events/InvitationCanceled";
+import { AllowedInvitationStatus } from "../../../../../src/modules/project/invitation/core/objects/InvitationStatus";
 
 const DEFAULT_ID = '019df05a-8588-758c-b5e7-92af14bf85cf';
 const HOST_ID = '019df05a-8588-758c-b5e7-92af14bf85c0';
 const PROJECT_ID = '019df05a-8588-758c-b5e7-92af14bf85c1';
 const GUEST_EMAIL = 'guest@example.com';
-const ACTOR_ID = '019df05a-8588-758c-b5e7-92af14bf85c2';
 
 const buildInvitation = () => {
   return Invitation.create(
     {
-      key: 'create-key',
       id: DEFAULT_ID,
       host: HOST_ID,
       projectId: PROJECT_ID,
@@ -24,55 +20,30 @@ const buildInvitation = () => {
 };
 
 describe('Invitation Entity', () => {
-  it('creates an invitation and emits INVITATION_CREATED', () => {
+  it('creates an invitation with pending status', () => {
     const invitation = buildInvitation();
 
     expect(invitation).toBeInstanceOf(Invitation);
-    expect(invitation.getHost().getID()).toBe(HOST_ID);
-    expect(invitation.getProjectId().getID()).toBe(PROJECT_ID);
+    expect(invitation.getHost().toString()).toBe(HOST_ID);
+    expect(invitation.getProjectId().toString()).toBe(PROJECT_ID);
     expect(invitation.getGuest().getEmail()).toBe(GUEST_EMAIL);
     expect(invitation.getStatus().getStatus()).toBe(AllowedInvitationStatus.PENDING);
-
-    const events = invitation.pullEvents();
-    expect(events).toHaveLength(1);
-    expect(events[0]).toBeInstanceOf(InvitationCreated);
-    expect(events[0]!.getEvent()).toBe('INVITATION_CREATED');
   });
 
-  it('can be canceled and emits INVITATION_CANCELED', () => {
+  it('can be canceled', () => {
     const invitation = buildInvitation();
-    invitation.pullEvents();
 
-    invitation.cancel('cancel-key');
+    invitation.cancel();
 
     expect(invitation.getStatus().getStatus()).toBe(AllowedInvitationStatus.CANCELED);
-    const events = invitation.pullEvents();
-    expect(events).toHaveLength(1);
-    expect(events[0]).toBeInstanceOf(InvitationCanceled);
-    expect(events[0]!.getEvent()).toBe('INVITATION_CANCELED');
   });
 
-  it('can be accepted without emitting an event (status changes)', () => {
+  it('can be accepted', () => {
     const invitation = buildInvitation();
-    invitation.pullEvents();
 
-    invitation.accept('accept-key');
+    invitation.accept();
 
     expect(invitation.getStatus().getStatus()).toBe(AllowedInvitationStatus.ACCEPTED);
-    const events = invitation.pullEvents();
-    expect(events).toHaveLength(0);
-  });
-
-  it('delete emits INVITATION_CANCELED (per implementation)', () => {
-    const invitation = buildInvitation();
-    invitation.pullEvents();
-
-    invitation.delete('delete-key');
-
-    const events = invitation.pullEvents();
-    expect(events).toHaveLength(1);
-    expect(events[0]).toBeInstanceOf(InvitationCanceled);
-    expect(events[0]!.getEvent()).toBe('INVITATION_CANCELED');
   });
 
   it('serializes to primitives and reconstructs from primitives', () => {
@@ -86,8 +57,8 @@ describe('Invitation Entity', () => {
     expect(primitives.status).toBe(AllowedInvitationStatus.PENDING);
 
     const reconstructed = Invitation.fromPrimitives(primitives);
-    expect(reconstructed.getHost().getID()).toBe(HOST_ID);
-    expect(reconstructed.getProjectId().getID()).toBe(PROJECT_ID);
+    expect(reconstructed.getHost().toString()).toBe(HOST_ID);
+    expect(reconstructed.getProjectId().toString()).toBe(PROJECT_ID);
     expect(reconstructed.getGuest().getEmail()).toBe(GUEST_EMAIL);
     expect(reconstructed.getStatus().getStatus()).toBe(AllowedInvitationStatus.PENDING);
   });

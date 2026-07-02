@@ -39,8 +39,8 @@ describe('Link', () => {
 
     expect(events).toHaveLength(1);
     expect(events[0]!.getEvent()).toBe('LINK_CREATED');
-    expect(link.getId().getID()).toBe(LINK_ID);
-    expect(link.getTaskId().getID()).toBe(TASK_ID);
+    expect(link.getId().toString()).toBe(LINK_ID);
+    expect(link.getTaskId().toString()).toBe(TASK_ID);
     expect(link.getUrl().getUrl()).toBe(URL_VALUE);
     expect(link.getVisibleText()).toBeInstanceOf(Text);
     expect((link.getVisibleText() as Text).getText()).toBe(INITIAL_TEXT);
@@ -96,8 +96,8 @@ describe('Link', () => {
     const params = createLinkParams();
     const link = Link.fromPrimitives(params);
 
-    expect(link.getId().getID()).toBe(LINK_ID);
-    expect(link.getTaskId().getID()).toBe(TASK_ID);
+    expect(link.getId().toString()).toBe(LINK_ID);
+    expect(link.getTaskId().toString()).toBe(TASK_ID);
     expect(link.getUrl().getUrl()).toBe(URL_VALUE);
     expect(link.getVisibleText()).toBeInstanceOf(Text);
     expect((link.getVisibleText() as Text).getText()).toBe(INITIAL_TEXT);

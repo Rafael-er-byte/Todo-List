@@ -37,7 +37,7 @@ describe('CheckList', () => {
   it('completes an item and emits ChecklistItemCompleted', () => {
     const checklist = CheckList.create({ id: ID.generateId().toString(), idOwner: owner, name: 'Tasks', actor, key });
     checklist.addChecklistItem(new Text('Write tests'), actor, key);
-    const itemId = checklist.getItems()[0]!.getId().getID();
+    const itemId = checklist.getItems()[0]!.getId().toString();
     checklist.pullEvents();
 
     checklist.completeChecklistItem(itemId, actor, key);
@@ -51,7 +51,7 @@ describe('CheckList', () => {
   it('marks an item as pending and recalculates percentage', () => {
     const checklist = CheckList.create({ id: ID.generateId().toString(), idOwner: owner, name: 'Tasks', actor, key });
     checklist.addChecklistItem(new Text('Build feature'), actor, key);
-    const itemId = checklist.getItems()[0]!.getId().getID();
+    const itemId = checklist.getItems()[0]!.getId().toString();
     checklist.completeChecklistItem(itemId, actor, key);
     checklist.pullEvents();
 

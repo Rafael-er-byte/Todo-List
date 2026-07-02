@@ -112,10 +112,10 @@ describe('List', () => {
     list.addTask(insertedTask);
 
     const tasks = list.getTasks();
-    expect(tasks.map((task) => task.id.getID())).toEqual([
-      insertedTask.id.getID(),
-      firstTask.id.getID(),
-      secondTask.id.getID(),
+    expect(tasks.map((task) => task.id.toString())).toEqual([
+      insertedTask.id.toString(),
+      firstTask.id.toString(),
+      secondTask.id.toString(),
     ]);
     expect(tasks.map((task) => task.position.getValue())).toEqual([1, 2, 3]);
   });
@@ -133,9 +133,9 @@ describe('List', () => {
     list.removeTask(secondTask);
 
     const tasks = list.getTasks();
-    expect(tasks.map((task) => task.id.getID())).toEqual([
-      firstTask.id.getID(),
-      thirdTask.id.getID(),
+    expect(tasks.map((task) => task.id.toString())).toEqual([
+      firstTask.id.toString(),
+      thirdTask.id.toString(),
     ]);
     expect(tasks.map((task) => task.position.getValue())).toEqual([1, 2]);
   });

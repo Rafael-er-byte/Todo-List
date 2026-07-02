@@ -33,7 +33,7 @@ describe('ChecklistItem', () => {
     const item = ChecklistItem.create(title);
     const updated = item.updateTitle(new Text('Updated'));
 
-    expect(updated.getId().getID()).toBe(item.getId().getID());
+    expect(updated.getId().toString()).toBe(item.getId().toString());
     expect(updated.getTitle().getText()).toBe('Updated');
   });
 });

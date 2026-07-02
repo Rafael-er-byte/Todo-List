@@ -98,13 +98,13 @@ describe("ProjectAccess", () => {
     it("returns id member value object", () => {
       const access = createProjectAccess();
 
-      expect(access.getIdMember().getID()).toBe(MEMBER_ID);
+      expect(access.getIdMember().toString()).toBe(MEMBER_ID);
     });
 
     it("returns project id value object", () => {
       const access = createProjectAccess();
 
-      expect(access.getIDProject().getID()).toBe(PROJECT_ID);
+      expect(access.getIDProject().toString()).toBe(PROJECT_ID);
     });
   });
 });

@@ -59,7 +59,7 @@ export default class ChecklistItem extends ValueObject {
 
   public toPrimitives(): ChecklistItemParams {
     return {
-      id: this.id.getID(),
+      id: this.id.toString(),
       title: this.title.getText(),
       isCompleted: this.completed,
     };

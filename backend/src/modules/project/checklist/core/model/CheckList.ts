@@ -91,9 +91,9 @@ export default class CheckList extends Entity {
   }
 
   public deleteChecklistItem(itemId: string, actor: IdEntity, key: string): void {
-    const item = this.items.find((checklistItem) => checklistItem.getId().getID() === itemId);
+    const item = this.items.find((checklistItem) => checklistItem.getId().toString() === itemId);
     if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
-    this.items = this.items.filter((checklistItem) => checklistItem.getId().getID() !== itemId);
+    this.items = this.items.filter((checklistItem) => checklistItem.getId().toString() !== itemId);
     this.recalculateCompletedPercentage();
     this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, item.toPrimitives()));
   }
@@ -107,11 +107,11 @@ export default class CheckList extends Entity {
   }
 
   public updateChecklistItemTitle(itemId: string, title: Text, actor: IdEntity, key: string): void {
-    const item = this.items.find((checklistItem) => checklistItem.getId().getID() === itemId);
+    const item = this.items.find((checklistItem) => checklistItem.getId().toString() === itemId);
     if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
     const updatedItem = item.updateTitle(title);
     this.items = this.items.map((checklistItem) =>
-      checklistItem.getId().getID() === itemId ? updatedItem : checklistItem,
+      checklistItem.getId().toString() === itemId ? updatedItem : checklistItem,
     );
     this.addEvent(
       new ChecklistItemTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, {
@@ -127,8 +127,8 @@ export default class CheckList extends Entity {
 
   public toPrimitives(): CheckListParams {
     return {
-      id: (super.getID() as IdCheckList).getID(),
-      idOwner: this.getTaskId().getID(),
+      id: (super.getID() as IdCheckList).toString(),
+      idOwner: this.getTaskId().toString(),
       name: this.name.getName(),
       items: this.items.map((item) => item.toPrimitives()),
       completedPercentage: this.completedPercentage.toPrimitive(),
@@ -142,12 +142,12 @@ export default class CheckList extends Entity {
     key: string,
     EventClass: typeof ChecklistItemCompleted | typeof ChecklistItemMarkedAsPending,
   ): void {
-    const item = this.items.find((checklistItem) => checklistItem.getId().getID() === itemId);
+    const item = this.items.find((checklistItem) => checklistItem.getId().toString() === itemId);
     if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
 
     const updatedItem = isCompleted ? item.complete() : item.markAsPending();
     this.items = this.items.map((checklistItem) =>
-      checklistItem.getId().getID() === itemId ? updatedItem : checklistItem,
+      checklistItem.getId().toString() === itemId ? updatedItem : checklistItem,
     );
     this.recalculateCompletedPercentage();
     this.addEvent(new EventClass(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, updatedItem.toPrimitives()));

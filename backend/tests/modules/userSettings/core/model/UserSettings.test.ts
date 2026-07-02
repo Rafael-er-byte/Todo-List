@@ -29,7 +29,7 @@ describe('UserSettings entity', () => {
     const params = buildParams();
     const settings = new UserSettings(params);
 
-    expect(settings.getUserId().getID()).toBe(params.userId);
+    expect(settings.getUserId().toString()).toBe(params.userId);
     expect(settings.getLanguage().getLanguage()).toBe(params.language);
     expect(settings.getTheme().getTheme()).toBe(params.theme);
     expect(settings.getTimezone().getTimezone()).toBe(params.timezone);

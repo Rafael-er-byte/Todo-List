@@ -17,7 +17,7 @@ describe('Entity abstract class', () => {
         }
 
         toPrimitives(): unknown {
-            return { idEntity: super.getID().getID() };
+            return { idEntity: super.getID().toString() };
         }
     }
 

@@ -33,7 +33,7 @@ describe('TaskAttachment entity tests', () => {
     expect(taskAttachment.getType()).toBe(AllowedAttachments.png);
     expect(taskAttachment.getName().getText()).toBe('file.png');
     expect(taskAttachment.getSize().getValue()).toBe(128);
-    expect(taskAttachment.getTaskId().getID()).toBe('4043c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(taskAttachment.getTaskId().toString()).toBe('4043c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = taskAttachment.pullEvents();
     expect(events).toHaveLength(1);
@@ -67,7 +67,7 @@ describe('TaskAttachment entity tests', () => {
     });
 
     const restored = TaskAttachment.fromPrimitives(primitives);
-    expect(restored.getTaskId().getID()).toBe(primitives.idTask);
+    expect(restored.getTaskId().toString()).toBe(primitives.idTask);
     expect(restored.getName().getText()).toBe('file.png');
     expect(restored.toPrimitives().attachment.url).toBe(primitives.attachment.url);
   });

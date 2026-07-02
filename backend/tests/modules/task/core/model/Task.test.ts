@@ -25,18 +25,18 @@ const buildTask = () => {
   const task = Task.create(
     {
       title: 'Initial task title',
-      listContainer: listContainer.getID(),
+      listContainer: listContainer.toString(),
       positionInList: 1,
       state: TaskState.pending().getState(),
       archived: false,
       id: '0243c815-7220-7d64-8c42-6f2af4f9fd37',
-      idProject: projectId.getID(),
+      idProject: projectId.toString(),
       description: null,
       startDate: null,
       dueDate: null,
       categories: [],
       assigned: [],
-      actor: actor.getID(),
+      actor: actor.toString(),
       key: 'task-created-key',
     },
   );
@@ -59,7 +59,7 @@ describe('Task', () => {
     expect(primitives.categories).toEqual([]);
     expect(primitives.assigned).toEqual([]);
     expect(primitives.description).toBeNull();
-    expect(task.getIdProject().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getIdProject().toString()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = task.pullEvents();
     expect(events).toHaveLength(1);
@@ -74,18 +74,18 @@ describe('Task', () => {
     expect(() => Task.create(
       {
         title: 'Initial task title',
-        listContainer: listContainer.getID(),
+        listContainer: listContainer.toString(),
         positionInList: -1,
         state: TaskState.pending().getState(),
         archived: false,
         id: '0243c815-7220-7d64-8c42-6f2af4f9fd37',
-        idProject: projectId.getID(),
+        idProject: projectId.toString(),
         description: null,
         startDate: null,
         dueDate: null,
         categories: [],
         assigned: [],
-        actor: actor.getID(),
+        actor: actor.toString(),
         key: 'task-created-key',
       },
     )).toThrow(InvalidParameters);
@@ -94,9 +94,9 @@ describe('Task', () => {
   it('returns values from Task getters', () => {
     const { task } = buildTask();
 
-    expect(task.getIdProject().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getIdProject().toString()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(task.getTitle().getTitle()).toBe('Initial task title');
-    expect(task.getListContainer().getID()).toBe('0143c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getListContainer().toString()).toBe('0143c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(task.toPrimitives().positionInList).toBe(1);
     expect(task.getState().getState()).toBe(TaskState.pending().getState());
     expect(task.getDescription()).toBeInstanceOf(None);
@@ -156,7 +156,7 @@ describe('Task', () => {
 
     expect(task.toPrimitives().listContainer).toBe('0643c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(task.toPrimitives().positionInList).toBe(2);
-    expect(task.getIdProject().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getIdProject().toString()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
 
     const events = task.pullEvents();
     expect(events).toHaveLength(1);
@@ -374,7 +374,7 @@ describe('Task', () => {
     expect(primitives.dueDate).toEqual(dueDate);
     expect(primitives.id).toBe('0243c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.idProject).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
-    expect(task.getIdProject().getID()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
+    expect(task.getIdProject().toString()).toBe('0343c815-7220-7d64-8c42-6f2af4f9fd37');
     expect(primitives.deletedAt).toBeUndefined();
   });
 

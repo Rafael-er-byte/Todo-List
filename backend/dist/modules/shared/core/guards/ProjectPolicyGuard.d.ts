@@ -1,4 +1,4 @@
-import type DTO from "../handler/DTO";
+import type { DTO } from "../handler/DTO";
 import type ProjectAccessRepository from "../repository/ProjectPolicyRepository";
 import { AccessType } from "../types/AccessType";
 export default class ProjectPolicyGuard {

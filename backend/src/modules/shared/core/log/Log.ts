@@ -1,7 +1,14 @@
 type Event = {
-    type: "ERROR" | "WARN" | "INFO" | "METRIC",
+    type: LogLevel,
     message: string,
     duration?: number,
+}
+
+export enum LogLevel{
+    "INFO",
+    "METRIC",
+    "WARN",
+    "ERROR"
 }
 
 export default interface Log{

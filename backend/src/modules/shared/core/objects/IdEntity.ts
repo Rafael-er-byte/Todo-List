@@ -7,7 +7,7 @@ export default class IdEntity {
     this.id = ID.fromString(id);
   }
 
-  public getID(): string {
+  public toString(): string {
     return this.id.toString();
   }
 }

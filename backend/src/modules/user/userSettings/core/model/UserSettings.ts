@@ -65,8 +65,8 @@ export default class UserSettings extends Entity {
 
   public toPrimitives() {
     return {
-      id: this.getID().getID(),
-      userId: this.userId.getID(),
+      id: this.getID().toString(),
+      userId: this.userId.toString(),
       language: this.language.getLanguage(),
       theme: this.theme.getTheme(),
       timezone: this.timezone.getTimezone(),

@@ -175,7 +175,7 @@ describe("Project tests", () => {
         project.delete(DEFAULT_KEY, new IdEntity(DEFAULT_ID));
         const events = project.pullEvents();
 
-        expect((events[0]?.getActor() as IdEntity).getID()).toBe(DEFAULT_ID);
+        expect((events[0]?.getActor() as IdEntity).toString()).toBe(DEFAULT_ID);
         expect(events[0]?.getId()).toBe('key-for-deletion');
     });
 
@@ -244,7 +244,7 @@ describe("Project tests", () => {
         ];
 
         let listsOrder = project.getlists().map(l => l.position.getValue());
-        let listIdsOrder = project.getlists().map(l => l.idList.getID());
+        let listIdsOrder = project.getlists().map(l => l.idList.toString());
 
         expect(listsOrder).toStrictEqual(expectedOrder);
         expect(listIdsOrder).toStrictEqual(idsExpectedOrder);
@@ -254,7 +254,7 @@ describe("Project tests", () => {
         idsExpectedOrder.splice(1, 0, '01978b74-7c3e-71f2-8a9b-5d6e7f1c2d44');
 
         listsOrder = project.getlists().map(l => l.position.getValue());
-        listIdsOrder = project.getlists().map(l => l.idList.getID());
+        listIdsOrder = project.getlists().map(l => l.idList.toString());
 
         expect(listsOrder).toStrictEqual(expectedOrder);
         expect(listIdsOrder).toStrictEqual(idsExpectedOrder);
@@ -262,10 +262,10 @@ describe("Project tests", () => {
         project.removeList(list3.idList);
 
         listsOrder = project.getlists().map(l => l.position.getValue());
-        listIdsOrder = project.getlists().map(l => l.idList.getID());
+        listIdsOrder = project.getlists().map(l => l.idList.toString());
 
         expectedOrder = [1, 2, 3, 4];
-        idsExpectedOrder = idsExpectedOrder.filter(i => i !== list3.idList.getID());
+        idsExpectedOrder = idsExpectedOrder.filter(i => i !== list3.idList.toString());
 
         expect(listsOrder).toStrictEqual(expectedOrder);
         expect(listIdsOrder).toStrictEqual(idsExpectedOrder);

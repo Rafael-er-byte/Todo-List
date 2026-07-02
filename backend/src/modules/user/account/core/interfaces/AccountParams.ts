@@ -5,6 +5,6 @@ export default interface AccountParams {
   name: string;
   userId: string;
   provider: string;
-  profileImage?: string | null;
+  profileImage?: string;
   createdAt?: Date;
 }

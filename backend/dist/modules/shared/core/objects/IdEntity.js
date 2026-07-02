@@ -3,7 +3,7 @@ export default class IdEntity {
     constructor(id) {
         this.id = ID.fromString(id);
     }
-    getID() {
+    toString() {
         return this.id.toString();
     }
 }

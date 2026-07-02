@@ -1,0 +1,1 @@
+{"version":3,"file":"InvalidUserSettingsKey.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/user/userSettings/core/errors/InvalidUserSettingsKey.ts"],"names":[],"mappings":"AAAA,OAAO,iBAAiB,MAAM,kDAAkD,CAAC;AAEjF,MAAM,CAAC,OAAO,OAAO,sBAAuB,SAAQ,iBAAiB;gBACvD,OAAO,EAAE,MAAM;CAI5B"}

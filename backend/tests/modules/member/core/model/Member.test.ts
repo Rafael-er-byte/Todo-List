@@ -39,7 +39,7 @@ const createMember = (overrides?: Parameters<typeof createParams>[0]) => {
       idAccount: params.idAccount,
       role: params.role,
       status: params.status,
-      actor: createActor().getID(),
+      actor: createActor().toString(),
       key: "member-create-key",
     }
   );
@@ -52,8 +52,8 @@ describe("Member Entity", () => {
     it("should create a valid member", () => {
       const member = createMember();
 
-      expect(member.getID().getID()).toBe(DEFAULT_ID);
-      expect(member.getIdProject().getID()).toBe(DEFAULT_ID);
+      expect(member.getID().toString()).toBe(DEFAULT_ID);
+      expect(member.getIdProject().toString()).toBe(DEFAULT_ID);
       expect(member.isBlocked()).toBe(false);
       expect(member.pullEvents()[0]).toBeInstanceOf(MemberAddedToProject);
     });
@@ -133,7 +133,7 @@ describe("Member Entity", () => {
         role: primitives.role,
         projectMetadata: primitives.projectMetadata,
       });
-      expect(member.getIdProject().getID()).toBe(primitives.idProject);
+      expect(member.getIdProject().toString()).toBe(primitives.idProject);
       expect(member.isBlocked()).toBe(false);
     });
 

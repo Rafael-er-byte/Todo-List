@@ -117,9 +117,9 @@ export default class Member extends Entity {
 
   public toPrimitives(): MemberParams {
     return {
-      id: super.getID().getID(),
-      idProject: this.idProject.getID(),
-      idAccount: this.idAccount.getID(),
+      id: super.getID().toString(),
+      idProject: this.idProject.toString(),
+      idAccount: this.idAccount.toString(),
       status: this.status.getStatus(),
       role: this.role.getRole(),
       projectMetadata:{

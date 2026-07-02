@@ -78,13 +78,13 @@ export default class Account extends Entity {
 
 	public toPrimitives(): AccountParams {
 		return {
-			id: super.getID().getID(),
+			id: super.getID().toString(),
 			email: this.email.getEmail(),
 			isPrimary: this.isPrimary,
 			name: this.name.toPrimitives(),
 			provider: this.provider,
 			profileImage: this.profileImage instanceof None ? null : (this.profileImage as Url).getUrl(),
-			userId: this.owner.getID(),
+			userId: this.owner.toString(),
 			createdAt: this.createdAt.getDate()
 		};
 	}

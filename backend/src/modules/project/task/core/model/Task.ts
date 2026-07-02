@@ -154,7 +154,7 @@ export default class Task extends Entity {
     );
 
     task.addEvent(
-      new TaskCreated(params.key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()),
+      new TaskCreated(params.key, DateTime.now(), actor, task.getIdProject(), task.toString(), task.toPrimitives()),
     );
     return task;
   }
@@ -314,7 +314,7 @@ export default class Task extends Entity {
   }
 
   public isAssigned(assigned: IdEntity): boolean{
-    const exists = this.assigned.getItems().find(a => a.getID() === assigned.getID());
+    const exists = this.assigned.getItems().find(a => a.toString() === assigned.toString());
     return exists !== undefined;
   }
 
@@ -390,12 +390,12 @@ export default class Task extends Entity {
   public toPrimitives(): TaskParams {
     return {
       title: this.title.getTitle(),
-      listContainer: this.listContainer.getID(),
+      listContainer: this.listContainer.toString(),
       positionInList: this.positionInList.getValue(),
       state: this.state.getState(),
       archived: this.archived,
-      id: super.getID().getID(),
-      idProject: this.idProject.getID(),
+      id: super.getID().toString(),
+      idProject: this.idProject.toString(),
       categories: this.categories.getPrimitives(),
       assigned: this.assigned.getPrimitives(),
       description: (this.description instanceof None) ? null : (this.description as Text).getText(),

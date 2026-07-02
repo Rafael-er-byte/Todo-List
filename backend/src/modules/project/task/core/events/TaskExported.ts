@@ -14,6 +14,6 @@ export default class TaskExported extends DomainEvent {
     list: IdEntity,
     newPositionInList: PositiveInteger
   ) {
-    super(key, date, actor, newProject, idTask, 'TASK_EXPORTED', { list: list.getID(), newPositionInList: newPositionInList.getValue() });
+    super(key, date, actor, newProject, idTask, 'TASK_EXPORTED', { list: list.toString(), newPositionInList: newPositionInList.getValue() });
   }
 }

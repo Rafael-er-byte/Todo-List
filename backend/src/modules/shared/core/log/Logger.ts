@@ -1,16 +1,29 @@
 import type Log from "./Log";
+import { LogLevel } from "./Log";
 
 export default class Logger{
     log!: Log;
     start!: number;
+    private logLevel: LogLevel = LogLevel.METRIC;
     
     constructor(
+        logLevel: LogLevel,
         ip: string,
         idUser: string,
         method: string,
         url: string,
         requestKey?: string,
     ){
+        this.log = {
+            ip: "",
+            idUser: "",
+            date: new Date(),
+            duration: 0,
+            method: "",
+            url: "",
+            events: [],
+            status: 0,
+        };
         this.log.ip = ip;
         this.log.idUser = idUser;
         this.log.date = new Date();
@@ -18,19 +31,22 @@ export default class Logger{
         this.log.url = url;
         if(requestKey)this.log.requestKey = requestKey;
         this.start = performance.now();
+        this.logLevel = logLevel;
     }
 
     info(message:string, duration?: number){
+        if(this.logLevel > LogLevel.INFO)return;
         this.log.events.push({
-                            type: "INFO", 
+                            type: LogLevel.INFO, 
                             message: message, 
                             ...(duration !== undefined && {duration})
                         });
     }
 
     warn(message:string, duration?: number){
+        if(this.logLevel > LogLevel.WARN)return;
         this.log.events.push({
-                            type: "WARN", 
+                            type: LogLevel.WARN, 
                             message: message, 
                             ...(duration !== undefined && {duration})
                         });
@@ -38,15 +54,16 @@ export default class Logger{
 
     error(message:string, duration?: number){
         this.log.events.push({
-                            type: "ERROR", 
+                            type: LogLevel.ERROR, 
                             message: message, 
                             ...(duration !== undefined && {duration})
                         });
     }
 
-    metric(message:string, duration: number){
+    metric(message:string, duration?: number){
+        if(this.logLevel > LogLevel.METRIC)return;
         this.log.events.push({
-                            type: "METRIC", 
+                            type: LogLevel.METRIC, 
                             message: message, 
                             ...(duration !== undefined && {duration})
                         });

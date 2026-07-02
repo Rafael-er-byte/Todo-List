@@ -84,8 +84,8 @@ export default class Category extends Entity {
 
   public toPrimitives(): CategoryParams {
     return {
-      id: super.getID().getID(),
-      idProject: this.getIdProject().getID(),
+      id: super.getID().toString(),
+      idProject: this.getIdProject().toString(),
       name: this.name.getName(),
       color: this.color.getColor(),
     };

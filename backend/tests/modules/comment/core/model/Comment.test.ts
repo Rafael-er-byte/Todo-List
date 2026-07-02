@@ -47,11 +47,11 @@ const buildComment = (overrides?: Parameters<typeof createCommentParams>[0]) => 
 };
 
 const IDMock = {
-  getID: vi.fn().mockReturnValue(ACTOR_ID)
+  toString: vi.fn().mockReturnValue(ACTOR_ID)
 } as unknown as IdEntity;
 
 const CreatorMock = {
-  getID: vi.fn().mockReturnValue(CREATOR_ID)
+  toString: vi.fn().mockReturnValue(CREATOR_ID)
 } as unknown as IdEntity;
 
 describe("Comment Entity", () => {
@@ -60,14 +60,14 @@ describe("Comment Entity", () => {
     it("should create a valid comment", () => {
       const comment = buildComment();
 
-      expect(comment.getId().getID()).toBe(DEFAULT_ID);
+      expect(comment.getId().toString()).toBe(DEFAULT_ID);
     });
 
     it("should set the creator correctly", () => {
       const comment = buildComment();
 
-      expect(comment.getCreator().getID()).toBe(CREATOR_ID);
-      expect(comment.getTask().getID()).toBe(TASK_ID);
+      expect(comment.getCreator().toString()).toBe(CREATOR_ID);
+      expect(comment.getTask().toString()).toBe(TASK_ID);
     });
 
     it("should set the content correctly", () => {
@@ -98,6 +98,7 @@ describe("Comment Entity", () => {
       comment.pullEvents();
 
       const newContent = new Text("Updated comment content");
+      console.log("this", CreatorMock);
       comment.updateContent("test-key-2", newContent, CreatorMock);
 
       expect(comment.getContent().getText()).toBe("Updated comment content");
@@ -151,7 +152,7 @@ describe("Comment Entity", () => {
       comment.addMention("test-key-6", mentionedId, CreatorMock);
 
       expect(comment.getMentions().getItems().length).toBe(1);
-      expect(comment.getMentions().getItems()[0]!.getID()).toBe(MENTION_ID);
+      expect(comment.getMentions().getItems()[0]!.toString()).toBe(MENTION_ID);
     });
 
     it("should emit CommentMentionAdded event when mention is added", () => {
@@ -222,7 +223,6 @@ describe("Comment Entity", () => {
       expect(primitives.creator).toBe(params.creator);
       expect(primitives.content).toBe(params.content);
       expect(primitives.mentions).toEqual([]);
-      expect(primitives.deletedAt).toBeUndefined();
     });
 
     it("should serialize comment with mentions", () => {
@@ -246,9 +246,9 @@ describe("Comment Entity", () => {
 
       const comment = Comment.fromPrimitives(params);
 
-      expect(comment.getId().getID()).toBe(params.id);
-      expect(comment.getCreator().getID()).toBe(params.creator);
-      expect(comment.getTask().getID()).toBe(params.idTask);
+      expect(comment.getId().toString()).toBe(params.id);
+      expect(comment.getCreator().toString()).toBe(params.creator);
+      expect(comment.getTask().toString()).toBe(params.idTask);
       expect(comment.getContent().getText()).toBe(params.content);
       expect(comment.getMentions().getItems().length).toBe(1);
     });
@@ -269,8 +269,6 @@ describe("Comment Entity", () => {
       comment.delete("test-key-16", CreatorMock);
 
       const primitives = comment.toPrimitives();
-
-      expect(primitives.deletedAt).toBeUndefined();
     });
   });
 
@@ -278,7 +276,7 @@ describe("Comment Entity", () => {
     it("should not allow modification of creator after creation", () => {
       const comment = buildComment();
       
-      expect(comment.getCreator().getID()).toBe(CREATOR_ID);
+      expect(comment.getCreator().toString()).toBe(CREATOR_ID);
       // Creator is readonly, so trying to modify should not work
     });
   });

@@ -52,8 +52,8 @@ describe("Category Entity", () => {
     it("should create a valid category", () => {
       const category = buildCategory();
 
-      expect(category.getID().getID()).toBe(DEFAULT_ID);
-      expect(category.getIdProject().getID()).toBe(DEFAULT_ID);
+      expect(category.getID().toString()).toBe(DEFAULT_ID);
+      expect(category.getIdProject().toString()).toBe(DEFAULT_ID);
     });
   });
 

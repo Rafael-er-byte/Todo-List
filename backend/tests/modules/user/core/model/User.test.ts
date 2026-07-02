@@ -23,7 +23,7 @@ describe('User entity', () => {
     console.log(user.getAccounts);
 
     expect(user.getAccounts().length).toBe(1);
-    expect(user.getPrimaryAccount().getID()).toBe(DEFAULT_ID);
+    expect(user.getPrimaryAccount().toString()).toBe(DEFAULT_ID);
   });
 
   it('throws when adding duplicate account', () => {
@@ -54,7 +54,7 @@ describe('User entity', () => {
 
     user.removeAccount(acc);
     expect(user.getAccounts().length === 2);
-    expect(user.getAccounts()[0].getID()).toStrictEqual(DEFAULT_ID);
+    expect(user.getAccounts()[0].toString()).toStrictEqual(DEFAULT_ID);
   });
 
   it("Should throw if try to remove the last account", () => {
@@ -74,10 +74,10 @@ describe('User entity', () => {
     user.addAccount(newPrimary);
     user.changePrimaryAccount(newPrimary);
 
-    expect(user.getPrimaryAccount().getID()).toBe(newPrimary.getID());
+    expect(user.getPrimaryAccount().toString()).toBe(newPrimary.toString());
 
     user.removeAccount(newPrimary);
 
-    expect(user.getPrimaryAccount().getID()).toBe(DEFAULT_ID);
+    expect(user.getPrimaryAccount().toString()).toBe(DEFAULT_ID);
   });
 });

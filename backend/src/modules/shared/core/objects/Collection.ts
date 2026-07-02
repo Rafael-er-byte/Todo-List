@@ -41,7 +41,7 @@ export default class Collection{
 
   public getPrimitives(): string[]{
     return this.items.map((item) => {
-      return item.getID()
+      return item.toString()
     })
   }
 }

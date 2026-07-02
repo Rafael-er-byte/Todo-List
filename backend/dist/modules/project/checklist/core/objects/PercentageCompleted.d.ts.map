@@ -1,0 +1,1 @@
+{"version":3,"file":"PercentageCompleted.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/checklist/core/objects/PercentageCompleted.ts"],"names":[],"mappings":"AAEA,OAAO,WAAW,MAAM,6CAA6C,CAAC;AAEtE,MAAM,CAAC,OAAO,OAAO,mBAAoB,SAAQ,WAAW;IAC1D,OAAO,CAAC,KAAK,CAAW;gBAEZ,KAAK,EAAE,MAAM;IAQlB,QAAQ,IAAI,MAAM;IAIlB,WAAW,IAAI,MAAM;CAG7B"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"CannotModifyClosedProject.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/project/core/errors/CannotModifyClosedProject.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,0CAA0C,CAAC;AAEjE,MAAM,CAAC,OAAO,OAAO,yBAA0B,SAAQ,SAAS;gBAClD,SAAS,EAAE,MAAM;CAI9B"}

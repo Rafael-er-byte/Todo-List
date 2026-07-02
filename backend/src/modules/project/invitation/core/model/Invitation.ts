@@ -1,11 +1,8 @@
 import Entity from '../../../../shared/core/model/Entity';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
-import DateTime from '../../../../shared/core/objects/DateTime';
 import IdInvitation from '../objects/IdInvitation';
 import InvitationStatus, { AllowedInvitationStatus } from '../objects/InvitationStatus';
 import type InvitationParams from '../interfaces/InvitationParams';
-import InvitationCreated from '../events/InvitationCreated';
-import InvitationCanceled from '../events/InvitationCanceled';
 import Email from '../../../../shared/core/objects/Email';
 
 export default class Invitation extends Entity {
@@ -22,27 +19,21 @@ export default class Invitation extends Entity {
     this.guest = guest;
   }
 
-  public static create(params: Omit<InvitationParams, 'status'> & { key: string }): Invitation {
+  public static create(params: Omit<InvitationParams, 'status'> & {  }): Invitation {
     const id = new IdInvitation(params.id);
     const host = new IdEntity(params.host);
     const projectId = new IdEntity(params.projectId);
     const guest = new Email(params.guest);
     const invitation = new Invitation(id, host, projectId, InvitationStatus.pending(), guest);
-    invitation.addEvent(new InvitationCreated(params.key, DateTime.now(), host, host, id, invitation.toPrimitives()));
     return invitation;
   }
 
-  public cancel(key: string): void {
+  public cancel(): void {
     this.status = InvitationStatus.canceled();
-    this.addEvent(new InvitationCanceled(key, DateTime.now(), this.host, this.host, super.getID()));
   }
 
   public accept(): void {
     this.status = InvitationStatus.accepted();
-  }
-
-  public delete(key: string): void {
-    this.addEvent(new InvitationCanceled(key, DateTime.now(), this.host, this.host, super.getID()));
   }
 
   public static fromPrimitives(params: InvitationParams): Invitation {
@@ -57,9 +48,9 @@ export default class Invitation extends Entity {
 
   public toPrimitives(): InvitationParams {
     return {
-      id: super.getID().getID(),
-      host: this.host.getID(),
-      projectId: this.projectId.getID(),
+      id: super.getID().toString(),
+      host: this.host.toString(),
+      projectId: this.projectId.toString(),
       status: this.status.getStatus() as AllowedInvitationStatus,
       guest: this.guest.getEmail(),
     };

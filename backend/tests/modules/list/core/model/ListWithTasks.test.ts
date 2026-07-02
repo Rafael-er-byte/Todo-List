@@ -43,10 +43,10 @@ describe('List with tasks', () => {
     list.addTask(insertedTask);
 
     const tasks = list.getTasks();
-    expect(tasks.map((task) => task.id.getID())).toEqual([
-      insertedTask.id.getID(),
-      firstTask.id.getID(),
-      secondTask.id.getID(),
+    expect(tasks.map((task) => task.id.toString())).toEqual([
+      insertedTask.id.toString(),
+      firstTask.id.toString(),
+      secondTask.id.toString(),
     ]);
     expect(tasks.map((task) => task.position.getValue())).toEqual([1, 2, 3]);
   });
@@ -64,9 +64,9 @@ describe('List with tasks', () => {
     list.removeTask(secondTask);
 
     const tasks = list.getTasks();
-    expect(tasks.map((task) => task.id.getID())).toEqual([
-      firstTask.id.getID(),
-      thirdTask.id.getID(),
+    expect(tasks.map((task) => task.id.toString())).toEqual([
+      firstTask.id.toString(),
+      thirdTask.id.toString(),
     ]);
     expect(tasks.map((task) => task.position.getValue())).toEqual([1, 2]);
   });
@@ -90,7 +90,7 @@ describe('List with tasks', () => {
 
     list.export(newProject, new PositiveInteger(2), 'list-exported-key', new IdEntity('0643c815-7220-7d64-8c42-6f2af4f9fd37'));
 
-    expect(list.getProjectId().getID()).toBe(newProject.getID());
-    expect(task!.project.getID()).toBe(newProject.getID());
+    expect(list.getProjectId().toString()).toBe(newProject.toString());
+    expect(task!.project.toString()).toBe(newProject.toString());
   });
 });
