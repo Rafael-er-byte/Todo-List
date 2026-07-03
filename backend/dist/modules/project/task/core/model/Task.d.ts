@@ -15,6 +15,7 @@ export default class Task extends Entity {
     private positionInList;
     private state;
     private archived;
+    private available;
     private description;
     private startDate;
     private dueDate;
@@ -63,6 +64,7 @@ export default class Task extends Entity {
     getIsStarted(): boolean;
     getIsOverdue(): boolean;
     getPositionInList(): PositiveInteger;
+    isAvailable(): boolean;
     toPrimitives(): TaskParams;
 }
 //# sourceMappingURL=Task.d.ts.map

@@ -40,6 +40,7 @@ export default class Task extends Entity {
   private positionInList!: PositiveInteger;
   private state!: TaskState;
   private archived: boolean = false;
+  private available: boolean = false;
   private description!: Text | None;
 
   private startDate: DateTime | None = new None();
@@ -57,6 +58,7 @@ export default class Task extends Entity {
     positionInList: PositiveInteger,
     state: TaskState,
     archived: boolean,
+    available: boolean,
     id: TaskId,
     idProject: IdEntity,
     description: Text | None,
@@ -71,6 +73,7 @@ export default class Task extends Entity {
     this.title = title;
     this.idProject = idProject;
     this.archived = archived;
+    this.available = available;
     this.state = state;
     this.description = description;
     this.startDate = startDate;
@@ -84,7 +87,7 @@ export default class Task extends Entity {
   }
 
   private ensureNotArchived(): void {
-    if (this.archived) {
+    if (this.archived || this.available) {
       throw new InvalidOperation('canot modify archived tasks');
     }
   }
@@ -105,6 +108,7 @@ export default class Task extends Entity {
       new PositiveInteger(params.positionInList),
       TaskState.create(params.state as AllowedTaskState),
       params.archived,
+      params.available,
       new TaskId(params.id),
       new IdEntity(params.idProject),
       params.description ? new Text(params.description) : new None(),
@@ -127,6 +131,7 @@ export default class Task extends Entity {
     const positionInList = new PositiveInteger(params.positionInList);
     const state = TaskState.create(params.state as AllowedTaskState);
     const archived = params.archived;
+    const available = params.available;
     const id = new TaskId(params.id);
     const idProject = new IdEntity(params.idProject);
     const description = params.description ? new Text(params.description) : new None();
@@ -142,6 +147,7 @@ export default class Task extends Entity {
         positionInList,
         state,
         archived,
+        available,
         id,
         idProject,
         description,
@@ -387,6 +393,10 @@ export default class Task extends Entity {
     return this.positionInList;
   }
 
+  public isAvailable(): boolean{
+    return this.available;
+  }
+
   public toPrimitives(): TaskParams {
     return {
       title: this.title.getTitle(),
@@ -394,6 +404,7 @@ export default class Task extends Entity {
       positionInList: this.positionInList.getValue(),
       state: this.state.getState(),
       archived: this.archived,
+      available: this.available,
       id: super.getID().toString(),
       idProject: this.idProject.toString(),
       categories: this.categories.getPrimitives(),

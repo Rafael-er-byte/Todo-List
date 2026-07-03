@@ -31,9 +31,10 @@ import TaskStarted from '../events/TaskStarted';
 import TaskOverDue from '../events/TaskOverDue';
 import PositiveInteger from '../../../../shared/core/objects/PositiveInteger';
 export default class Task extends Entity {
-    constructor(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, isOverDue, isStarted, categories, assigned) {
+    constructor(title, listContainer, positionInList, state, archived, available, id, idProject, description, startDate, dueDate, isOverDue, isStarted, categories, assigned) {
         super(id);
         this.archived = false;
+        this.available = false;
         this.startDate = new None();
         this.dueDate = new None();
         this.isStarted = false;
@@ -43,6 +44,7 @@ export default class Task extends Entity {
         this.title = title;
         this.idProject = idProject;
         this.archived = archived;
+        this.available = available;
         this.state = state;
         this.description = description;
         this.startDate = startDate;
@@ -55,7 +57,7 @@ export default class Task extends Entity {
         this.assigned = assigned;
     }
     ensureNotArchived() {
-        if (this.archived) {
+        if (this.archived || this.available) {
             throw new InvalidOperation('canot modify archived tasks');
         }
     }
@@ -67,7 +69,7 @@ export default class Task extends Entity {
         const assigned = params.assigned.map((assign) => {
             return new IdEntity(assign);
         });
-        const task = new Task(new TaskTitle(params.title), new IdEntity(params.listContainer), new PositiveInteger(params.positionInList), TaskState.create(params.state), params.archived, new TaskId(params.id), new IdEntity(params.idProject), params.description ? new Text(params.description) : new None(), params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(), params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(), params.isOverdue, params.isStarted, new Collection(categories, [], []), new Collection(assigned, [], []));
+        const task = new Task(new TaskTitle(params.title), new IdEntity(params.listContainer), new PositiveInteger(params.positionInList), TaskState.create(params.state), params.archived, params.available, new TaskId(params.id), new IdEntity(params.idProject), params.description ? new Text(params.description) : new None(), params.startDate instanceof Date ? DateTime.create(params.startDate) : new None(), params.dueDate instanceof Date ? DateTime.create(params.dueDate) : new None(), params.isOverdue, params.isStarted, new Collection(categories, [], []), new Collection(assigned, [], []));
         return task;
     }
     //mutable methods
@@ -77,6 +79,7 @@ export default class Task extends Entity {
         const positionInList = new PositiveInteger(params.positionInList);
         const state = TaskState.create(params.state);
         const archived = params.archived;
+        const available = params.available;
         const id = new TaskId(params.id);
         const idProject = new IdEntity(params.idProject);
         const description = params.description ? new Text(params.description) : new None();
@@ -85,7 +88,7 @@ export default class Task extends Entity {
         const categories = new Collection(params.categories.map((category) => new IdEntity(category)), [], []);
         const assigned = new Collection(params.assigned.map((assign) => new IdEntity(assign)), [], []);
         const actor = new IdEntity(params.actor);
-        const task = new Task(title, listContainer, positionInList, state, archived, id, idProject, description, startDate, dueDate, false, false, categories, assigned);
+        const task = new Task(title, listContainer, positionInList, state, archived, available, id, idProject, description, startDate, dueDate, false, false, categories, assigned);
         task.addEvent(new TaskCreated(params.key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()));
         return task;
     }
@@ -251,6 +254,9 @@ export default class Task extends Entity {
     getPositionInList() {
         return this.positionInList;
     }
+    isAvailable() {
+        return this.available;
+    }
     toPrimitives() {
         return {
             title: this.title.getTitle(),
@@ -258,6 +264,7 @@ export default class Task extends Entity {
             positionInList: this.positionInList.getValue(),
             state: this.state.getState(),
             archived: this.archived,
+            available: this.available,
             id: super.getID().toString(),
             idProject: this.idProject.toString(),
             categories: this.categories.getPrimitives(),

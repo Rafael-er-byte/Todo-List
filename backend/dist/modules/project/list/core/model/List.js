@@ -15,7 +15,6 @@ import InvalidOperation from "../../../../shared/core/errors/InvalidOperation";
 import CannotModifyArchivedList from "../errors/CannotModifyArchivedList";
 import InvalidPositionInList from "../errors/InvalidPositionInList";
 import PositiveInteger from "../../../../shared/core/objects/PositiveInteger";
-import TaskList from "../object/TaskList";
 export default class List extends Entity {
     constructor(id, title, position, tasks, projectId) {
         super(id);
@@ -39,10 +38,6 @@ export default class List extends Entity {
         const list = new List(new ListId(params.id), new ListTitle(new Text(params.title)), new PositiveInteger(params.position), params.tasks, new IdEntity(params.projectId));
         return list;
     }
-    static exportBetweenLists(from, to, taskList) {
-        from.removeTask(taskList);
-        to.addTask(taskList);
-    }
     //mutable actions 
     updateTitle(newTitle, key, actor) {
         this.ensureCanBeModified();
@@ -64,10 +59,16 @@ export default class List extends Entity {
     }
     archive(key, actor) {
         this.archived = true;
+        this.tasks.forEach(t => {
+            t.archivedByList = true;
+        });
         this.addEvent(new ListArchived(key, DateTime.now(), actor, this.projectId, this.id));
     }
     unarchive(key, actor) {
         this.archived = false;
+        this.tasks.forEach(t => {
+            t.archivedByList = false;
+        });
         this.addEvent(new ListUnarchived(key, DateTime.now(), actor, this.projectId, this.id));
     }
     delete(key, actor) {
@@ -76,27 +77,27 @@ export default class List extends Entity {
         this.addEvent(new ListDeleted(key, DateTime.now(), actor, this.projectId, this.id));
     }
     //validations
-    addTask(taskList) {
+    addTask(taskEntry) {
         this.ensureCanBeModified();
-        if (taskList.position.getValue() > this.tasks.length + 1 ||
-            taskList.position.getValue() <= 0)
-            throw new InvalidPositionInList({ positionToInsert: taskList.position.getValue(), listId: this.getID().toString() });
-        const part1 = this.tasks.slice(0, taskList.position.getValue() - 1);
-        const part2 = this.tasks.slice(taskList.position.getValue() - 1);
+        if (taskEntry.position.getValue() > this.tasks.length + 1 ||
+            taskEntry.position.getValue() <= 0)
+            throw new InvalidPositionInList({ positionToInsert: taskEntry.position.getValue(), listId: this.getID().toString() });
+        const part1 = this.tasks.slice(0, taskEntry.position.getValue() - 1);
+        const part2 = this.tasks.slice(taskEntry.position.getValue() - 1);
         part2.forEach(t => t.position = new PositiveInteger(t.position.getValue() + 1));
-        this.tasks = [...part1, taskList, ...part2];
+        this.tasks = [...part1, taskEntry, ...part2];
     }
-    removeTask(taskList) {
+    removeTask(taskEntry) {
         this.ensureCanBeModified();
-        if (!this.tasks.find(t => t.id.toString() === taskList.id.toString()))
-            throw new ResourceNotFound(`The taskList with id: ${taskList.id.toString()} does not exists in list with id: ${this.getID()}`, {
-                taskListId: taskList.id.toString(),
+        if (!this.tasks.find(t => t.id.toString() === taskEntry.id.toString()))
+            throw new ResourceNotFound(`The taskEntry with id: ${taskEntry.id.toString()} does not exists in list with id: ${this.getID()}`, {
+                taskEntryId: taskEntry.id.toString(),
                 listId: this.getID().toString()
             });
-        this.tasks = this.tasks.filter(t => t.id.toString() !== taskList.id.toString());
-        for (let i = taskList.position.getValue() - 1; i < this.tasks.length; i++) {
-            const nextTaskList = this.tasks[i];
-            nextTaskList.position = new PositiveInteger(nextTaskList.position.getValue() - 1);
+        this.tasks = this.tasks.filter(t => t.id.toString() !== taskEntry.id.toString());
+        for (let i = taskEntry.position.getValue() - 1; i < this.tasks.length; i++) {
+            const nextTaskEntry = this.tasks[i];
+            nextTaskEntry.position = new PositiveInteger(nextTaskEntry.position.getValue() - 1);
         }
     }
     //getters

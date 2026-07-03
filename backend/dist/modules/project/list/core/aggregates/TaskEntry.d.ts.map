@@ -1,0 +1,1 @@
+{"version":3,"file":"TaskEntry.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/list/core/aggregates/TaskEntry.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,QAAQ,MAAM,0CAA0C,CAAC;AACrE,OAAO,KAAK,eAAe,MAAM,iDAAiD,CAAC;AAEnF,MAAM,CAAC,OAAO,OAAO,SAAS;IACnB,EAAE,EAAG,QAAQ,CAAC;IACd,QAAQ,EAAG,eAAe,CAAC;IAC3B,OAAO,EAAG,QAAQ,CAAC;IACnB,cAAc,EAAG,OAAO,CAAC;CACnC"}
