@@ -130,6 +130,7 @@ export default class List extends Entity{
                             listId: this.getID().toString()
                         });
         this.tasks = this.tasks.filter(t => t.id.toString() !== taskEntry.id.toString());
+        
         for(let i = taskEntry.position.getValue() - 1; i < this.tasks.length; i++){
             const nextTaskEntry = this.tasks[i] as TaskEntry;
             nextTaskEntry.position = new PositiveInteger(nextTaskEntry.position.getValue() - 1);

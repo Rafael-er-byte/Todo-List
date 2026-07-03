@@ -244,8 +244,10 @@ export default class Project extends Entity {
     }
 
     this.lists = this.lists.filter(l => l.idList.toString() !== list.idList.toString());
-    let index = 1;
-    this.lists.forEach(l => l.position = new PositiveInteger(index++));
+    for(let i = list.position.getValue() - 1; i < this.lists.length; i++){
+        const nextListEntry = this.lists[i] as ListEntry;
+        nextListEntry.position = new PositiveInteger(nextListEntry.position.getValue() - 1);
+    }
   }
 
   public generateInvitationToken(): string {

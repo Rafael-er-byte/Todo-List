@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import List from '../../../../../src/modules/project/list/core/model/List';
 import ReorganizeAndValidateTaskMovementBetweenLists from '../../../../../src/modules/project/project/core/services/ReorganizeAndValidateTaskMovementBetweenLists';
 import Task from '../../../../../src/modules/project/task/core/model/Task';
+import CannotModifyArchivedList from '../../../../../src/modules/project/list/core/errors/CannotModifyArchivedList';
 import InvalidPositionInList from '../../../../../src/modules/project/list/core/errors/InvalidPositionInList';
 import ResourceNotFound from '../../../../../src/modules/shared/core/errors/ResourceNotFound';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
@@ -97,5 +98,65 @@ describe('ReorganizeAndValidateTaskMovementBetweenLists service', () => {
     const task = buildTask(movedTaskId, 2, fromList.getID().toString());
 
     expect(() => ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task)).toThrow(InvalidPositionInList);
+  });
+
+  it('safely moves a first-position task and reindexes source and destination lists', () => {
+    const movedTaskId = '3243c815-7220-7d64-8c42-6f2af4f9fd37';
+    const fromList = buildList('0143c815-7220-7d64-8c42-6f2af4f9fd37', [
+      buildTaskEntry(movedTaskId, 1),
+      buildTaskEntry('3343c815-7220-7d64-8c42-6f2af4f9fd37', 2),
+      buildTaskEntry('3443c815-7220-7d64-8c42-6f2af4f9fd37', 3),
+    ]);
+    const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', [
+      buildTaskEntry('3543c815-7220-7d64-8c42-6f2af4f9fd37', 1),
+      buildTaskEntry('3643c815-7220-7d64-8c42-6f2af4f9fd37', 2),
+    ]);
+    const task = buildTask(movedTaskId, 1, fromList.getID().toString());
+
+    expect(() => ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task)).not.toThrow();
+
+    const fromEntries = fromList.getTasks();
+    expect(fromEntries.map((entry) => entry.id.toString())).toEqual([
+      '3343c815-7220-7d64-8c42-6f2af4f9fd37',
+      '3443c815-7220-7d64-8c42-6f2af4f9fd37',
+    ]);
+    expect(fromEntries.map((entry) => entry.position.getValue())).toEqual([1, 2]);
+
+    const toEntries = toList.getTasks();
+    expect(toEntries.map((entry) => entry.id.toString())).toEqual([
+      movedTaskId,
+      '3543c815-7220-7d64-8c42-6f2af4f9fd37',
+      '3643c815-7220-7d64-8c42-6f2af4f9fd37',
+    ]);
+    expect(toEntries.map((entry) => entry.position.getValue())).toEqual([1, 2, 3]);
+  });
+
+  it('throws CannotModifyArchivedList when source list is archived', () => {
+    const movedTaskId = '3743c815-7220-7d64-8c42-6f2af4f9fd37';
+    const actor = new IdEntity('3843c815-7220-7d64-8c42-6f2af4f9fd37');
+    const fromList = buildList('0143c815-7220-7d64-8c42-6f2af4f9fd37', [
+      buildTaskEntry(movedTaskId, 1),
+    ]);
+    const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', []);
+    const task = buildTask(movedTaskId, 1, fromList.getID().toString());
+
+    fromList.archive('archive-source-key', actor);
+
+    expect(() => ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task)).toThrow(CannotModifyArchivedList);
+  });
+
+  it('throws CannotModifyArchivedList when destination list is archived', () => {
+    const movedTaskId = '3943c815-7220-7d64-8c42-6f2af4f9fd37';
+    const actor = new IdEntity('3a43c815-7220-7d64-8c42-6f2af4f9fd37');
+    const fromList = buildList('0143c815-7220-7d64-8c42-6f2af4f9fd37', [
+      buildTaskEntry(movedTaskId, 1),
+      buildTaskEntry('3b43c815-7220-7d64-8c42-6f2af4f9fd37', 2),
+    ]);
+    const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', []);
+    const task = buildTask(movedTaskId, 1, fromList.getID().toString());
+
+    toList.archive('archive-target-key', actor);
+
+    expect(() => ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task)).toThrow(CannotModifyArchivedList);
   });
 });
