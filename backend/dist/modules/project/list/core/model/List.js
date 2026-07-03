@@ -72,7 +72,7 @@ export default class List extends Entity {
     }
     delete(key, actor) {
         if (!this.archived)
-            throw new InvalidOperation(`List must be archived before being delete`, { listID: this.getID().getID() });
+            throw new InvalidOperation(`List must be archived before being delete`, { listID: this.getID().toString() });
         this.addEvent(new ListDeleted(key, DateTime.now(), actor, this.projectId, this.id));
     }
     //validations
@@ -80,7 +80,7 @@ export default class List extends Entity {
         this.ensureCanBeModified();
         if (taskList.position.getValue() > this.tasks.length + 1 ||
             taskList.position.getValue() <= 0)
-            throw new InvalidPositionInList({ positionToInsert: taskList.position.getValue(), listId: this.getID().getID() });
+            throw new InvalidPositionInList({ positionToInsert: taskList.position.getValue(), listId: this.getID().toString() });
         const part1 = this.tasks.slice(0, taskList.position.getValue() - 1);
         const part2 = this.tasks.slice(taskList.position.getValue() - 1);
         part2.forEach(t => t.position = new PositiveInteger(t.position.getValue() + 1));
@@ -88,12 +88,12 @@ export default class List extends Entity {
     }
     removeTask(taskList) {
         this.ensureCanBeModified();
-        if (!this.tasks.find(t => t.id.getID() === taskList.id.getID()))
-            throw new ResourceNotFound(`The taskList with id: ${taskList.id.getID()} does not exists in list with id: ${this.getID()}`, {
-                taskListId: taskList.id.getID(),
-                listId: this.getID().getID()
+        if (!this.tasks.find(t => t.id.toString() === taskList.id.toString()))
+            throw new ResourceNotFound(`The taskList with id: ${taskList.id.toString()} does not exists in list with id: ${this.getID()}`, {
+                taskListId: taskList.id.toString(),
+                listId: this.getID().toString()
             });
-        this.tasks = this.tasks.filter(t => t.id.getID() !== taskList.id.getID());
+        this.tasks = this.tasks.filter(t => t.id.toString() !== taskList.id.toString());
         for (let i = taskList.position.getValue() - 1; i < this.tasks.length; i++) {
             const nextTaskList = this.tasks[i];
             nextTaskList.position = new PositiveInteger(nextTaskList.position.getValue() - 1);
@@ -117,7 +117,7 @@ export default class List extends Entity {
     }
     ensureCanBeModified() {
         if (this.archived)
-            throw new CannotModifyArchivedList({ listId: this.getID().getID() });
+            throw new CannotModifyArchivedList({ listId: this.getID().toString() });
     }
     toPrimitives() {
         return {
@@ -126,7 +126,7 @@ export default class List extends Entity {
             position: this.position.getValue(),
             archived: this.archived,
             tasks: this.tasks,
-            projectId: this.projectId.getID()
+            projectId: this.projectId.toString()
         };
     }
 }

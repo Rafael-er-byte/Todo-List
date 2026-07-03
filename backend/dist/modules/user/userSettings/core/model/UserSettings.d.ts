@@ -22,8 +22,8 @@ export default class UserSettings extends Entity {
     updateTimezone(timezone: Timezone): void;
     updateNotificationSettings(notificationSettings: NotificationSettings): void;
     toPrimitives(): {
-        id: any;
-        userId: any;
+        id: string;
+        userId: string;
         language: import("../types/Language").AllowedLanguage;
         theme: import("../types/Theme").AllowedTheme;
         timezone: string;

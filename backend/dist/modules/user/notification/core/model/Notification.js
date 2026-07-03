@@ -29,7 +29,7 @@ export default class Notification extends Entity {
     }
     markAsRead(key, actor) {
         if (this.status.isRead()) {
-            throw new NotificationAlreadyRead({ idNotification: this.getId().getID() });
+            throw new NotificationAlreadyRead({ idNotification: this.getId().toString() });
         }
         this.status = NotificationStatus.read();
         this.addEvent(new NotificationRead(key, DateTime.now(), actor, this.getIdUser(), this.getId(), this.status));
@@ -51,10 +51,10 @@ export default class Notification extends Entity {
     }
     toPrimitives() {
         return {
-            id: this.getId().getID(),
+            id: this.getId().toString(),
             eventKey: this.eventKey,
             status: this.status.getStatus(),
-            idUser: this.getIdUser().getID(),
+            idUser: this.getIdUser().toString(),
             type: this.type,
         };
     }

@@ -80,7 +80,7 @@ export default class Project extends Entity {
     }
     delete(key, actor) {
         if (!this.status.isClosed())
-            throw new ProjectNeedsToBeClosedBeforeDeleteIt(this.id.getID());
+            throw new ProjectNeedsToBeClosedBeforeDeleteIt(this.id.toString());
         this.addEvent(new ProjectDeleted(key, DateTime.now(), actor, this.id));
     }
     updateProjectName(projectName, key, actor) {
@@ -139,11 +139,11 @@ export default class Project extends Entity {
     }
     addList(Projectlist) {
         this.ensureCanBeModified();
-        if (this.lists.find((existingProjectList) => existingProjectList.idList.getID() === Projectlist.idList.getID())) {
-            throw new ConflictDuplicateResource(`A Projectlist with ID ${Projectlist.idList.getID()} already exists in the project.`);
+        if (this.lists.find((existingProjectList) => existingProjectList.idList.toString() === Projectlist.idList.toString())) {
+            throw new ConflictDuplicateResource(`A Projectlist with ID ${Projectlist.idList.toString()} already exists in the project.`);
         }
         if (Projectlist.position.getValue() > this.lists.length + 1 || Projectlist.position.getValue() < 1) {
-            throw new InvalidPositionInProject(this.id.getID());
+            throw new InvalidPositionInProject(this.id.toString());
         }
         const Projectlist1 = this.lists.slice(0, Projectlist.position.getValue() - 1);
         const Projectlist2 = this.lists.slice(Projectlist.position.getValue() - 1);
@@ -152,13 +152,13 @@ export default class Project extends Entity {
     }
     removeList(listId) {
         this.ensureCanBeModified();
-        const list = this.lists.find(l => l.idList.getID() === listId.getID());
+        const list = this.lists.find(l => l.idList.toString() === listId.toString());
         if (!list) {
-            throw new ResourceNotFound(`The list with id: ${listId.getID()} does not exists in project with id: ${this.getID()}`, { listId: listId.getID(), projectId: this.getID() });
+            throw new ResourceNotFound(`The list with id: ${listId.toString()} does not exists in project with id: ${this.getID()}`, { listId: listId.toString(), projectId: this.getID() });
         }
         const ProjectlistToReorganize = this.lists.slice(list.position.getValue() - 1);
         ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
-        this.lists = this.lists.filter(l => l.idList.getID() !== list.idList.getID());
+        this.lists = this.lists.filter(l => l.idList.toString() !== list.idList.toString());
     }
     generateInvitationToken() {
         this.invitaionToken = ID.generateId();
@@ -209,11 +209,11 @@ export default class Project extends Entity {
     }
     ensureCanBeModified() {
         if (this.status.isClosed())
-            throw new CannotModifyClosedProject(this.id.getID());
+            throw new CannotModifyClosedProject(this.id.toString());
     }
     toPrimitives() {
         return {
-            id: this.id.getID(),
+            id: this.id.toString(),
             status: this.status.getStatus(),
             projectName: this.projectName.getName(),
             projectDescription: this.projectDescription instanceof None ? null : this.projectDescription.getDescription(),

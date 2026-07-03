@@ -195,7 +195,7 @@ export default class Task extends Entity {
         this.addEvent(new TaskOverDue(key, DateTime.now(), this.getIdProject(), super.getID()));
     }
     isAssigned(assigned) {
-        const exists = this.assigned.getItems().find(a => a.getID() === assigned.getID());
+        const exists = this.assigned.getItems().find(a => a.toString() === assigned.toString());
         return exists !== undefined;
     }
     //mutable methods accesible for another classes
@@ -254,12 +254,12 @@ export default class Task extends Entity {
     toPrimitives() {
         return {
             title: this.title.getTitle(),
-            listContainer: this.listContainer.getID(),
+            listContainer: this.listContainer.toString(),
             positionInList: this.positionInList.getValue(),
             state: this.state.getState(),
             archived: this.archived,
-            id: super.getID().getID(),
-            idProject: this.idProject.getID(),
+            id: super.getID().toString(),
+            idProject: this.idProject.toString(),
             categories: this.categories.getPrimitives(),
             assigned: this.assigned.getPrimitives(),
             description: (this.description instanceof None) ? null : this.description.getText(),

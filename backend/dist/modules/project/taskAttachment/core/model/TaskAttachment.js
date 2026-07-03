@@ -58,8 +58,8 @@ export default class TaskAttachment extends Entity {
     }
     toPrimitives() {
         return {
-            id: super.getID().getID(),
-            idTask: this.getTask().getID(),
+            id: super.getID().toString(),
+            idTask: this.getTask().toString(),
             attachment: {
                 url: this.attachment.getUrl().getUrl(),
                 type: this.attachment.getType(),

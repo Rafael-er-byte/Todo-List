@@ -154,7 +154,7 @@ export default class Task extends Entity {
     );
 
     task.addEvent(
-      new TaskCreated(params.key, DateTime.now(), actor, task.getIdProject(), task.toString(), task.toPrimitives()),
+      new TaskCreated(params.key, DateTime.now(), actor, task.getIdProject(), task.getID(), task.toPrimitives()),
     );
     return task;
   }

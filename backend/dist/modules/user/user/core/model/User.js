@@ -21,18 +21,18 @@ export default class User extends Entity {
         return new User(id, accounts, primary);
     }
     addAccount(account) {
-        const exists = this.accounts.find((a) => a.getID() === account.getID());
+        const exists = this.accounts.find((a) => a.toString() === account.toString());
         if (exists)
-            throw new DuplicateAccount(account.getID());
+            throw new DuplicateAccount(account.toString());
         this.accounts.push(account);
     }
     changePrimaryAccount(newPrimary) {
         if (this.primaryAccount instanceof None)
             throw new InvalidOperation("Primary account doesnt exists");
-        const previous = this.primaryAccount.getID();
-        const found = this.accounts.find((a) => a.getID() === newPrimary.getID());
+        const previous = this.primaryAccount.toString();
+        const found = this.accounts.find((a) => a.toString() === newPrimary.toString());
         if (!found) {
-            throw new AccountDoesntExist(newPrimary.getID());
+            throw new AccountDoesntExist(newPrimary.toString());
         }
         this.primaryAccount = newPrimary;
         this.addEvent(new AccountChanged(ID.generateId().toString(), DateTime.now(), this.getID(), super.getID(), newPrimary, { previousPrimary: previous }));
@@ -40,13 +40,13 @@ export default class User extends Entity {
     removeAccount(account) {
         if (this.primaryAccount instanceof None)
             throw new InvalidOperation("Primary account doesnt exists");
-        const found = this.accounts.find((a) => a.getID() === account.getID());
+        const found = this.accounts.find((a) => a.toString() === account.toString());
         if (!found)
-            throw new AccountDoesntExist(account.getID());
+            throw new AccountDoesntExist(account.toString());
         if (this.accounts.length <= 1)
             throw new InvalidOperation('The user at least must have one account');
-        this.accounts = this.accounts.filter((a) => a.getID() !== account.getID());
-        if (account.getID() === this.primaryAccount.getID())
+        this.accounts = this.accounts.filter((a) => a.toString() !== account.toString());
+        if (account.toString() === this.primaryAccount.toString())
             this.primaryAccount = this.accounts[0];
     }
     getAccounts() {
@@ -61,9 +61,9 @@ export default class User extends Entity {
         if (this.primaryAccount instanceof None)
             throw new InvalidOperation("Primary account doesnt exists");
         return {
-            id: super.getID().getID(),
-            primaryAccount: this.primaryAccount.getID(),
-            accounts: this.accounts.map((a) => a.getID()),
+            id: super.getID().toString(),
+            primaryAccount: this.primaryAccount.toString(),
+            accounts: this.accounts.map((a) => a.toString()),
         };
     }
 }

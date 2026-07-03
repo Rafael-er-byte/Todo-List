@@ -50,8 +50,8 @@ export default class Link extends Entity {
     }
     toPrimitives() {
         return {
-            id: this.getId().getID(),
-            idTask: this.getTaskId().getID(),
+            id: this.getId().toString(),
+            idTask: this.getTaskId().toString(),
             url: this.url.getUrl(),
             visibleText: this.visibleText instanceof None ? null : this.visibleText.getText(),
         };

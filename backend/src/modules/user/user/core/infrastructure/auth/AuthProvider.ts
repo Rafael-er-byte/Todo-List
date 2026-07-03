@@ -9,5 +9,6 @@ export type identity = {
 }
 
 export interface AuthProvider{
+    //throws Unauthorized('Invalid authentication code')
     authenticate(code:string): Promise<identity>;
 }

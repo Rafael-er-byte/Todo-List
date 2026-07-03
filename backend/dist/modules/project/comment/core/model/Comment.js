@@ -50,7 +50,7 @@ export default class Comment extends Entity {
         return this.task;
     }
     updateContent(key, newContent, actor) {
-        if (actor.getID() !== this.getCreator().getID()) {
+        if (actor.toString() !== this.getCreator().toString()) {
             throw new Unauthorized('Only the creator can update the comment content');
         }
         this.content = newContent;
@@ -68,11 +68,11 @@ export default class Comment extends Entity {
     }
     toPrimitives() {
         return {
-            id: this.getId().getID(),
-            creator: this.getCreator().getID(),
+            id: this.getId().toString(),
+            creator: this.getCreator().toString(),
             content: this.content.getText(),
             mentions: this.mentions.getPrimitives(),
-            idTask: this.task.getID(),
+            idTask: this.task.toString(),
         };
     }
 }

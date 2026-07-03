@@ -33,7 +33,7 @@ export default class AuthenticateUser {
             name: authenticatedUser.name,
             userId: user.getID().toString(),
             provider: authenticatedUser.provider,
-            ...(authenticatedUser.profileImage !== undefined && { profileImage: authenticatedUser.profileImage }),
+            profileImage: authenticatedUser.profileImage !== undefined ? authenticatedUser.profileImage : null,
         });
         data.chronLog.info(`user account created with id: ${account.getID()}`);
         start = performance.now();

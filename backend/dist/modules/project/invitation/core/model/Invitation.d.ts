@@ -9,12 +9,9 @@ export default class Invitation extends Entity {
     private status;
     private guest;
     private constructor();
-    static create(params: Omit<InvitationParams, 'status'> & {
-        key: string;
-    }): Invitation;
-    cancel(key: string): void;
+    static create(params: Omit<InvitationParams, 'status'> & {}): Invitation;
+    cancel(): void;
     accept(): void;
-    delete(key: string): void;
     static fromPrimitives(params: InvitationParams): Invitation;
     toPrimitives(): InvitationParams;
     getHost(): IdEntity;
