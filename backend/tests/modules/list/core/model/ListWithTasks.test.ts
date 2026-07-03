@@ -1,13 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import List from '../../../../../src/modules/project/list/core/model/List';
-import ListId from '../../../../../src/modules/project/list/core/object/ListId';
-import ListTitle from '../../../../../src/modules/project/list/core/object/ListTitle';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import InvalidPositionInList from '../../../../../src/modules/project/list/core/errors/InvalidPositionInList';
 import PositiveInteger from '../../../../../src/modules/shared/core/objects/PositiveInteger';
-import Text from '../../../../../src/modules/shared/core/objects/Text';
-import None from '../../../../../src/modules/shared/core/objects/None';
-import TaskList from '../../../../../src/modules/project/list/core/object/TaskList';
+import TaskEntry from '../../../../../src/modules/project/list/core/aggregates/TaskEntry';
 
 const buildList = () =>
   List.create(
@@ -20,9 +16,18 @@ const buildList = () =>
     },
   );
 
-const buildTask = (id = '0143c815-7220-7d64-8c42-6f2af4f9fd37', position = 1, project = '0343c815-7220-7d64-8c42-6f2af4f9fd37') => {
-  return new TaskList(new IdEntity(id), new PositiveInteger(position), new IdEntity(project));
-}
+const buildTask = (
+  id = '0143c815-7220-7d64-8c42-6f2af4f9fd37',
+  position = 1,
+  project = '0343c815-7220-7d64-8c42-6f2af4f9fd37',
+): TaskEntry => {
+  const task = new TaskEntry();
+  task.id = new IdEntity(id);
+  task.position = new PositiveInteger(position);
+  task.project = new IdEntity(project);
+  task.archivedByList = false;
+  return task;
+};
 
 describe('List with tasks', () => {
   it('does not allow adding a task with an invalid position', () => {

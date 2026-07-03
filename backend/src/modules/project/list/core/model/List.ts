@@ -16,21 +16,21 @@ import InvalidOperation from "../../../../shared/core/errors/InvalidOperation";
 import CannotModifyArchivedList from "../errors/CannotModifyArchivedList";
 import InvalidPositionInList from "../errors/InvalidPositionInList";
 import PositiveInteger from "../../../../shared/core/objects/PositiveInteger"
-import TaskList from "../object/TaskList";
+import type TaskEntry from "../aggregates/TaskEntry";
 
 export default class List extends Entity{
     private readonly id!: ListId;
     private title!: ListTitle ;
     private position!: PositiveInteger;
     private archived: boolean = false;
-    private tasks!: TaskList[];
+    private tasks!: TaskEntry[];
     private projectId!: IdEntity;
 
     private constructor(
         id: ListId,
         title: ListTitle,
         position: PositiveInteger,
-        tasks: TaskList[],
+        tasks: TaskEntry[],
         projectId: IdEntity
     ){
         super(id);
@@ -65,11 +65,6 @@ export default class List extends Entity{
         return list;
     }
 
-    public static exportBetweenLists(from: List, to: List, taskList: TaskList){
-        from.removeTask(taskList);
-        to.addTask(taskList);
-    }
-
     //mutable actions 
     public updateTitle(newTitle: ListTitle, key: string, actor: IdEntity): void{
         this.ensureCanBeModified();
@@ -94,11 +89,17 @@ export default class List extends Entity{
 
     public archive(key: string, actor: IdEntity): void{
         this.archived = true;
+        this.tasks.forEach(t => {
+            t.archivedByList = true;
+        });
         this.addEvent(new ListArchived(key, DateTime.now(), actor, this.projectId, this.id));
     }
 
     public unarchive(key: string, actor: IdEntity): void{
         this.archived = false;
+        this.tasks.forEach(t => {
+            t.archivedByList = false;
+        });
         this.addEvent(new ListUnarchived(key, DateTime.now(), actor, this.projectId, this.id));
     }
 
@@ -108,30 +109,30 @@ export default class List extends Entity{
     }
 
     //validations
-    public addTask(taskList: TaskList): void{
+    public addTask(taskEntry: TaskEntry): void{
         this.ensureCanBeModified();
 
-        if(taskList.position.getValue()  > this.tasks.length + 1 || 
-            taskList.position.getValue() <= 0)throw new InvalidPositionInList({positionToInsert: taskList.position.getValue(), listId: this.getID().toString()});
-        const part1 = this.tasks.slice(0, taskList.position.getValue() - 1);
-        const part2 = this.tasks.slice(taskList.position.getValue() -1);
+        if(taskEntry.position.getValue()  > this.tasks.length + 1 || 
+            taskEntry.position.getValue() <= 0)throw new InvalidPositionInList({positionToInsert: taskEntry.position.getValue(), listId: this.getID().toString()});
+        const part1 = this.tasks.slice(0, taskEntry.position.getValue() - 1);
+        const part2 = this.tasks.slice(taskEntry.position.getValue() -1);
         part2.forEach(t => t.position = new PositiveInteger(t.position.getValue() + 1));
-        this.tasks = [...part1, taskList, ...part2];
+        this.tasks = [...part1, taskEntry, ...part2];
     }
 
-    public removeTask(taskList: TaskList): void{
+    public removeTask(taskEntry: TaskEntry): void{
         this.ensureCanBeModified();
         
-        if(!this.tasks.find(t => t.id.toString() === taskList.id.toString())) throw new ResourceNotFound(
-                        `The taskList with id: ${taskList.id.toString()} does not exists in list with id: ${this.getID()}`, 
+        if(!this.tasks.find(t => t.id.toString() === taskEntry.id.toString())) throw new ResourceNotFound(
+                        `The taskEntry with id: ${taskEntry.id.toString()} does not exists in list with id: ${this.getID()}`, 
                         {
-                            taskListId: taskList.id.toString(), 
+                            taskEntryId: taskEntry.id.toString(), 
                             listId: this.getID().toString()
                         });
-        this.tasks = this.tasks.filter(t => t.id.toString() !== taskList.id.toString());
-        for(let i = taskList.position.getValue() - 1; i < this.tasks.length; i++){
-            const nextTaskList = this.tasks[i] as TaskList;
-            nextTaskList.position = new PositiveInteger(nextTaskList.position.getValue() - 1);
+        this.tasks = this.tasks.filter(t => t.id.toString() !== taskEntry.id.toString());
+        for(let i = taskEntry.position.getValue() - 1; i < this.tasks.length; i++){
+            const nextTaskEntry = this.tasks[i] as TaskEntry;
+            nextTaskEntry.position = new PositiveInteger(nextTaskEntry.position.getValue() - 1);
         }
     }
 
@@ -144,7 +145,7 @@ export default class List extends Entity{
         return this.position;
     }
 
-    public getTasks(): TaskList[]{
+    public getTasks(): TaskEntry[]{
         return [...this.tasks];
     }
 

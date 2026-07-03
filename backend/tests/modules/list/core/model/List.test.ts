@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import List from '../../../../../src/modules/project/list/core/model/List';
-import ListId from '../../../../../src/modules/project/list/core/object/ListId';
-import ListTitle from '../../../../../src/modules/project/list/core/object/ListTitle';
-import TaskList from '../../../../../src/modules/project/list/core/object/TaskList';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
 import InvalidParameters from '../../../../../src/modules/shared/core/errors/InvalidParameters';
 import PositiveInteger from '../../../../../src/modules/shared/core/objects/PositiveInteger';
-import Text from '../../../../../src/modules/shared/core/objects/Text';
+import TaskEntry from '../../../../../src/modules/project/list/core/aggregates/TaskEntry';
 
 const buildList = () => List.create(
   {
@@ -18,8 +15,18 @@ const buildList = () => List.create(
   },
 );
 
-const buildTask = (position: number, id: string, projectId: string = '0343c815-7220-7d64-8c42-6f2af4f9fd37') =>
-  new TaskList(new IdEntity(id), new PositiveInteger(position), new IdEntity(projectId));
+const buildTask = (
+  position: number,
+  id: string,
+  projectId: string = '0343c815-7220-7d64-8c42-6f2af4f9fd37',
+): TaskEntry => {
+  const task = new TaskEntry();
+  task.id = new IdEntity(id);
+  task.position = new PositiveInteger(position);
+  task.project = new IdEntity(projectId);
+  task.archivedByList = false;
+  return task;
+};
 
 describe('List', () => {
   it('creates a list with a positive integer position', () => {
@@ -31,7 +38,7 @@ describe('List', () => {
   it('returns list information with getters', () => {
     const list = buildList();
     const tasks = list.getTasks();
-    tasks.push({} as TaskList);
+    tasks.push(buildTask(1, '1243c815-7220-7d64-8c42-6f2af4f9fd37'));
 
     expect(list.getTitle().getValue().getText()).toBe('Backlog');
     expect(list.getPosition().getValue()).toBe(1);
