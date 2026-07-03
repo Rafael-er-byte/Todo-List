@@ -137,18 +137,18 @@ export default class Project extends Entity {
         this.showCompletedTasks = false;
         this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
     }
-    addList(Projectlist) {
+    addList(ListEntry) {
         this.ensureCanBeModified();
-        if (this.lists.find((existingProjectList) => existingProjectList.idList.toString() === Projectlist.idList.toString())) {
-            throw new ConflictDuplicateResource(`A Projectlist with ID ${Projectlist.idList.toString()} already exists in the project.`);
+        if (this.lists.find((existingListEntry) => existingListEntry.idList.toString() === ListEntry.idList.toString())) {
+            throw new ConflictDuplicateResource(`A ListEntry with ID ${ListEntry.idList.toString()} already exists in the project.`);
         }
-        if (Projectlist.position.getValue() > this.lists.length + 1 || Projectlist.position.getValue() < 1) {
+        if (ListEntry.position.getValue() > this.lists.length + 1 || ListEntry.position.getValue() < 1) {
             throw new InvalidPositionInProject(this.id.toString());
         }
-        const Projectlist1 = this.lists.slice(0, Projectlist.position.getValue() - 1);
-        const Projectlist2 = this.lists.slice(Projectlist.position.getValue() - 1);
-        Projectlist2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
-        this.lists = [...Projectlist1, Projectlist, ...Projectlist2];
+        const ListEntry1 = this.lists.slice(0, ListEntry.position.getValue() - 1);
+        const ListEntry2 = this.lists.slice(ListEntry.position.getValue() - 1);
+        ListEntry2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
+        this.lists = [...ListEntry1, ListEntry, ...ListEntry2];
     }
     removeList(listId) {
         this.ensureCanBeModified();
@@ -156,9 +156,9 @@ export default class Project extends Entity {
         if (!list) {
             throw new ResourceNotFound(`The list with id: ${listId.toString()} does not exists in project with id: ${this.getID()}`, { listId: listId.toString(), projectId: this.getID() });
         }
-        const ProjectlistToReorganize = this.lists.slice(list.position.getValue() - 1);
-        ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
         this.lists = this.lists.filter(l => l.idList.toString() !== list.idList.toString());
+        let index = 1;
+        this.lists.forEach(l => l.position = new PositiveInteger(index++));
     }
     generateInvitationToken() {
         this.invitaionToken = ID.generateId();

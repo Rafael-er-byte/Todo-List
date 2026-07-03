@@ -40,3 +40,6 @@ The application layer contains DTOs and handlers (use cases), they use dependenc
 ## Completion
 - git add: changes
 - git commit -m: descriptive commit message
+
+## Feedback
+- If you found any bug or component that doesnt match the required specs or style report it and explain it, dont resolve it till was reviewed, you can fix name error or atributes that are required but not existent at moment

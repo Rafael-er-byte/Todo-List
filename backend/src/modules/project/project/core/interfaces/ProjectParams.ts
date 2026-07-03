@@ -1,6 +1,6 @@
 import type { AllowedColors } from '../../../../shared/core/types/AllowedColors';
 import type { AllowedProjectSetting } from '../../../../shared/core/types/AllowedProjectSetting';
-import type ProjectList from '../objects/ProjectList';
+import type ListEntry from '../aggregates/ListEntry';
 import type { AllowedBackgroundType } from '../types/AllowedBackgroundType';
 import type { AllowedProjectStatus } from '../types/AllowedProjectStatus';
 import type ProjectBackgroundImageParams from './ProjectBackgroundImageParams';
@@ -12,7 +12,7 @@ export default interface ProjectParams {
   projectDescription: string | null;
   background: ProjectBackgroundImageParams | AllowedColors;
   backgroundType: AllowedBackgroundType;
-  lists: ProjectList[];
+  lists: ListEntry[];
   commentAuthorization: AllowedProjectSetting;
   inmutableComment: boolean;
   addMemberSettings: AllowedProjectSetting;

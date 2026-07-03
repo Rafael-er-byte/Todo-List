@@ -5,7 +5,6 @@ import ProjectBackGroundColor from "../../../../../src/modules/project/project/c
 import ProjectBackGroundImage from "../../../../../src/modules/project/project/core/objects/ProjectBackGroundImage";
 import ProjectDescription from "../../../../../src/modules/project/project/core/objects/ProjectDescription";
 import ProjectId from "../../../../../src/modules/project/project/core/objects/ProjectId";
-import ProjectList from "../../../../../src/modules/project/project/core/objects/ProjectList";
 import ProjectName from "../../../../../src/modules/project/project/core/objects/ProjectName";
 import ProjectSetting from "../../../../../src/modules/project/project/core/objects/ProjectSetting";
 import ProjectStatus from "../../../../../src/modules/project/project/core/objects/ProjectStatus";
@@ -26,6 +25,7 @@ import { AllowedColors } from "../../../../../src/modules/shared/core/types/Allo
 import { describe, it, expect } from "vitest";
 import { AllowedProjectSetting } from "../../../../../src/modules/shared/core/types/AllowedProjectSetting";
 import { AllowedMemberRoles } from "../../../../../src/modules/shared/core/types/AllowedMemberRoles";
+import ListEntry from "../../../../../src/modules/project/project/core/aggregates/ListEntry";
 
 describe("Project tests", () => {
 
@@ -38,7 +38,7 @@ describe("Project tests", () => {
         projectDescription: string | null;
         background: ProjectBackgroundImageParams | AllowedColors;
         backgroundType: AllowedBackgroundType;
-        lists: ProjectList[];
+        lists: ListEntry[];
         commentAuthorization: AllowedProjectSetting;
         inmutableComment: boolean;
         addMemberSettings: AllowedProjectSetting;
@@ -64,10 +64,15 @@ describe("Project tests", () => {
     });
 
     const buildList = (
-        idList: IdEntity = new IdEntity('01978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'), 
-        position: PositiveInteger = new PositiveInteger(1)) => {
-
-        return new ProjectList(idList, position);
+        idList: IdEntity = new IdEntity('01978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'),
+        position: PositiveInteger = new PositiveInteger(1),
+        isArchived: boolean = false,
+    ) => {
+        const list = new ListEntry();
+        list.idList = idList;
+        list.position = position;
+        list.isArchived = isArchived;
+        return list;
     }
 
     let project: Project | null;
@@ -216,6 +221,89 @@ describe("Project tests", () => {
         );
     });
 
+    it("Should expose expected data from getters when project has image background and lists", () => {
+        const listA = buildList(
+            new IdEntity('12978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'),
+            new PositiveInteger(1),
+            true,
+        );
+        const listB = buildList(
+            new IdEntity('13978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'),
+            new PositiveInteger(2),
+            false,
+        );
+
+        const params = buildParams({
+            projectName: 'Roadmap 2026',
+            projectDescription: 'Long term priorities',
+            backgroundType: AllowedBackgroundType.image,
+            background: {
+                url: DEFAULT_IMAGE.getUrl().getUrl(),
+                type: DEFAULT_IMAGE.getType(),
+                name: DEFAULT_IMAGE.getName().getText(),
+                size: DEFAULT_IMAGE.getSize().getValue(),
+            },
+            lists: [listA, listB],
+            commentAuthorization: AllowedMemberRoles.member,
+            addMemberSettings: AllowedMemberRoles.member,
+            createResourcesSettings: AllowedMemberRoles.admin,
+            inmutableComment: true,
+            showCompletedTasks: false,
+        });
+
+        project = Project.fromPrimitives(params);
+
+        expect(project.getId()).toBeInstanceOf(ProjectId);
+        expect(project.getProjectName().getName()).toBe('Roadmap 2026');
+        expect(project.getProjectDescription()).toBeInstanceOf(ProjectDescription);
+        expect((project.getProjectDescription() as ProjectDescription).getDescription()).toBe('Long term priorities');
+        expect(project.getBackgroundType()).toBe(AllowedBackgroundType.image);
+        expect(project.getBackground()).toBeInstanceOf(ProjectBackGroundImage);
+
+        const backgroundImage = (project.getBackground() as ProjectBackGroundImage).getImage();
+        expect(backgroundImage.getUrl().getUrl()).toBe(DEFAULT_IMAGE.getUrl().getUrl());
+        expect(backgroundImage.getType()).toBe(DEFAULT_IMAGE.getType());
+        expect(backgroundImage.getName().getText()).toBe(DEFAULT_IMAGE.getName().getText());
+        expect(backgroundImage.getSize().getValue()).toBe(DEFAULT_IMAGE.getSize().getValue());
+
+        expect(project.getCommentAuthorization().getSetting()).toBe(AllowedMemberRoles.member);
+        expect(project.getAddMemberSettings().getSetting()).toBe(AllowedMemberRoles.member);
+        expect(project.getCreateResourcesSettings().getSetting()).toBe(AllowedMemberRoles.admin);
+        expect(project.isCommentInmutable()).toBe(true);
+        expect(project.shouldShowCompletedTasks()).toBe(false);
+
+        const lists = project.getlists();
+        expect(lists).toHaveLength(2);
+        expect(lists.map((l) => l.idList.toString())).toEqual([
+            '12978b74-7c3d-7b2a-8f71-3d7f6a8c2e11',
+            '13978b74-7c3d-7b2a-8f71-3d7f6a8c2e11',
+        ]);
+        expect(lists.map((l) => l.position.getValue())).toEqual([1, 2]);
+        expect(lists.map((l) => l.isArchived)).toEqual([true, false]);
+    });
+
+    it("Should return expected primitive payload with list entries", () => {
+        const params = buildParams({
+            projectName: 'Operations',
+            lists: [
+                buildList(new IdEntity('14978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'), new PositiveInteger(1), true),
+                buildList(new IdEntity('15978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'), new PositiveInteger(2), false),
+            ],
+        });
+        project = Project.fromPrimitives(params);
+
+        const primitives = project.toPrimitives();
+        expect(primitives.projectName).toBe('Operations');
+        expect(primitives.backgroundType).toBe(AllowedBackgroundType.color);
+        expect(primitives.lists).toHaveLength(2);
+        expect(primitives.lists.map((l) => l.idList.toString())).toEqual([
+            '14978b74-7c3d-7b2a-8f71-3d7f6a8c2e11',
+            '15978b74-7c3d-7b2a-8f71-3d7f6a8c2e11',
+        ]);
+        expect(primitives.lists.map((l) => l.position.getValue())).toEqual([1, 2]);
+        expect(primitives.lists.map((l) => l.isArchived)).toEqual([true, false]);
+    });
+
     it("Should validate and maintain correct order of listsOrder when add or remove ones", () => {
         const params = buildParams();
         project = Project.fromPrimitives(params);
@@ -285,5 +373,28 @@ describe("Project tests", () => {
         project.addList(list1);
         expect(project.getlists()).toHaveLength(1);
         expect(() => project!.addList(list1)).toThrow(ConflictDuplicateResource);
+    });
+
+    it("Should safely remove first list position and reindex remaining lists", () => {
+        const params = buildParams();
+        project = Project.fromPrimitives(params);
+
+        const list1 = buildList(new IdEntity('16978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'), new PositiveInteger(1));
+        const list2 = buildList(new IdEntity('17978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'), new PositiveInteger(2));
+        const list3 = buildList(new IdEntity('18978b74-7c3d-7b2a-8f71-3d7f6a8c2e11'), new PositiveInteger(3));
+
+        project.addList(list1);
+        project.addList(list2);
+        project.addList(list3);
+
+        expect(() => project.removeList(list1.idList)).not.toThrow();
+
+        const lists = project.getlists();
+        expect(lists).toHaveLength(2);
+        expect(lists.map((l) => l.idList.toString())).toEqual([
+            '17978b74-7c3d-7b2a-8f71-3d7f6a8c2e11',
+            '18978b74-7c3d-7b2a-8f71-3d7f6a8c2e11',
+        ]);
+        expect(lists.map((l) => l.position.getValue())).toEqual([1, 2]);
     });
 });

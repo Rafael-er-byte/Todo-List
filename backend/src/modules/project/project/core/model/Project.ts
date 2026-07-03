@@ -36,8 +36,8 @@ import PositiveInteger from '../../../../shared/core/objects/PositiveInteger';
 import ResourceNotFound from '../../../../shared/core/errors/ResourceNotFound';
 import ID from '../../../../shared/core/objects/ID';
 import { AllowedBackgroundType } from '../types/AllowedBackgroundType';
-import type ProjectList from '../objects/ProjectList';
 import CannotModifyClosedProject from '../errors/CannotModifyClosedProject';
+import type ListEntry from '../aggregates/ListEntry';
 
 export default class Project extends Entity {
   private readonly id!: ProjectId;
@@ -45,7 +45,7 @@ export default class Project extends Entity {
   private projectName!: ProjectName;
   private projectDescription!: ProjectDescription | None;
   private background!: ProjectBackGroundImage | ProjectBackGroundColor;
-  private lists!: ProjectList[];
+  private lists!: ListEntry[];
   private commentAuthorization!: ProjectSetting;
   private inmutableComment!: boolean;
   private addMemberSettings!: ProjectSetting;
@@ -59,7 +59,7 @@ export default class Project extends Entity {
     projectName: ProjectName,
     projectDescription: ProjectDescription | None,
     background: ProjectBackGroundImage | ProjectBackGroundColor,
-    lists: ProjectList[],
+    lists: ListEntry[],
     commentAuthorization: ProjectSetting,
     inmutableComment: boolean,
     addMemberSettings: ProjectSetting,
@@ -219,20 +219,20 @@ export default class Project extends Entity {
     this.addEvent(new ProjectCompletedTasksVisibilityUpdated(key, DateTime.now(), actor, this.id, this.showCompletedTasks));
   }
 
-  public addList(Projectlist: ProjectList): void {
+  public addList(ListEntry: ListEntry): void {
     this.ensureCanBeModified();
-    if(this.lists.find((existingProjectList) => existingProjectList.idList.toString() === Projectlist.idList.toString())) {
-      throw new ConflictDuplicateResource(`A Projectlist with ID ${Projectlist.idList.toString()} already exists in the project.`);
+    if(this.lists.find((existingListEntry) => existingListEntry.idList.toString() === ListEntry.idList.toString())) {
+      throw new ConflictDuplicateResource(`A ListEntry with ID ${ListEntry.idList.toString()} already exists in the project.`);
     }
-    if(Projectlist.position.getValue() > this.lists.length + 1 || Projectlist.position.getValue() < 1) {
+    if(ListEntry.position.getValue() > this.lists.length + 1 || ListEntry.position.getValue() < 1) {
       throw new InvalidPositionInProject(this.id.toString());
     }
     
-    const Projectlist1 = this.lists.slice(0, Projectlist.position.getValue() - 1);
-    const Projectlist2 = this.lists.slice(Projectlist.position.getValue() -1);
+    const ListEntry1 = this.lists.slice(0, ListEntry.position.getValue() - 1);
+    const ListEntry2 = this.lists.slice(ListEntry.position.getValue() -1);
 
-    Projectlist2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
-    this.lists = [...Projectlist1, Projectlist, ...Projectlist2];
+    ListEntry2.forEach(l => l.position = new PositiveInteger(l.position.getValue() + 1));
+    this.lists = [...ListEntry1, ListEntry, ...ListEntry2];
   }
 
   public removeList(listId: IdEntity): void {
@@ -243,10 +243,9 @@ export default class Project extends Entity {
       throw new ResourceNotFound(`The list with id: ${listId.toString()} does not exists in project with id: ${this.getID()}`, {listId: listId.toString(), projectId: this.getID()});
     }
 
-    const ProjectlistToReorganize = this.lists.slice(list.position.getValue() -1);
-
-    ProjectlistToReorganize.forEach(l => l.position = new PositiveInteger(l.position.getValue() - 1));
     this.lists = this.lists.filter(l => l.idList.toString() !== list.idList.toString());
+    let index = 1;
+    this.lists.forEach(l => l.position = new PositiveInteger(index++));
   }
 
   public generateInvitationToken(): string {
@@ -286,7 +285,7 @@ export default class Project extends Entity {
     return (this.background instanceof ProjectBackGroundColor)? AllowedBackgroundType.color: AllowedBackgroundType.image;
   }
 
-  public getlists(): ProjectList[] {
+  public getlists(): ListEntry[] {
     return [...this.lists];
   }
 

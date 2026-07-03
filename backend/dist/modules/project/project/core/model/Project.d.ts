@@ -10,7 +10,7 @@ import ProjectName from '../objects/ProjectName';
 import ProjectSetting from '../objects/ProjectSetting';
 import ProjectStatus from '../objects/ProjectStatus';
 import { AllowedBackgroundType } from '../types/AllowedBackgroundType';
-import type ProjectList from '../objects/ProjectList';
+import type ListEntry from '../aggregates/ListEntry';
 export default class Project extends Entity {
     private readonly id;
     private status;
@@ -42,7 +42,7 @@ export default class Project extends Entity {
     changeImmutableCommentSettings(inmutableComment: boolean, key: string, actor: IdEntity): void;
     showCompletedTaskEvents(key: string, actor: IdEntity): void;
     unshowCompletedTaskEvents(key: string, actor: IdEntity): void;
-    addList(Projectlist: ProjectList): void;
+    addList(ListEntry: ListEntry): void;
     removeList(listId: IdEntity): void;
     generateInvitationToken(): string;
     invalidateInvitationToken(): void;
@@ -53,7 +53,7 @@ export default class Project extends Entity {
     getProjectDescription(): ProjectDescription | None;
     getBackground(): ProjectBackGroundImage | ProjectBackGroundColor;
     getBackgroundType(): AllowedBackgroundType;
-    getlists(): ProjectList[];
+    getlists(): ListEntry[];
     getCommentAuthorization(): ProjectSetting;
     isCommentInmutable(): boolean;
     getAddMemberSettings(): ProjectSetting;
