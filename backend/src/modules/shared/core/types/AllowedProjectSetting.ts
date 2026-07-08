@@ -1,4 +1,4 @@
-import { AllowedMemberRoles } from "../../../shared/core/types/AllowedMemberRoles";
+import { AllowedMemberRoles } from "./AllowedMemberRoles";
 
 export const ALLOWED_PROJECT_SETTING = [AllowedMemberRoles.admin, AllowedMemberRoles.member] as const;
 

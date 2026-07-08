@@ -15,9 +15,9 @@ function createLogger(args: LoggerArgs = {}) {
     return new Logger(
         args.logLevel ?? LogLevel.METRIC,
         args.ip ?? "127.0.0.1",
-        args.idUser ?? "user-1",
         args.method ?? "GET",
         args.url ?? "/tasks",
+        args.idUser ?? "user-1",
         args.requestKey,
     );
 }
@@ -36,9 +36,9 @@ describe("Logger", () => {
 
         const logger = createLogger({
             ip: "192.168.1.1",
-            idUser: "user-123",
             method: "POST",
             url: "/project/1",
+            idUser: "user-123",
         });
 
         expect(logger.log.ip).toBe("192.168.1.1");
@@ -173,7 +173,7 @@ describe("Logger", () => {
         const logger = createLogger();
         const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
-        logger.print();
+        logger.save();
 
         expect(consoleSpy).toHaveBeenCalledWith(logger.log);
     });

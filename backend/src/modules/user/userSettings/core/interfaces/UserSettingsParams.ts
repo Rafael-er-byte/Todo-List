@@ -5,13 +5,13 @@ import type { AllowedTheme } from '../types/Theme';
 export default interface UserSettingsParams {
   id: string;
   userId: string;
-  language: AllowedLanguage;
-  theme: AllowedTheme;
+  language?: AllowedLanguage;
+  theme?: AllowedTheme;
   timezone: string;
   notificationSettings?: {
-    type: AllowedNotificationType;
-    projectType: AllowedProjectType;
-    channel: AllowedChannelType;
-    active: boolean;
+    type?: AllowedNotificationType;
+    projectType?: AllowedProjectType;
+    channel?: AllowedChannelType;
+    active?: boolean;
   };
 }

@@ -1,4 +1,4 @@
-import ValueObject from '../../../shared/core/objects/ValueObject';
+import ValueObject from './ValueObject';
 import InvalidFormat from '../errors/InvalidFormat';
 
 export default class Email extends ValueObject {

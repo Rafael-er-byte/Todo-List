@@ -13,11 +13,11 @@ export enum LogLevel{
 
 export default interface Log{
     ip: string;
-    idUser: string;
     date: Date;
     duration: number;
     method: string;
     url: string;
+    idUser?: string;
     requestKey?: string;
     events: Event[];
     status: number;

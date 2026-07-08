@@ -25,6 +25,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/context"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"]
 }

@@ -157,8 +157,10 @@ export default class Project extends Entity {
             throw new ResourceNotFound(`The list with id: ${listId.toString()} does not exists in project with id: ${this.getID()}`, { listId: listId.toString(), projectId: this.getID() });
         }
         this.lists = this.lists.filter(l => l.idList.toString() !== list.idList.toString());
-        let index = 1;
-        this.lists.forEach(l => l.position = new PositiveInteger(index++));
+        for (let i = list.position.getValue() - 1; i < this.lists.length; i++) {
+            const nextListEntry = this.lists[i];
+            nextListEntry.position = new PositiveInteger(nextListEntry.position.getValue() - 1);
+        }
     }
     generateInvitationToken() {
         this.invitaionToken = ID.generateId();

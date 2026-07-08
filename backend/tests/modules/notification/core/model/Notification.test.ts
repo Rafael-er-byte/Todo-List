@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import NotificationAlreadyRead from '../../../../../src/modules/user/notification/core/error/NotificationAlreadyRead';
-import Notification from '../../../../../src/modules/user/notification/core/model/Notification';
-import { AllowedNotificationStatus } from '../../../../../src/modules/user/notification/core/types/AllowedNotificationStatus';
-import { NotificationTypes } from '../../../../../src/modules/user/notification/core/types/NotificationTypes';
 import type DomainEvent from '../../../../../src/modules/shared/core/events/DomainEvent';
 import IdEntity from '../../../../../src/modules/shared/core/objects/IdEntity';
+import { AllowedNotificationStatus } from '../../../../../src/modules/notification/notification/core/types/AllowedNotificationStatus';
+import Notification from '../../../../../src/modules/notification/notification/core/model/Notification'
+import { NotificationTypes } from '../../../../../src/modules/notification/notification/core/types/NotificationTypes';
+import NotificationAlreadyRead from '../../../../../src/modules/notification/notification/core/error/NotificationAlreadyRead';
 
 const DEFAULT_ID = '019df05a-8588-758c-b5e7-92af14bf85cf';
 const EVENT_ID = '019df05a-8588-758c-b5e7-92af14bf85c0';

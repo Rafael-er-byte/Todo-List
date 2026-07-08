@@ -4,16 +4,16 @@ import type UserRepository from "../../../../../src/modules/user/user/core/repos
 import type { AuthProvider, identity } from "../../../../../src/modules/user/user/core/infrastructure/auth/AuthProvider";
 import Logger from "../../../../../src/modules/shared/core/log/Logger";
 import { LogLevel } from "../../../../../src/modules/shared/core/log/Log";
-import type AutenticationDto from "../../../../../src/modules/user/user/application/dtos/AutenticationDto";
 import ID from "../../../../../src/modules/shared/core/objects/ID";
 import User from "../../../../../src/modules/user/user/core/model/User";
 import Account from "../../../../../src/modules/user/account/core/model/Account";
+import AuthenticationDto from "../../../../../src/modules/user/user/application/dtos/AuthenticationDto";
 
 type AuthenticateUserDependencies = {
   handler: AuthenticateUser;
   repo: {
     existsUserByAccountId: ReturnType<typeof vi.fn>;
-    createUserWithAccount: ReturnType<typeof vi.fn>;
+    createUserWithAccountAndDefaultUserSettings: ReturnType<typeof vi.fn>;
   };
   auth: {
     authenticate: ReturnType<typeof vi.fn>;
@@ -32,7 +32,7 @@ const DEFAULT_AUTH_RESPONSE: identity = {
 function createDependencies(): AuthenticateUserDependencies {
   const repo = {
     existsUserByAccountId: vi.fn(),
-    createUserWithAccount: vi.fn(),
+    createUserWithAccountAndDefaultUserSettings: vi.fn(),
   };
 
   const auth = {
@@ -51,10 +51,10 @@ function createChronLog(): Logger {
   return new Logger(LogLevel.INFO, "127.0.0.1", "member-id", "POST", "/auth");
 }
 
-function createDto(overrides: Partial<AutenticationDto> = {}): AutenticationDto {
+function createDto(overrides: Partial<AuthenticationDto> = {}): AuthenticationDto {
   return {
     code: "valid-auth-code",
-    idMember: "member-id",
+    timezone: "America/New_York",
     chronLog: createChronLog(),
     ...overrides,
   };
@@ -81,12 +81,12 @@ describe("AuthenticateUser", () => {
 
     const result = await handler.execute(dto);
 
-    expect(result).toEqual({ token: DEFAULT_AUTH_RESPONSE.token });
+    expect(result).toEqual({ created: false, token: DEFAULT_AUTH_RESPONSE.token });
     expect(auth.authenticate).toHaveBeenCalledWith(dto.code);
     expect(repo.existsUserByAccountId).toHaveBeenCalledWith(
       DEFAULT_AUTH_RESPONSE.accountId
     );
-    expect(repo.createUserWithAccount).not.toHaveBeenCalled();
+    expect(repo.createUserWithAccountAndDefaultUserSettings).not.toHaveBeenCalled();
 
     expect(chronLog.log.events).toHaveLength(3);
     expect(chronLog.log.events[0]).toMatchObject({
@@ -117,10 +117,10 @@ describe("AuthenticateUser", () => {
 
     const result = await handler.execute(dto);
 
-    expect(result).toEqual({ token: DEFAULT_AUTH_RESPONSE.token });
-    expect(repo.createUserWithAccount).toHaveBeenCalledOnce();
+    expect(result).toEqual({ created: true, token: DEFAULT_AUTH_RESPONSE.token });
+    expect(repo.createUserWithAccountAndDefaultUserSettings).toHaveBeenCalledOnce();
 
-    const [createdUser, createdAccount] = repo.createUserWithAccount.mock.calls[0] as [
+    const [createdUser, createdAccount] = repo.createUserWithAccountAndDefaultUserSettings.mock.calls[0] as [
       User,
       Account,
     ];

@@ -1,5 +1,4 @@
-import type { DTO } from "../../../../shared/core/handler/DTO";
-
-export default interface UserIdentityDto extends DTO{
+export default interface UserIdentityDto{
     token: string;
+    created: boolean;
 }

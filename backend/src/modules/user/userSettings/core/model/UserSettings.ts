@@ -5,6 +5,9 @@ import type UserSettingsParams from '../interfaces/UserSettingsParams';
 import Theme from '../objects/Theme';
 import Timezone from '../objects/Timezone';
 import NotificationSettings from '../objects/NotificationSettings';
+import { AllowedLanguage } from '../types/Language';
+import { AllowedChannelType, AllowedNotificationType, AllowedProjectType } from '../types/NotificationSettings';
+import { AllowedTheme } from '../types/Theme';
 
 export default class UserSettings extends Entity {
   private readonly userId: IdEntity;
@@ -16,14 +19,16 @@ export default class UserSettings extends Entity {
   public constructor(params: UserSettingsParams) {
     super(new IdEntity(params.id));
     this.userId = new IdEntity(params.userId);
-    this.language = new Language(params.language);
-    this.theme = new Theme(params.theme);
+    this.language = new Language(params.language ?? AllowedLanguage.en);
+    this.theme = new Theme(params.theme ?? AllowedTheme.light);
     this.timezone = new Timezone(params.timezone);
+
+    const notificationSettings = params.notificationSettings;
     this.notificationSettings = NotificationSettings.create(
-      params.notificationSettings!.type,
-      params.notificationSettings!.projectType,
-      params.notificationSettings!.channel,
-      params.notificationSettings!.active,
+      notificationSettings?.type ?? AllowedNotificationType.assigned,
+      notificationSettings?.projectType ?? AllowedProjectType.all,
+      notificationSettings?.channel ?? AllowedChannelType.push,
+      notificationSettings?.active ?? true,
     );
   }
 

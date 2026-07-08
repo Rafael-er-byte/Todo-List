@@ -42,6 +42,28 @@ describe('UserSettings entity', () => {
     expect(settings.toPrimitives()).toEqual(params);
   });
 
+  it('uses defaults when language, theme or notification settings attributes are missing', () => {
+    const params = {
+      id: ID.generateId().toString(),
+      userId: ID.generateId().toString(),
+      timezone: 'Europe/Madrid',
+      notificationSettings: {
+        active: false,
+      },
+    };
+
+    const settings = new UserSettings(params);
+
+    expect(settings.getLanguage().getLanguage()).toBe(AllowedLanguage.en);
+    expect(settings.getTheme().getTheme()).toBe(AllowedTheme.light);
+    expect(settings.getNotificationSettings().toPrimitives()).toEqual({
+      type: AllowedNotificationType.assigned,
+      projectType: AllowedProjectType.all,
+      channel: AllowedChannelType.push,
+      active: false,
+    });
+  });
+
   it('updates language, theme, timezone and notification settings', () => {
     const params = buildParams();
     const settings = new UserSettings(params);

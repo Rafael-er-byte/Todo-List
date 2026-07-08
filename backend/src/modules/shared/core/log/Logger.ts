@@ -9,9 +9,9 @@ export default class Logger{
     constructor(
         logLevel: LogLevel,
         ip: string,
-        idUser: string,
         method: string,
         url: string,
+        idUser?: string,
         requestKey?: string,
     ){
         this.log = {
@@ -25,10 +25,10 @@ export default class Logger{
             status: 0,
         };
         this.log.ip = ip;
-        this.log.idUser = idUser;
         this.log.date = new Date();
         this.log.method = method;
         this.log.url = url;
+        if(idUser)this.log.idUser = idUser;
         if(requestKey)this.log.requestKey = requestKey;
         this.start = performance.now();
         this.logLevel = logLevel;
@@ -74,7 +74,7 @@ export default class Logger{
         this.log.duration = performance.now() - this.start;
     }
 
-    print(){
+    save(){
         console.log(this.log);
     }
 }

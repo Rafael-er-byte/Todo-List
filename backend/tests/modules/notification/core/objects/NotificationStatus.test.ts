@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import NotificationStatusNotSupported from '../../../../../src/modules/user/notification/core/error/NotificationStatusNotSupported';
-import NotificationStatus from '../../../../../src/modules/user/notification/core/objects/NotificationStatus';
-import { AllowedNotificationStatus } from '../../../../../src/modules/user/notification/core/types/AllowedNotificationStatus';
+import NotificationStatus from '../../../../../src/modules/notification/notification/core/objects/NotificationStatus'
+import { AllowedNotificationStatus } from '../../../../../src/modules/notification/notification/core/types/AllowedNotificationStatus';
+import NotificationStatusNotSupported from '../../../../../src/modules/notification/notification/core/error/NotificationStatusNotSupported';
 
 describe('NotificationStatus Value Object', () => {
   it('should create an unread status correctly', () => {
