@@ -1,1 +1,0 @@
-{"version":3,"file":"Unauthorized.js","sourceRoot":"","sources":["../../../../../src/modules/shared/core/errors/Unauthorized.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,aAAa,CAAC;AAEpC,MAAM,CAAC,OAAO,OAAO,YAAa,SAAQ,SAAS;IACjD,YAAY,OAAe,EAAE,IAAc;QACzC,KAAK,CAAC,OAAO,EAAE,IAAI,CAAC,CAAC;QACrB,MAAM,CAAC,cAAc,CAAC,IAAI,EAAE,YAAY,CAAC,SAAS,CAAC,CAAC;IACtD,CAAC;CACF"}

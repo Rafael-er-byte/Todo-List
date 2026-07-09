@@ -1,1 +1,0 @@
-{"version":3,"file":"CheckListName.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/checklist/core/objects/CheckListName.ts"],"names":[],"mappings":"AAEA,OAAO,WAAW,MAAM,6CAA6C,CAAC;AAItE,MAAM,CAAC,OAAO,OAAO,aAAc,SAAQ,WAAW;IACpD,OAAO,CAAC,IAAI,CAAQ;gBAER,IAAI,EAAE,MAAM;IASjB,OAAO,IAAI,MAAM;CAGzB"}

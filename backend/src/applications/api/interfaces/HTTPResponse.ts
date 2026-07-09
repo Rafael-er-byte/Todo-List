@@ -1,4 +1,3 @@
-import { Response } from "express";
+import type { Response } from "express";
 
-export interface HTTPResponse extends Response{
-};
+export type HTTPResponse = Response;

@@ -1,1 +1,0 @@
-{"version":3,"file":"TaskNeedsToBeArchivedBeforeDeleteIt.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/task/core/error/TaskNeedsToBeArchivedBeforeDeleteIt.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,0CAA0C,CAAC;AAEjE,MAAM,CAAC,OAAO,OAAO,mCAAoC,SAAQ,SAAS;gBAC5D,IAAI,CAAC,EAAE,OAAO;CAI3B"}

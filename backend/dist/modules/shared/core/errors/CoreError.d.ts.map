@@ -1,1 +1,0 @@
-{"version":3,"file":"CoreError.d.ts","sourceRoot":"","sources":["../../../../../src/modules/shared/core/errors/CoreError.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,OAAO,SAAU,SAAQ,KAAK;IACnC,IAAI,CAAC,EAAE,OAAO,CAAC;gBAEV,OAAO,EAAE,MAAM,EAAE,IAAI,EAAE,OAAO;CAS3C"}

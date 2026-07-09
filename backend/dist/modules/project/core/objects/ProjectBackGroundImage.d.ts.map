@@ -1,1 +1,0 @@
-{"version":3,"file":"ProjectBackGroundImage.d.ts","sourceRoot":"","sources":["../../../../../src/modules/project/core/objects/ProjectBackGroundImage.ts"],"names":[],"mappings":"AACA,OAAO,UAAU,MAAM,yCAAyC,CAAC;AACjE,OAAO,WAAW,MAAM,0CAA0C,CAAC;AAEnE,MAAM,CAAC,OAAO,OAAO,sBAAuB,SAAQ,WAAW;IAC7D,OAAO,CAAC,KAAK,CAAc;gBAEf,KAAK,EAAE,UAAU;IAMtB,QAAQ,IAAI,UAAU;CAG9B"}

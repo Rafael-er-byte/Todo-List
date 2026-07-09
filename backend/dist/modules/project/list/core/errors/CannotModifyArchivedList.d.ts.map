@@ -1,1 +1,0 @@
-{"version":3,"file":"CannotModifyArchivedList.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/list/core/errors/CannotModifyArchivedList.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,0CAA0C,CAAC;AAEjE,MAAM,CAAC,OAAO,OAAO,wBAAyB,SAAQ,SAAS;gBACjD,IAAI,CAAC,EAAE,OAAO;CAI3B"}

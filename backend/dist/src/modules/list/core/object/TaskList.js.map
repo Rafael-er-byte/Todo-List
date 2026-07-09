@@ -1,1 +1,0 @@
-{"version":3,"file":"TaskList.js","sourceRoot":"","sources":["../../../../../../src/modules/list/core/object/TaskList.ts"],"names":[],"mappings":"AAEA,OAAO,WAAW,MAAM,0CAA0C,CAAC;AAEnE,MAAM,CAAC,OAAO,OAAO,QAAS,SAAQ,WAAW;IAC7C,YAAmB,EAAY,EAAS,QAAyB,EAAS,OAAiB;QACvF,KAAK,EAAE,CAAC;QADO,OAAE,GAAF,EAAE,CAAU;QAAS,aAAQ,GAAR,QAAQ,CAAiB;QAAS,YAAO,GAAP,OAAO,CAAU;IAE3F,CAAC;CACJ"}

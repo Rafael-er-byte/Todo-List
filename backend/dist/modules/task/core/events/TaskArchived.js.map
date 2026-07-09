@@ -1,1 +1,0 @@
-{"version":3,"file":"TaskArchived.js","sourceRoot":"","sources":["../../../../../src/modules/task/core/events/TaskArchived.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,MAAM,yCAAyC,CAAC;AAIlE,MAAM,CAAC,OAAO,OAAO,YAAa,SAAQ,WAAW;IACnD,YAAY,GAAW,EAAE,IAAc,EAAE,KAAe,EAAE,SAAmB,EAAE,QAAkB;QAC/F,KAAK,CAAC,GAAG,EAAE,IAAI,EAAE,KAAK,EAAE,SAAS,EAAE,QAAQ,EAAE,eAAe,CAAC,CAAC;IAChE,CAAC;CACF"}

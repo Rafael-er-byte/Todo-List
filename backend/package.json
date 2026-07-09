@@ -31,14 +31,17 @@
   "homepage": "https://github.com/Rafael-er-byte/Todo-List#readme",
   "devDependencies": {
     "@eslint/js": "^9.34.0",
+    "@testcontainers/postgresql": "^12.0.4",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.3",
     "@types/node": "^24.6.2",
+    "@types/pg": "^8.20.0",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
     "create-jest": "^30.1.2",
     "dotenv": "^17.2.3",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -55,6 +58,7 @@
     "vitest": "^4.1.6"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.2",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
     "zod": "^4.4.3"

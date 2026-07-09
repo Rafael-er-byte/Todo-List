@@ -1,1 +1,0 @@
-{"version":3,"file":"ID.d.ts","sourceRoot":"","sources":["../../../../../src/modules/shared/core/objects/ID.ts"],"names":[],"mappings":"AAEA,OAAO,WAAW,MAAM,eAAe,CAAC;AAGxC,MAAM,CAAC,OAAO,OAAO,EAAG,SAAQ,WAAW;IACzC,OAAO,CAAC,EAAE,CAAQ;IAElB,OAAO;IAKP,OAAO,CAAC,UAAU;IAKlB,MAAM,CAAC,UAAU,IAAI,EAAE;IAKvB,MAAM,CAAC,UAAU,CAAC,EAAE,EAAE,MAAM,GAAG,EAAE;IAM1B,QAAQ,IAAI,MAAM;CAG1B"}

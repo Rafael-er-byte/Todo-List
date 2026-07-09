@@ -1,6 +1,6 @@
 import InvalidOperation from "../errors/InvalidOperation";
 import InvalidParameters from "../errors/InvalidParameters";
-import type { DTO } from "../handler/DTO";
+import type { CommandDto} from "../handler/DTO";
 import IdEntity from "../objects/IdEntity";
 import type ProjectAccessRepository from "../repository/ProjectPolicyRepository";
 import { AccessType } from "../types/AccessType";
@@ -8,7 +8,7 @@ import { AccessType } from "../types/AccessType";
 export default class ProjectPolicyGuard{
     constructor(private repo: ProjectAccessRepository){}
 
-    public async guard(data: DTO, accessType: AccessType): Promise<void>{
+    public async guard(data: CommandDto, accessType: AccessType): Promise<void>{
         if(!data.idProject || !data.idMember)throw new InvalidParameters('The id of project and id member are required to access');
     
         const projectAccess = await this.repo.getMemberFromProjectWithProjectPolicy(new IdEntity(data.idProject as string), new IdEntity(data.idMember as string));

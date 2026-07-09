@@ -1,1 +1,0 @@
-{"version":3,"file":"ProjectSetting.d.ts","sourceRoot":"","sources":["../../../../../src/modules/project/core/objects/ProjectSetting.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,MAAM,0CAA0C,CAAC;AACnE,OAAO,EAA2B,KAAK,qBAAqB,EAAE,MAAM,kDAAkD,CAAC;AAGvH,MAAM,CAAC,OAAO,OAAO,cAAe,SAAQ,WAAW;IACrD,OAAO,CAAC,OAAO,CAAyB;gBAE5B,OAAO,EAAE,qBAAqB;IAMnC,UAAU,IAAI,qBAAqB;CAG3C"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"InvalidPositionInList.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/list/core/errors/InvalidPositionInList.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,uCAAuC,CAAC;AAE9D,MAAM,CAAC,OAAO,OAAO,qBAAsB,SAAQ,SAAS;gBAC9C,IAAI,CAAC,EAAE,OAAO;CAI3B"}

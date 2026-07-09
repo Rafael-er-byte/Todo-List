@@ -1,1 +1,0 @@
-{"version":3,"file":"AccountName.d.ts","sourceRoot":"","sources":["../../../../../src/modules/account/core/objects/AccountName.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,MAAM,0CAA0C,CAAC;AAGnE,MAAM,CAAC,OAAO,OAAO,WAAY,SAAQ,WAAW;IAClD,OAAO,CAAC,QAAQ,CAAC,IAAI,CAAO;gBAEhB,IAAI,EAAE,MAAM;IAKjB,OAAO,IAAI,MAAM;IAIjB,YAAY,IAAI,MAAM;CAG9B"}

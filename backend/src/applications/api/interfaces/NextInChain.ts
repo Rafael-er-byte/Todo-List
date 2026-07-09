@@ -1,3 +1,3 @@
-import { NextFunction } from "express";
+import type { NextFunction } from "express";
 
-export default interface NextInChain extends NextFunction{};
+export type NextInChain = NextFunction;

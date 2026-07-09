@@ -1,1 +1,0 @@
-{"version":3,"file":"LinkParams.d.ts","sourceRoot":"","sources":["../../../../../src/modules/link/core/interfaces/LinkParams.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,WAAW,UAAU;IACjC,EAAE,EAAE,MAAM,CAAC;IACX,MAAM,EAAE,MAAM,CAAC;IACf,GAAG,EAAE,MAAM,CAAC;IACZ,WAAW,EAAE,MAAM,GAAG,IAAI,CAAC;CAC5B"}

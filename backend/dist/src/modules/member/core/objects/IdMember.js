@@ -1,7 +1,0 @@
-import IdEntity from '../../../shared/core/objects/IdEntity';
-export default class IdMember extends IdEntity {
-    constructor(id) {
-        super(id);
-    }
-}
-//# sourceMappingURL=IdMember.js.map

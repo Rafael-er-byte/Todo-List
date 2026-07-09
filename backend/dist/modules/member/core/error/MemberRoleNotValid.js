@@ -1,8 +1,0 @@
-import CoreError from '../../../shared/core/errors/CoreError';
-export default class MemberRoleNotValid extends CoreError {
-    constructor(info) {
-        super('Member role is not valid', info);
-        Object.setPrototypeOf(this, MemberRoleNotValid.prototype);
-    }
-}
-//# sourceMappingURL=MemberRoleNotValid.js.map

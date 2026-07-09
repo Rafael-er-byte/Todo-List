@@ -1,1 +1,0 @@
-{"version":3,"file":"ProjectBackgroundColorNotSupported.d.ts","sourceRoot":"","sources":["../../../../../src/modules/project/core/errors/ProjectBackgroundColorNotSupported.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,uCAAuC,CAAC;AAE9D,MAAM,CAAC,OAAO,OAAO,kCAAmC,SAAQ,SAAS;gBAC3D,KAAK,EAAE,MAAM;CAI1B"}

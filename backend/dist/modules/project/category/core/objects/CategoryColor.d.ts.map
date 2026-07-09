@@ -1,1 +1,0 @@
-{"version":3,"file":"CategoryColor.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/category/core/objects/CategoryColor.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,MAAM,6CAA6C,CAAC;AACtE,OAAO,EAAkB,aAAa,EAAE,MAAM,6CAA6C,CAAC;AAG5F,MAAM,CAAC,OAAO,OAAO,aAAc,SAAQ,WAAW;IACpD,OAAO,CAAC,KAAK,CAAiB;gBAElB,KAAK,EAAE,aAAa;IAMzB,QAAQ,IAAI,aAAa;CAGjC"}

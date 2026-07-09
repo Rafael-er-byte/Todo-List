@@ -1,1 +1,0 @@
-{"version":3,"file":"BackgroundTypeNotSupported.d.ts","sourceRoot":"","sources":["../../../../../../src/modules/project/project/core/errors/BackgroundTypeNotSupported.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,0CAA0C,CAAC;AAEjE,MAAM,CAAC,OAAO,OAAO,0BAA2B,SAAQ,SAAS;gBACnD,cAAc,EAAE,MAAM;CAInC"}

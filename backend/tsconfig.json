@@ -25,6 +25,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
   },
-  "include": ["src/**/*", "src/context"],
+  "include": ["src/**/*", "src/context", "infrastructure/db"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"]
 }
