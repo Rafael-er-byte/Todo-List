@@ -6,11 +6,11 @@ import { describe, it, expect } from 'vitest';
 
 describe('Account model', () => {
   it('create builds account with primitive params', () => {
-    const id = ID.generateId().toString();
+    const accountId = ID.generateId().toString();
     const userId = ID.generateId().toString();
 
     const account = Account.create({
-      id,
+      accountId,
       userId,
       email: 'test@example.com',
       name: 'Test',
@@ -20,7 +20,7 @@ describe('Account model', () => {
     });
     const primitives = account.toPrimitives();
 
-    expect(primitives.id).toBe(id);
+    expect(primitives.id).toBe(`google${accountId}`);
     expect(primitives.userId).toBe(userId);
     expect(primitives.email).toBe('test@example.com');
     expect(primitives.name).toBe('Test');

@@ -2,12 +2,12 @@ import type DomainEvent from '../events/DomainEvent';
 import DateTime from '../objects/DateTime';
 import type IdEntity from '../objects/IdEntity';
 
-export default abstract class Entity {
+export default abstract class Entity<TId = IdEntity> {
   private tmpHistory: DomainEvent[] = [];
   private lastUpdate!: DateTime;
-  private readonly idEntity!: IdEntity;
+  private readonly idEntity!: TId;
 
-  protected constructor(idEntity: IdEntity) {
+  protected constructor(idEntity: TId) {
     this.idEntity = idEntity;
   }
 
@@ -26,7 +26,7 @@ export default abstract class Entity {
     return this.lastUpdate;
   }
 
-  public getID(): IdEntity{
+  public getID(): TId{
     return this.idEntity;
   }
 

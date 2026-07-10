@@ -1,7 +1,11 @@
-import IdEntity from '../../../../shared/core/objects/IdEntity';
+export default class IdAccount {
+  private readonly id: string;
 
-export default class IdAccount extends IdEntity {
   constructor(id: string) {
-    super(id);
+    this.id = id;
+  }
+
+  public toString(): string {
+    return this.id;
   }
 }

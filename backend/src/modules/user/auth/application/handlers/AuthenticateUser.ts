@@ -49,7 +49,7 @@ export default class AuthenticateUser extends Handler <AuthenticationDto, UserId
                 data.chronLog.info(`User created with id: ${user.getID()}`);
 
                 const account = Account.create({
-                                            id: authenticatedUser.accountId,
+                                            accountId: authenticatedUser.accountId,
                                             email: authenticatedUser.email,
                                             isPrimary: true,
                                             name: authenticatedUser.name,

@@ -174,7 +174,7 @@ describe("AuthenticateUser", () => {
     expect(createdUser.getID().toString()).toBe(generatedUserId);
     expect(createdUser.getAccounts()).toHaveLength(0);
     expect(createdAccount.toPrimitives()).toMatchObject({
-      id: DEFAULT_AUTH_RESPONSE.accountId,
+      id: `${DEFAULT_AUTH_RESPONSE.provider}${DEFAULT_AUTH_RESPONSE.accountId}`,
       email: DEFAULT_AUTH_RESPONSE.email,
       isPrimary: true,
       name: DEFAULT_AUTH_RESPONSE.name,
@@ -207,7 +207,7 @@ describe("AuthenticateUser", () => {
     });
     expect(chronLog.log.events[4]).toMatchObject({
       type: LogLevel.INFO,
-      message: `User account created with id: ${DEFAULT_AUTH_RESPONSE.accountId}`,
+      message: `User account created with id: ${DEFAULT_AUTH_RESPONSE.provider}${DEFAULT_AUTH_RESPONSE.accountId}`,
     });
     expect(chronLog.log.events[5]).toMatchObject({
       type: LogLevel.INFO,

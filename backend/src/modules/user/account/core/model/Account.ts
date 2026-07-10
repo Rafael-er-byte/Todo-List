@@ -4,12 +4,13 @@ import IdEntity from '../../../../shared/core/objects/IdEntity';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import None from '../../../../shared/core/objects/None';
 import type AccountParams from '../interfaces/AccountParams';
+import type { AccountCreateParams } from '../interfaces/AccountParams';
 import Email from '../../../../shared/core/objects/Email';
 import AccountName from '../objects/AccountName';
 import Url from '../../../../shared/core/objects/URL';
 import InvalidParameters from '../../../../shared/core/errors/InvalidParameters';
 
-export default class Account extends Entity {
+export default class Account extends Entity<IdAccount> {
 	private email!: Email;
 	private name!: AccountName;
 	private owner: IdEntity;
@@ -39,12 +40,13 @@ export default class Account extends Entity {
 	}
 
 	public static create(
-		params: Omit<AccountParams, 'createdAt'>,
+		params: AccountCreateParams,
 	): Account {
 		const profileImage = params.profileImage ? new Url(params.profileImage) : new None();
 		const createdAt = DateTime.now();
+		const id = `${params.provider}${params.accountId}`;
 		const account = new Account(
-			new IdAccount(params.id),
+			new IdAccount(id),
 			new Email(params.email),
 			params.isPrimary,
 			new AccountName(params.name),
