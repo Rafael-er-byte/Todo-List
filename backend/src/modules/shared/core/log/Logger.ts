@@ -52,11 +52,12 @@ export default class Logger{
                         });
     }
 
-    error(message:string, duration?: number){
+    error(message:string, duration?: number, info?: unknown){
         this.log.events.push({
                             type: LogLevel.ERROR, 
                             message: message, 
-                            ...(duration !== undefined && {duration})
+                            ...(duration !== undefined && {duration}),
+                            ...(info !== undefined && {info})
                         });
     }
 

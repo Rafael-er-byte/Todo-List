@@ -2,6 +2,7 @@ type Event = {
     type: LogLevel,
     message: string,
     duration?: number,
+    info?: unknown
 }
 
 export enum LogLevel{
