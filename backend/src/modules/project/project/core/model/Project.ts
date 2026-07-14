@@ -1,4 +1,4 @@
-import Entity from '../../../../shared/core/model/Entity';
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
 import None from '../../../../shared/core/objects/None';
@@ -39,7 +39,7 @@ import { AllowedBackgroundType } from '../types/AllowedBackgroundType';
 import CannotModifyClosedProject from '../errors/CannotModifyClosedProject';
 import type ListEntry from '../aggregates/ListEntry';
 
-export default class Project extends Entity {
+export default class Project extends ProjectEntity {
   private readonly id!: ProjectId;
   private status!: ProjectStatus;
   private projectName!: ProjectName;
@@ -240,7 +240,7 @@ export default class Project extends Entity {
     const list = this.lists.find(l => l.idList.toString() === listId.toString());
     
     if(!list) {
-      throw new ResourceNotFound(`The list with id: ${listId.toString()} does not exists in project with id: ${this.getID()}`, {listId: listId.toString(), projectId: this.getID()});
+      throw new ResourceNotFound(`The list with id: ${listId.toString()} does not exists in project with id: ${this.getId()}`, {listId: listId.toString(), projectId: this.getId()});
     }
 
     this.lists = this.lists.filter(l => l.idList.toString() !== list.idList.toString());

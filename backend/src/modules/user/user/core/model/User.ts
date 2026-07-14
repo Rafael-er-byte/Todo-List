@@ -1,13 +1,10 @@
 import IdEntity from '../../../../shared/core/objects/IdEntity';
-import Entity from '../../../../shared/core/model/Entity';
-import DateTime from '../../../../shared/core/objects/DateTime';
-import AccountChanged from '../events/AccountChanged';
 import DuplicateAccount from '../errors/DuplicateAccount';
 import AccountDoesntExist from '../errors/AccountDoesntExist';
 import type UserParams from '../interfaces/UserParams';
 import InvalidOperation from '../../../../shared/core/errors/InvalidOperation';
-import ID from '../../../../shared/core/objects/ID';
 import None from '../../../../shared/core/objects/None';
+import Entity from '../../../../shared/core/model/Entity';
 
 export default class User extends Entity {
   private accounts: IdEntity[] = [];
@@ -34,16 +31,12 @@ export default class User extends Entity {
 
   public changePrimaryAccount(newPrimary: IdEntity): void {
     if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
-    const previous = this.primaryAccount.toString();
     const found = this.accounts.find((a) => a.toString() === newPrimary.toString());
     if (!found) {
       throw new AccountDoesntExist(newPrimary.toString());
     }
 
     this.primaryAccount = newPrimary;
-    this.addEvent(
-      new AccountChanged(ID.generateId().toString(), DateTime.now(), this.getID(), super.getID(), newPrimary, { previousPrimary: previous }),
-    );
   }
 
   public removeAccount(account: IdEntity): void {
@@ -69,7 +62,7 @@ export default class User extends Entity {
   public toPrimitives(): UserParams {
     if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
     return {
-      id: super.getID().toString(),
+      id: super.getId().toString(),
       primaryAccount:this.primaryAccount.toString(),
       accounts: this.accounts.map((a) => a.toString()),
     };

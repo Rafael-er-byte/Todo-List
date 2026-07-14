@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import ProjectAccess from "../../../../../../src/modules/shared/core/model/ProjectAccess";
+import ProjectAccess from "../../../../../../src/modules/project/shared/model/ProjectAccess";
 import Unauthorized from "../../../../../../src/modules/shared/core/errors/Unauthorized";
 import { AllowedMemberRoles } from "../../../../../../src/modules/shared/core/types/AllowedMemberRoles";
-import { AllowedProjectSetting } from "../../../../../../src/modules/shared/core/types/AllowedProjectSetting";
+import type { AllowedProjectSetting } from "../../../../../../src/modules/shared/core/types/AllowedProjectSetting";
 
 const PROJECT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";
 const MEMBER_ID = "019df05a-8588-758c-b5e7-92af14bf85c0";

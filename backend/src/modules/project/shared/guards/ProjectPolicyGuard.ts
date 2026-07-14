@@ -1,9 +1,9 @@
-import InvalidOperation from "../errors/InvalidOperation";
-import InvalidParameters from "../errors/InvalidParameters";
-import type { CommandDto} from "../handler/DTO";
-import IdEntity from "../objects/IdEntity";
+import InvalidOperation from '../../../shared/core/errors/InvalidOperation';
+import InvalidParameters from '../../../shared/core/errors/InvalidParameters';
+import type { CommandDto } from '../../../shared/core/handler/DTO';
+import IdEntity from '../../../shared/core/objects/IdEntity';
 import type ProjectAccessRepository from "../repository/ProjectPolicyRepository";
-import { AccessType } from "../types/AccessType";
+import { AccessType } from '../../../shared/core/types/AccessType';
 
 export default class ProjectPolicyGuard{
     constructor(private repo: ProjectAccessRepository){}

@@ -1,4 +1,4 @@
-import Entity from "../../../../shared/core/model/Entity";
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import IdEntity from "../../../../shared/core/objects/IdEntity";
 import Text from "../../../../shared/core/objects/Text";
 import IdComment from "../objects/IdComment";
@@ -11,7 +11,7 @@ import CommentDeleted from "../events/CommentDeleted";
 import CommentMentionAdded from "../events/CommentMentionAdded";
 import Unauthorized from "../../../../shared/core/errors/Unauthorized";
 
-export default class Comment extends Entity {
+export default class Comment extends ProjectEntity {
     private content!: Text;
     private mentions!: Collection;
     private creator!: IdEntity;
@@ -65,7 +65,7 @@ export default class Comment extends Entity {
     }
 
     public getId(): IdComment {
-        return super.getID() as IdComment;
+        return super.getId() as IdComment;
     }
 
     public getCreator(): IdEntity {

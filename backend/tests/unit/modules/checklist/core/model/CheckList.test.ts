@@ -3,7 +3,7 @@ import CheckListName from '../../../../../../src/modules/project/checklist/core/
 import Text from '../../../../../../src/modules/shared/core/objects/Text';
 import ID from '../../../../../../src/modules/shared/core/objects/ID';
 import { describe, it, expect } from 'vitest';
-import type DomainEvent from '../../../../../../src/modules/shared/core/events/DomainEvent';
+import type DomainEvent from '../../../../../../src/modules/project/shared/events/DomainEvent';
 
 describe('CheckList', () => {
   const owner = ID.generateId().toString();

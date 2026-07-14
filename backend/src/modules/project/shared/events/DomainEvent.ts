@@ -1,6 +1,6 @@
-import type DateTime from '../objects/DateTime';
-import type IdEntity from '../objects/IdEntity';
-import type None from '../objects/None';
+import type DateTime from '../../../shared/core/objects/DateTime';
+import type IdEntity from '../../../shared/core/objects/IdEntity';
+import type None from '../../../shared/core/objects/None';
 
 export default class DomainEvent {
   private eventId!: string;

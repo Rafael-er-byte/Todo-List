@@ -1,7 +1,7 @@
 import type Log from "./Log";
 import { LogLevel } from "./Log";
 
-export default class Logger{
+export default abstract class Logger{
     log!: Log;
     start!: number;
     private logLevel: LogLevel = LogLevel.METRIC;
@@ -75,7 +75,5 @@ export default class Logger{
         this.log.duration = performance.now() - this.start;
     }
 
-    save(){
-        console.log(this.log);
-    }
+    abstract save(): Promise<void> | void;
 }

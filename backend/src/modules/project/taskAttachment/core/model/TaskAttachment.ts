@@ -1,4 +1,4 @@
-import Entity from '../../../../shared/core/model/Entity';
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
 import Attachment from '../../../../shared/core/objects/Attachment';
@@ -12,7 +12,7 @@ import TaskAttachmentId from '../objects/TaskAttachmentId';
 import type TaskAttachmentParams from '../interface/TaskAttachmentParams';
 import type { AllowedAttachments } from '../../../../shared/core/types/AllowedAttachment.types';
 
-export default class TaskAttachment extends Entity {
+export default class TaskAttachment extends ProjectEntity {
   private attachment!: Attachment;
   private task!: IdEntity;
 
@@ -41,7 +41,7 @@ export default class TaskAttachment extends Entity {
         DateTime.now(),
         actor,
         task,
-        taskAttachment.getID(),
+        taskAttachment.getId(),
         attachment,
       ),
     );
@@ -77,14 +77,14 @@ export default class TaskAttachment extends Entity {
         DateTime.now(),
         actor,
         this.getTask(),
-        super.getID(),
+        super.getId(),
         name,
       ),
     );
   }
 
   public delete(actor: IdEntity, key: string): void {
-    this.addEvent(new TaskAttachmentDeleted(key, DateTime.now(), actor, this.getTask(), super.getID()));
+    this.addEvent(new TaskAttachmentDeleted(key, DateTime.now(), actor, this.getTask(), super.getId()));
   }
 
   public getAttachment(): Attachment {
@@ -117,7 +117,7 @@ export default class TaskAttachment extends Entity {
 
   public toPrimitives(): TaskAttachmentParams {
     return {
-      id: super.getID().toString(),
+      id: super.getId().toString(),
       idTask: this.getTask().toString(),
       attachment: {
         url: this.attachment.getUrl().getUrl(),

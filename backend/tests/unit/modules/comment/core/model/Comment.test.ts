@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import Comment from "../../../../../../src/modules/project/comment/core/model/Comment";
 import Text from "../../../../../../src/modules/shared/core/objects/Text";
 import IdEntity from "../../../../../../src/modules/shared/core/objects/IdEntity";
-import DomainEvent from "../../../../../../src/modules/shared/core/events/DomainEvent";
+import DomainEvent from "../../../../../../src/modules/project/shared/events/DomainEvent";
 import Unauthorized from "../../../../../../src/modules/shared/core/errors/Unauthorized";
 import ResourceNotFound from "../../../../../../src/modules/shared/core/errors/ResourceNotFound";
 

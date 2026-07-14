@@ -3,7 +3,7 @@ import type ListEntry from "../../aggregates/ListEntry";
 
 export default function FromListToListEntry(list: List): ListEntry{
     return {
-        idList: list.getID(),
+        idList: list.getId(),
         position: list.getPosition(),
         isArchived: list.isArchived()
     }

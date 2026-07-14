@@ -1,4 +1,3 @@
-import Entity from '../../../../shared/core/model/Entity';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
 import Language from '../objects/Language';
 import type UserSettingsParams from '../interfaces/UserSettingsParams';
@@ -8,6 +7,7 @@ import NotificationSettings from '../objects/NotificationSettings';
 import { AllowedLanguage } from '../types/Language';
 import { AllowedChannelType, AllowedNotificationType, AllowedProjectType } from '../types/NotificationSettings';
 import { AllowedTheme } from '../types/Theme';
+import Entity from '../../../../shared/core/model/Entity';
 
 export default class UserSettings extends Entity {
   private readonly userId: IdEntity;
@@ -70,7 +70,7 @@ export default class UserSettings extends Entity {
 
   public toPrimitives() {
     return {
-      id: this.getID().toString(),
+      id: this.getId().toString(),
       userId: this.userId.toString(),
       language: this.language.getLanguage(),
       theme: this.theme.getTheme(),

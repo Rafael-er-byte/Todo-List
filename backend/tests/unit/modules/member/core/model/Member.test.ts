@@ -52,7 +52,7 @@ describe("Member Entity", () => {
     it("should create a valid member", () => {
       const member = createMember();
 
-      expect(member.getID().toString()).toBe(DEFAULT_ID);
+      expect(member.getId().toString()).toBe(DEFAULT_ID);
       expect(member.getIdProject().toString()).toBe(DEFAULT_ID);
       expect(member.isBlocked()).toBe(false);
       expect(member.pullEvents()[0]).toBeInstanceOf(MemberAddedToProject);

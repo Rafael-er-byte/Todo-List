@@ -1,13 +1,10 @@
-import Entity from '../../../../shared/core/model/Entity';
-import DateTime from '../../../../shared/core/objects/DateTime';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
-import NotificationCreated from '../events/NotificationCreated';
-import NotificationRead from '../events/NotificationRead';
 import NotificationAlreadyRead from '../error/NotificationAlreadyRead';
 import type NotificationParams from '../interfaces/NotificationParams';
 import IdNotification from '../objects/IdNotification';
 import NotificationStatus from '../objects/NotificationStatus';
 import type { NotificationTypes } from '../types/NotificationTypes';
+import Entity from '../../../../shared/core/model/Entity';
 
 export default class Notification extends Entity {
   private eventKey!: string;
@@ -30,16 +27,12 @@ export default class Notification extends Entity {
   }
 
   public static create(
-    params: Omit<NotificationParams, 'status'> & { key: string; actor: string },
+    params: Omit<NotificationParams, 'status'>,
   ): Notification {
     const idNotification = new IdNotification(params.id);
     const idUser = new IdEntity(params.idUser);
-    const actor = new IdEntity(params.actor);
     const type = params.type as NotificationTypes;
     const notification = new Notification(idNotification, params.eventKey, NotificationStatus.unread(), type, idUser);
-    notification.addEvent(
-      new NotificationCreated(params.key, DateTime.now(), actor, idUser, idNotification, notification.toPrimitives()),
-    );
     return notification;
   }
 
@@ -55,19 +48,12 @@ export default class Notification extends Entity {
     return notification;
   }
 
-  public markAsRead(key: string, actor: IdEntity): void {
+  public markAsRead(): void {
     if (this.status.isRead()) {
       throw new NotificationAlreadyRead({ idNotification: this.getId().toString() });
     }
 
     this.status = NotificationStatus.read();
-    this.addEvent(
-      new NotificationRead(key, DateTime.now(), actor, this.getIdUser(), this.getId(), this.status),
-    );
-  }
-
-  public getId(): IdNotification {
-    return super.getID() as IdNotification;
   }
 
   public getEventKey(): string {

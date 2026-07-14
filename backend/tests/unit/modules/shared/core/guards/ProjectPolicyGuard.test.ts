@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import ProjectPolicyGuard from "../../../../../../src/modules/shared/core/guards/ProjectPolicyGuard";
+import ProjectPolicyGuard from "../../../../../../src/modules/project/shared/guards/ProjectPolicyGuard";
 import { AccessType } from "../../../../../../src/modules/shared/core/types/AccessType";
 import InvalidParameters from "../../../../../../src/modules/shared/core/errors/InvalidParameters";
 import InvalidOperation from "../../../../../../src/modules/shared/core/errors/InvalidOperation";
-import type ProjectPolicyRepository from "../../../../../../src/modules/shared/core/repository/ProjectPolicyRepository";
+import type ProjectPolicyRepository from "../../../../../../src/modules/project/shared/repository/ProjectPolicyRepository";
 import { DTO } from "../../../../../../src/modules/shared/core/handler/DTO";
 
 const PROJECT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";

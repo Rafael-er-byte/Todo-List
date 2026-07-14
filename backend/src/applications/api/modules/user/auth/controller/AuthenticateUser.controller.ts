@@ -4,7 +4,7 @@ import type AuthenticateUser from "../../../../../../modules/user/auth/applicati
 import BuildLogger from "../../../../helpers/BuildLogger";
 import type HTTPRequest from "../../../../interfaces/HTTPRequest";
 import type { HTTPResponse } from "../../../../interfaces/HTTPResponse";
-import type NextInChain from "../../../../interfaces/NextInChain";
+import type { NextInChain } from "../../../../interfaces/NextInChain";
 import { HTTPTypes } from "../../../../types/HTTPTypes";
 import { AuthenticateUserSchema } from "../schemas/AuthenticateUser.schema";
 

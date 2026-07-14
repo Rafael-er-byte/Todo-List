@@ -1,7 +1,7 @@
-import Unauthorized from "../errors/Unauthorized";
-import IdEntity from "../objects/IdEntity";
-import { AllowedMemberRoles } from "../types/AllowedMemberRoles";
-import type { AllowedProjectSetting } from "../types/AllowedProjectSetting";
+import Unauthorized from '../../../shared/core/errors/Unauthorized';
+import IdEntity from '../../../shared/core/objects/IdEntity';
+import { AllowedMemberRoles } from '../../../shared/core/types/AllowedMemberRoles';
+import type { AllowedProjectSetting } from '../../../shared/core/types/AllowedProjectSetting';
 
 interface AccessParams{
     idProject: string;

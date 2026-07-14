@@ -1,4 +1,4 @@
-import Entity from '../../../../shared/core/model/Entity';
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
 import None from '../../../../shared/core/objects/None';
 import Text from '../../../../shared/core/objects/Text';
@@ -10,7 +10,7 @@ import LinkCreated from '../events/LinkCreated';
 import LinkDeleted from '../events/LinkDeleted';
 import LinkVisibleTextUpdated from '../events/LinkVisibleTextUpdated';
 
-export default class Link extends Entity {
+export default class Link extends ProjectEntity {
   private task!: IdEntity;
   private url!: Url;
   private visibleText!: Text | None;
@@ -47,7 +47,7 @@ export default class Link extends Entity {
   }
 
   public getId(): LinkId {
-    return super.getID() as LinkId;
+    return super.getId() as LinkId;
   }
 
   public getTaskId(): IdEntity {

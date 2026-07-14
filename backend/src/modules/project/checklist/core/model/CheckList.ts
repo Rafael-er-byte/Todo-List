@@ -1,4 +1,4 @@
-import Entity from '../../../../shared/core/model/Entity';
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
 import Text from '../../../../shared/core/objects/Text';
@@ -17,7 +17,7 @@ import ResourceNotFound from '../../../../shared/core/errors/ResourceNotFound';
 import PercentageCompleted from '../objects/PercentageCompleted';
 import CheckListName from '../objects/CheckListName';
 
-export default class CheckList extends Entity {
+export default class CheckList extends ProjectEntity {
   private task!: IdEntity;
   private name!: CheckListName;
   private items: ChecklistItem[] = [];
@@ -80,14 +80,14 @@ export default class CheckList extends Entity {
 
   public updateName(name: CheckListName, actor: IdEntity, key: string): void {
     this.name = name;
-    this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, { name: name.getName() }));
+    this.addEvent(new CheckListTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getId() as IdCheckList, { name: name.getName() }));
   }
 
   public addChecklistItem(title: Text, actor: IdEntity, key: string): void {
     const item = ChecklistItem.create(title);
     this.items = [...this.items, item];
     this.recalculateCompletedPercentage();
-    this.addEvent(new ChecklistItemCreated(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, item.toPrimitives()));
+    this.addEvent(new ChecklistItemCreated(key, DateTime.now(), actor, this.getTaskId(), super.getId() as IdCheckList, item.toPrimitives()));
   }
 
   public deleteChecklistItem(itemId: string, actor: IdEntity, key: string): void {
@@ -95,7 +95,7 @@ export default class CheckList extends Entity {
     if (!item) throw new ResourceNotFound(`Checklist item ${itemId} not found`);
     this.items = this.items.filter((checklistItem) => checklistItem.getId().toString() !== itemId);
     this.recalculateCompletedPercentage();
-    this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, item.toPrimitives()));
+    this.addEvent(new ChecklistItemDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getId() as IdCheckList, item.toPrimitives()));
   }
 
   public completeChecklistItem(itemId: string, actor: IdEntity, key: string): void {
@@ -114,7 +114,7 @@ export default class CheckList extends Entity {
       checklistItem.getId().toString() === itemId ? updatedItem : checklistItem,
     );
     this.addEvent(
-      new ChecklistItemTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, {
+      new ChecklistItemTitleUpdated(key, DateTime.now(), actor, this.getTaskId(), super.getId() as IdCheckList, {
         id: itemId,
         title: title.getText(),
       }),
@@ -122,12 +122,12 @@ export default class CheckList extends Entity {
   }
 
   public delete(actor: IdEntity, key: string): void {
-    this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList));
+    this.addEvent(new CheckListDeleted(key, DateTime.now(), actor, this.getTaskId(), super.getId() as IdCheckList));
   }
 
   public toPrimitives(): CheckListParams {
     return {
-      id: (super.getID() as IdCheckList).toString(),
+      id: (super.getId() as IdCheckList).toString(),
       idOwner: this.getTaskId().toString(),
       name: this.name.getName(),
       items: this.items.map((item) => item.toPrimitives()),
@@ -150,7 +150,7 @@ export default class CheckList extends Entity {
       checklistItem.getId().toString() === itemId ? updatedItem : checklistItem,
     );
     this.recalculateCompletedPercentage();
-    this.addEvent(new EventClass(key, DateTime.now(), actor, this.getTaskId(), super.getID() as IdCheckList, updatedItem.toPrimitives()));
+    this.addEvent(new EventClass(key, DateTime.now(), actor, this.getTaskId(), super.getId() as IdCheckList, updatedItem.toPrimitives()));
   }
 
   private recalculateCompletedPercentage(): void {

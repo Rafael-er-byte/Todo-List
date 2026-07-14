@@ -1,4 +1,4 @@
-import type Transaction from "../../../../shared/core/repository/Transacction";
+import type Transaction from "../../../../project/shared/repository/Transacction";
 import type UserSettings from "../model/UserSettings";
 
 export default interface UserSetingsRepository{

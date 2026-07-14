@@ -1,11 +1,11 @@
-import Entity from '../../../../shared/core/model/Entity';
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
 import IdInvitation from '../objects/IdInvitation';
 import InvitationStatus, { AllowedInvitationStatus } from '../objects/InvitationStatus';
 import type InvitationParams from '../interfaces/InvitationParams';
 import Email from '../../../../shared/core/objects/Email';
 
-export default class Invitation extends Entity {
+export default class Invitation extends ProjectEntity {
   private host!: IdEntity;
   private projectId!: IdEntity;
   private status!: InvitationStatus;
@@ -48,7 +48,7 @@ export default class Invitation extends Entity {
 
   public toPrimitives(): InvitationParams {
     return {
-      id: super.getID().toString(),
+      id: super.getId().toString(),
       host: this.host.toString(),
       projectId: this.projectId.toString(),
       status: this.status.getStatus() as AllowedInvitationStatus,

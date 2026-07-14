@@ -4,7 +4,7 @@ import CategoryColor from "../../../../../../src/modules/project/category/core/o
 import CategoryName from "../../../../../../src/modules/project/category/core/objects/CategoryName";
 import { AllowedColors } from "../../../../../../src/modules/project/category/core/types/AllowedColors";
 import ResourceNotFound from "../../../../../../src/modules/shared/core/errors/ResourceNotFound";
-import DomainEvent from "../../../../../../src/modules/shared/core/events/DomainEvent";
+import DomainEvent from "../../../../../../src/modules/project/shared/events/DomainEvent";
 import IdEntity from "../../../../../../src/modules/shared/core/objects/IdEntity";
 
 const DEFAULT_ID = "019df05a-8588-758c-b5e7-92af14bf85cf";
@@ -52,7 +52,7 @@ describe("Category Entity", () => {
     it("should create a valid category", () => {
       const category = buildCategory();
 
-      expect(category.getID().toString()).toBe(DEFAULT_ID);
+      expect(category.getId().toString()).toBe(DEFAULT_ID);
       expect(category.getIdProject().toString()).toBe(DEFAULT_ID);
     });
   });

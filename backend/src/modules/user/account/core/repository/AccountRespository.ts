@@ -1,4 +1,4 @@
-import type Transaction from "../../../../shared/core/repository/Transacction";
+import type { Transaction } from "../../../../shared/core/transaction/Transaction";
 import type Account from "../model/Account";
 
 export default interface AccountRepository{

@@ -1,6 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import type DomainEvent from '../../../../../../src/modules/shared/core/events/DomainEvent';
-import IdEntity from '../../../../../../src/modules/shared/core/objects/IdEntity';
 import { AllowedNotificationStatus } from '../../../../../../src/modules/notification/notification/core/types/AllowedNotificationStatus';
 import Notification from '../../../../../../src/modules/notification/notification/core/model/Notification'
 import { NotificationTypes } from '../../../../../../src/modules/notification/notification/core/types/NotificationTypes';
@@ -9,7 +7,6 @@ import NotificationAlreadyRead from '../../../../../../src/modules/notification/
 const DEFAULT_ID = '019df05a-8588-758c-b5e7-92af14bf85cf';
 const EVENT_ID = '019df05a-8588-758c-b5e7-92af14bf85c0';
 const USER_ID = '019df05a-8588-758c-b5e7-92af14bf85c1';
-const ACTOR_ID = '019df05a-8588-758c-b5e7-92af14bf85c2';
 
 const createNotificationParams = (
   overrides?: Partial<{
@@ -18,7 +15,7 @@ const createNotificationParams = (
     status: AllowedNotificationStatus;
     idUser: string;
     type: NotificationTypes;
-    key: string;
+  
   }>,
 ) => ({
   id: DEFAULT_ID,
@@ -26,7 +23,6 @@ const createNotificationParams = (
   status: AllowedNotificationStatus.unread,
   idUser: USER_ID,
   type: NotificationTypes.info,
-  key: 'test-key',
   ...overrides,
 });
 
@@ -35,11 +31,9 @@ const buildNotification = (overrides?: Parameters<typeof createNotificationParam
 
   return Notification.create(
     {
-      key: params.key,
       id: params.id,
       eventKey: params.eventKey,
       idUser: params.idUser,
-      actor: ACTOR_ID,
       type: params.type,
     },
   );
@@ -57,61 +51,37 @@ describe('Notification Entity', () => {
       expect(notification.getType()).toBe(NotificationTypes.info);
     });
 
-    it('should emit NotificationCreated event on creation', () => {
-      const notification = buildNotification();
-
-      const events = notification.pullEvents();
-
-      expect(events).toHaveLength(1);
-      expect((events[0] as DomainEvent).getEvent()).toBe('NOTIFICATION_CREATED');
-    });
   });
 
   describe('Read Status', () => {
     it('should mark an unread notification as read', () => {
       const notification = buildNotification();
-      notification.pullEvents();
 
-      notification.markAsRead('read-key', new IdEntity(ACTOR_ID));
+      notification.markAsRead();
 
       expect(notification.getStatus().getStatus()).toBe(AllowedNotificationStatus.read);
-    });
-
-    it('should emit NotificationRead event when marked as read', () => {
-      const notification = buildNotification();
-      notification.pullEvents();
-
-      notification.markAsRead('read-key', new IdEntity(ACTOR_ID));
-
-      const events = notification.pullEvents();
-      expect(events).toHaveLength(1);
-      expect((events[0] as DomainEvent).getEvent()).toBe('NOTIFICATION_READ');
     });
 
     it('should not allow marking a notification as read twice', () => {
       const notification = buildNotification();
 
-      notification.markAsRead('read-key', new IdEntity(ACTOR_ID));
+      notification.markAsRead();
 
       expect(() => {
-        notification.markAsRead('read-key-2', new IdEntity(ACTOR_ID));
+        notification.markAsRead();
       }).toThrow(NotificationAlreadyRead);
     });
 
     it('should not emit a second event when marking as read twice fails', () => {
       const notification = buildNotification();
-      notification.pullEvents();
 
-      notification.markAsRead('read-key', new IdEntity(ACTOR_ID));
-      notification.pullEvents();
+      notification.markAsRead();
 
       try {
-        notification.markAsRead('read-key-2', new IdEntity(ACTOR_ID));
+        notification.markAsRead();
       } catch (e) {
         expect(e).toBeInstanceOf(NotificationAlreadyRead);
       }
-
-      expect(notification.pullEvents()).toHaveLength(0);
     });
   });
 
@@ -146,7 +116,7 @@ describe('Notification Entity', () => {
     it('should preserve immutable details after marking as read', () => {
       const notification = buildNotification();
 
-      notification.markAsRead('read-key', new IdEntity(ACTOR_ID));
+      notification.markAsRead();
 
       const primitives = notification.toPrimitives();
       expect(primitives.id).toBe(DEFAULT_ID);

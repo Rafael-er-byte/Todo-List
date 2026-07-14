@@ -1,4 +1,4 @@
-import type DomainEvent from '../../../../shared/core/events/DomainEvent';
+import type DomainEvent from '../../../shared/events/DomainEvent';
 import type None from '../../../../shared/core/objects/None';
 import type TaskCriteria from '../interface/TaskCriteria';
 import type Task from '../model/Task';

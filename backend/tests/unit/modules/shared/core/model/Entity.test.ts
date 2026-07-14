@@ -2,22 +2,16 @@ import { describe, it, expect } from 'vitest';
 import Entity from "../../../../../../src/modules/shared/core/model/Entity";
 import IdEntity from "../../../../../../src/modules/shared/core/objects/IdEntity";
 import ID from "../../../../../../src/modules/shared/core/objects/ID";
-import DateTime from "../../../../../../src/modules/shared/core/objects/DateTime";
-import DomainEvent from "../../../../../../src/modules/shared/core/events/DomainEvent";
 
-describe('Entity abstract class', () => {
+describe('Entity class', () => {
 
     class TestEntity extends Entity {
         constructor(idEntity: IdEntity) {
             super(idEntity);
         }
 
-        addEvent(event: DomainEvent): void {
-            super.addEvent(event);
-        }
-
         toPrimitives(): unknown {
-            return { idEntity: super.getID().toString() };
+            return { idEntity: super.getId().toString() };
         }
     }
 
@@ -26,37 +20,18 @@ describe('Entity abstract class', () => {
         return new TestEntity(idEntity);
     }
 
-    function createDomainEvent(): DomainEvent {
-        return new DomainEvent(
-            ID.generateId().toString(),
-            DateTime.now(),
-            new IdEntity(ID.generateId().toString()),
-            new IdEntity(ID.generateId().toString()),
-            new IdEntity(ID.generateId().toString()),
-            "TEST_EVENT"
-        );
-    }
-
     it('should create an instance of a class that extends Entity', () => {
         const entity = createTestEntity();
         expect(entity).toBeInstanceOf(TestEntity);
     });
 
-    it('should add an event and pull it', () => {
+    it('should expose the id through getId', () => {
         const entity = createTestEntity();
-        const event = createDomainEvent();
-
-        entity.addEvent(event);
-
-        const events = entity.pullEvents();
-        expect(events).toContain(event);
+        expect(entity.getId()).toBeInstanceOf(IdEntity);
     });
 
-    it("should update lastUpdate when adding an event", () => {
+    it('should serialize id through toPrimitives', () => {
         const entity = createTestEntity();
-        const event = createDomainEvent();
-
-        entity.addEvent(event);
-        expect(entity.getLastUpdate()).toBe(event.getDate());
+        expect(entity.toPrimitives()).toEqual({ idEntity: entity.getId().toString() });
     });
 });

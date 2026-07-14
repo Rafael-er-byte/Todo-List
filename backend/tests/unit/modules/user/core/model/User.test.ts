@@ -4,7 +4,6 @@ import ID from '../../../../../../src/modules/shared/core/objects/ID';
 import { describe, it, expect } from 'vitest';
 import UserParams from '../../../../../../src/modules/user/user/core/interfaces/UserParams';
 import DuplicateAccount from '../../../../../../src/modules/user/user/core/errors/DuplicateAccount';
-import AccountChanged from '../../../../../../src/modules/user/user/core/events/AccountChanged';
 import InvalidOperation from '../../../../../../src/modules/shared/core/errors/InvalidOperation';
 import AccountDoesntExist from '../../../../../../src/modules/user/user/core/errors/AccountDoesntExist';
 
@@ -33,16 +32,13 @@ describe('User entity', () => {
     expect(() => user.addAccount(acc)).toThrow(DuplicateAccount);
   });
 
-  it('changePrimaryAccount emits ACCOUNT_CHANGED event with previous info', () => {
+  it('changePrimaryAccount updates the primary account', () => {
     const user = User.fromPrimitives(params as UserParams);
     const newPrimary = new IdEntity(ID.generateId().toString());
     user.addAccount(newPrimary);
     user.changePrimaryAccount(newPrimary);
 
-    const events = user.pullEvents();
-  
-    expect(events.length).toBeGreaterThan(0);
-    expect(events[0]).toBeInstanceOf(AccountChanged);
+    expect(user.getPrimaryAccount().toString()).toBe(newPrimary.toString());
   });
 
   it("Should remove an account", () => {

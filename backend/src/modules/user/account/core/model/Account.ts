@@ -1,5 +1,3 @@
-import Entity from '../../../../shared/core/model/Entity';
-import IdAccount from '../objects/IdAccount';
 import IdEntity from '../../../../shared/core/objects/IdEntity';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import None from '../../../../shared/core/objects/None';
@@ -9,8 +7,10 @@ import Email from '../../../../shared/core/objects/Email';
 import AccountName from '../objects/AccountName';
 import Url from '../../../../shared/core/objects/URL';
 import InvalidParameters from '../../../../shared/core/errors/InvalidParameters';
+import Entity from '../../../../shared/core/model/Entity';
+import type { IdAccount } from '../objects/IdAccount';
 
-export default class Account extends Entity<IdAccount> {
+export default class Account extends Entity<string>{
 	private email!: Email;
 	private name!: AccountName;
 	private owner: IdEntity;
@@ -44,9 +44,8 @@ export default class Account extends Entity<IdAccount> {
 	): Account {
 		const profileImage = params.profileImage ? new Url(params.profileImage) : new None();
 		const createdAt = DateTime.now();
-		const id = `${params.provider}${params.accountId}`;
 		const account = new Account(
-			new IdAccount(id),
+			params.accountId,
 			new Email(params.email),
 			params.isPrimary,
 			new AccountName(params.name),
@@ -67,7 +66,7 @@ export default class Account extends Entity<IdAccount> {
 		const createdAt = DateTime.create(params.createdAt);
 
 		return new Account(
-			new IdAccount(params.id),
+			params.id,
 			new Email(params.email),
 			params.isPrimary,
 			new AccountName(params.name),
@@ -80,7 +79,7 @@ export default class Account extends Entity<IdAccount> {
 
 	public toPrimitives(): AccountParams {
 		return {
-			id: super.getID().toString(),
+			id: super.getId().toString(),
 			email: this.email.getEmail(),
 			isPrimary: this.isPrimary,
 			name: this.name.toPrimitives(),

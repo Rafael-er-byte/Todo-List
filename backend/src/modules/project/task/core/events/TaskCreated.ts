@@ -1,4 +1,4 @@
-import DomainEvent from '../../../../shared/core/events/DomainEvent';
+import DomainEvent from '../../../shared/events/DomainEvent';
 import type DateTime from '../../../../shared/core/objects/DateTime';
 import type IdEntity from '../../../../shared/core/objects/IdEntity';
 import type iTaskParams from '../interface/TaskParams';

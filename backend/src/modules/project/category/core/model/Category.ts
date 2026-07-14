@@ -1,7 +1,7 @@
 import IdCategory from '../objects/IdCategory';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import CategoryName from '../objects/CategoryName';
-import Entity from '../../../../shared/core/model/Entity';
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import CategoryColor from '../objects/CategoryColor';
 import CategoryCreated from '../events/CategoryCreated';
 import CategoryNameChanged from '../events/CategoryNameChanged';
@@ -11,7 +11,7 @@ import IdEntity from '../../../../shared/core/objects/IdEntity';
 import CategoryDeleted from '../events/CategoryDeleted';
 import type { AllowedColors } from '../../../../shared/core/types/AllowedColors';
 
-export default class Category extends Entity {
+export default class Category extends ProjectEntity {
   private name!: CategoryName;
   private color!: CategoryColor;
   private idProject!: IdEntity;
@@ -61,20 +61,20 @@ export default class Category extends Entity {
   public updateName(key: string, name: CategoryName, actor: IdEntity): void {
     this.name = name;
     this.addEvent(
-      new CategoryNameChanged(key, DateTime.now(), actor, this.getIdProject(), super.getID(), name)
+      new CategoryNameChanged(key, DateTime.now(), actor, this.getIdProject(), super.getId(), name)
     );
   }
 
   public updateColor(key: string, color: CategoryColor, actor: IdEntity): void {
     this.color = color;
     this.addEvent(
-      new CategoryColorChanged(key, DateTime.now(), actor, this.getIdProject(), super.getID(), color),
+      new CategoryColorChanged(key, DateTime.now(), actor, this.getIdProject(), super.getId(), color),
     );
   }
 
   public delete(key: string, actor: IdEntity): void{
     super.addEvent(
-      new CategoryDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID())
+      new CategoryDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getId())
     );
   }
 
@@ -84,7 +84,7 @@ export default class Category extends Entity {
 
   public toPrimitives(): CategoryParams {
     return {
-      id: super.getID().toString(),
+      id: super.getId().toString(),
       idProject: this.getIdProject().toString(),
       name: this.name.getName(),
       color: this.color.getColor(),

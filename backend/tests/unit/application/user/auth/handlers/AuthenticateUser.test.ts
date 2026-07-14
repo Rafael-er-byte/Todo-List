@@ -13,10 +13,16 @@ import AuthenticationDto from "../../../../../../src/modules/user/auth/applicati
 import UserSettings from "../../../../../../src/modules/user/userSettings/core/model/UserSettings";
 import type { Transaction } from "../../../../../../src/modules/shared/core/transaction/Transaction";
 
+class TestLogger extends Logger {
+  save(): void {
+    console.log(this.log);
+  }
+}
+
 type AuthenticateUserDependencies = {
   handler: AuthenticateUser;
   userRepo: {
-    existsUserByAccountId: ReturnType<typeof vi.fn>;
+    existsUserByAccountIdAndProvider: ReturnType<typeof vi.fn>;
     createUser: ReturnType<typeof vi.fn>;
   };
   accountRepo: {
@@ -44,7 +50,7 @@ const DEFAULT_AUTH_RESPONSE: identity = {
 
 function createDependencies(): AuthenticateUserDependencies {
   const userRepo = {
-    existsUserByAccountId: vi.fn(),
+    existsUserByAccountIdAndProvider: vi.fn(),
     createUser: vi.fn(),
   };
 
@@ -80,7 +86,7 @@ function createDependencies(): AuthenticateUserDependencies {
 }
 
 function createChronLog(): Logger {
-  return new Logger(LogLevel.INFO, "127.0.0.1", "member-id", "POST", "/auth");
+  return new TestLogger(LogLevel.INFO, "127.0.0.1", "POST", "/auth", "member-id");
 }
 
 function createDto(overrides: Partial<AuthenticationDto> = {}): AuthenticationDto {
@@ -103,7 +109,7 @@ describe("AuthenticateUser", () => {
     const dto = createDto({ chronLog });
 
     auth.authenticate.mockResolvedValue(DEFAULT_AUTH_RESPONSE);
-    userRepo.existsUserByAccountId.mockResolvedValue(
+    userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(
       User.fromPrimitives({
         id: "019df05a-8588-758c-b5e7-92af14bf85cf",
         accounts: [DEFAULT_AUTH_RESPONSE.accountId],
@@ -115,8 +121,9 @@ describe("AuthenticateUser", () => {
 
     expect(result).toEqual({ created: false, token: DEFAULT_AUTH_RESPONSE.token });
     expect(auth.authenticate).toHaveBeenCalledWith(dto.code);
-    expect(userRepo.existsUserByAccountId).toHaveBeenCalledWith(
-      DEFAULT_AUTH_RESPONSE.accountId
+    expect(userRepo.existsUserByAccountIdAndProvider).toHaveBeenCalledWith(
+      DEFAULT_AUTH_RESPONSE.accountId,
+      DEFAULT_AUTH_RESPONSE.provider,
     );
     expect(transaction.withTransaction).toHaveBeenCalledOnce();
     expect(userRepo.createUser).not.toHaveBeenCalled();
@@ -151,7 +158,7 @@ describe("AuthenticateUser", () => {
       .mockReturnValueOnce(ID.fromString(generatedUserId))
       .mockReturnValueOnce(ID.fromString(generatedUserSettingsId));
     auth.authenticate.mockResolvedValue(DEFAULT_AUTH_RESPONSE);
-    userRepo.existsUserByAccountId.mockResolvedValue(undefined);
+    userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(undefined);
 
     const result = await handler.execute(dto);
 
@@ -171,10 +178,10 @@ describe("AuthenticateUser", () => {
     expect(userTx).toBe(transaction as unknown as Transaction);
     expect(accountTx).toBe(transaction as unknown as Transaction);
     expect(settingsTx).toBe(transaction as unknown as Transaction);
-    expect(createdUser.getID().toString()).toBe(generatedUserId);
+    expect(createdUser.getId().toString()).toBe(generatedUserId);
     expect(createdUser.getAccounts()).toHaveLength(0);
     expect(createdAccount.toPrimitives()).toMatchObject({
-      id: `${DEFAULT_AUTH_RESPONSE.provider}${DEFAULT_AUTH_RESPONSE.accountId}`,
+      id: DEFAULT_AUTH_RESPONSE.accountId,
       email: DEFAULT_AUTH_RESPONSE.email,
       isPrimary: true,
       name: DEFAULT_AUTH_RESPONSE.name,
@@ -207,7 +214,7 @@ describe("AuthenticateUser", () => {
     });
     expect(chronLog.log.events[4]).toMatchObject({
       type: LogLevel.INFO,
-      message: `User account created with id: ${DEFAULT_AUTH_RESPONSE.provider}${DEFAULT_AUTH_RESPONSE.accountId}`,
+      message: `User account created with id: ${DEFAULT_AUTH_RESPONSE.accountId}`,
     });
     expect(chronLog.log.events[5]).toMatchObject({
       type: LogLevel.INFO,
@@ -245,7 +252,7 @@ describe("AuthenticateUser", () => {
       ...DEFAULT_AUTH_RESPONSE,
       profileImage: undefined,
     });
-    userRepo.existsUserByAccountId.mockResolvedValue(undefined);
+    userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(undefined);
 
     await handler.execute(createDto());
 

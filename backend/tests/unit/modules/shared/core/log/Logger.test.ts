@@ -2,6 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Logger from "../../../../../../src/modules/shared/core/log/Logger";
 import { LogLevel } from "../../../../../../src/modules/shared/core/log/Log";
 
+class TestLogger extends Logger {
+    save(): void {
+        console.log(this.log);
+    }
+}
+
 type LoggerArgs = {
     logLevel?: LogLevel;
     ip?: string;
@@ -12,7 +18,7 @@ type LoggerArgs = {
 };
 
 function createLogger(args: LoggerArgs = {}) {
-    return new Logger(
+    return new TestLogger(
         args.logLevel ?? LogLevel.METRIC,
         args.ip ?? "127.0.0.1",
         args.method ?? "GET",

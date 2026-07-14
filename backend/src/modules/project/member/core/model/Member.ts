@@ -1,7 +1,7 @@
 import IdMember from '../objects/IdMember';
 import MemberStatus from '../objects/MemberStatus';
 import MemberRole from '../objects/MemberRole';
-import Entity from '../../../../shared/core/model/Entity';
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import MemberAddedToProject from '../events/MemberAddedToProject';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import MemberBlocked from '../events/MemberBlocked';
@@ -12,7 +12,7 @@ import IdEntity from '../../../../shared/core/objects/IdEntity';
 import type MemberParams from '../interfaces/MemberParams';
 import MemberRoleChanged from '../events/MemberRoleChanged';
 
-export default class Member extends Entity {
+export default class Member extends ProjectEntity {
   private status!: MemberStatus;
   private role!: MemberRole;
   private idProject!: IdEntity;
@@ -74,21 +74,21 @@ export default class Member extends Entity {
 
   public block(key: string, actor: IdEntity): void {
     this.status = MemberStatus.blocked();
-    this.addEvent(new MemberBlocked(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
+    this.addEvent(new MemberBlocked(key, DateTime.now(), actor, this.getIdProject(), super.getId()));
   }
 
   public unBlock(key: string, actor: IdEntity): void {
     this.status = MemberStatus.active();
-    this.addEvent(new MemberActived(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
+    this.addEvent(new MemberActived(key, DateTime.now(), actor, this.getIdProject(), super.getId()));
   }
 
   public changeRole(key: string, actor: IdEntity, role: MemberRole): void {
     this.role = role;
-    this.addEvent(new MemberRoleChanged(key, DateTime.now(), actor, this.getIdProject(), super.getID(), role));
+    this.addEvent(new MemberRoleChanged(key, DateTime.now(), actor, this.getIdProject(), super.getId(), role));
   }
 
   public delete(key: string, actor: IdEntity): void {
-    this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getID()));
+    this.addEvent(new MemberDeleted(key, DateTime.now(), actor, this.getIdProject(), super.getId()));
   }
 
   public isBlocked(): boolean {
@@ -117,7 +117,7 @@ export default class Member extends Entity {
 
   public toPrimitives(): MemberParams {
     return {
-      id: super.getID().toString(),
+      id: super.getId().toString(),
       idProject: this.idProject.toString(),
       idAccount: this.idAccount.toString(),
       status: this.status.getStatus(),

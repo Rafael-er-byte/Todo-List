@@ -32,7 +32,7 @@ export default class AuthenticateUser extends Handler <AuthenticationDto, UserId
 
         return await this.transaction.withTransaction(async (tx: Transaction) => {
                 const exits = await this.metric.withMetric(async () => {
-                    return await this.userRepo.existsUserByAccountId(authenticatedUser.accountId);
+                    return await this.userRepo.existsUserByAccountIdAndProvider(authenticatedUser.accountId, authenticatedUser.provider);
                 }, 'Check if an user already exists in database', data.chronLog);
                 
                 if(exits){
@@ -46,27 +46,27 @@ export default class AuthenticateUser extends Handler <AuthenticationDto, UserId
                                             id: ID.generateId().toString(),
                                             accounts: []
                                         });
-                data.chronLog.info(`User created with id: ${user.getID()}`);
+                data.chronLog.info(`User created with id: ${user.getId()}`);
 
                 const account = Account.create({
                                             accountId: authenticatedUser.accountId,
                                             email: authenticatedUser.email,
                                             isPrimary: true,
                                             name: authenticatedUser.name,
-                                            userId: user.getID().toString(),
+                                            userId: user.getId().toString(),
                                             provider: authenticatedUser.provider,
                                             profileImage: authenticatedUser.profileImage !== undefined? authenticatedUser.profileImage: null,
                                         });
 
-                data.chronLog.info(`User account created with id: ${account.getID()}`);
+                data.chronLog.info(`User account created with id: ${account.getId()}`);
 
                 const userSettings = new UserSettings({
                                             id: ID.generateId().toString(), 
-                                            userId: user.getID().toString(), 
+                                            userId: user.getId().toString(), 
                                             timezone: data.timezone
                                         });
                                         
-                data.chronLog.info(`User settings created with id: ${userSettings.getID()}`);
+                data.chronLog.info(`User settings created with id: ${userSettings.getId()}`);
 
                 await this.metric.withMetric(async () => {
                     await this.userRepo.createUser(user, tx);

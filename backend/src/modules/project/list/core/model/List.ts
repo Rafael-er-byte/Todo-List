@@ -1,6 +1,6 @@
 import ListId from "../object/ListId";
 import Text from "../../../../shared/core/objects/Text";
-import Entity from "../../../../shared/core/model/Entity";
+import ProjectEntity from '../../../shared/model/ProjetEntity';
 import IdEntity from "../../../../shared/core/objects/IdEntity";
 import type ListParams from "../interfaces/ListParams";
 import ListTitleUpdated from "../events/ListTitleUpdated";
@@ -18,7 +18,7 @@ import InvalidPositionInList from "../errors/InvalidPositionInList";
 import PositiveInteger from "../../../../shared/core/objects/PositiveInteger"
 import type TaskEntry from "../aggregates/TaskEntry";
 
-export default class List extends Entity{
+export default class List extends ProjectEntity{
     private readonly id!: ListId;
     private title!: ListTitle ;
     private position!: PositiveInteger;
@@ -104,7 +104,7 @@ export default class List extends Entity{
     }
 
     public delete(key: string, actor: IdEntity): void{
-        if(!this.archived) throw new InvalidOperation(`List must be archived before being delete`, {listID:this.getID().toString()});
+        if(!this.archived) throw new InvalidOperation(`List must be archived before being delete`, {listID:this.getId().toString()});
         this.addEvent(new ListDeleted(key, DateTime.now(), actor, this.projectId, this.id));
     }
 
@@ -113,7 +113,7 @@ export default class List extends Entity{
         this.ensureCanBeModified();
 
         if(taskEntry.position.getValue()  > this.tasks.length + 1 || 
-            taskEntry.position.getValue() <= 0)throw new InvalidPositionInList({positionToInsert: taskEntry.position.getValue(), listId: this.getID().toString()});
+            taskEntry.position.getValue() <= 0)throw new InvalidPositionInList({positionToInsert: taskEntry.position.getValue(), listId: this.getId().toString()});
         const part1 = this.tasks.slice(0, taskEntry.position.getValue() - 1);
         const part2 = this.tasks.slice(taskEntry.position.getValue() -1);
         part2.forEach(t => t.position = new PositiveInteger(t.position.getValue() + 1));
@@ -124,10 +124,10 @@ export default class List extends Entity{
         this.ensureCanBeModified();
         
         if(!this.tasks.find(t => t.id.toString() === taskEntry.id.toString())) throw new ResourceNotFound(
-                        `The taskEntry with id: ${taskEntry.id.toString()} does not exists in list with id: ${this.getID()}`, 
+                        `The taskEntry with id: ${taskEntry.id.toString()} does not exists in list with id: ${this.getId()}`, 
                         {
                             taskEntryId: taskEntry.id.toString(), 
-                            listId: this.getID().toString()
+                            listId: this.getId().toString()
                         });
         this.tasks = this.tasks.filter(t => t.id.toString() !== taskEntry.id.toString());
         
@@ -159,7 +159,7 @@ export default class List extends Entity{
     }
 
     private ensureCanBeModified():void{
-        if(this.archived)throw new CannotModifyArchivedList({listId: this.getID().toString()});
+        if(this.archived)throw new CannotModifyArchivedList({listId: this.getId().toString()});
     }
 
     public toPrimitives(): ListParams{

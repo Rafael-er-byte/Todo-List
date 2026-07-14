@@ -20,7 +20,7 @@ describe('Account model', () => {
     });
     const primitives = account.toPrimitives();
 
-    expect(primitives.id).toBe(`google${accountId}`);
+    expect(primitives.id).toBe(accountId);
     expect(primitives.userId).toBe(userId);
     expect(primitives.email).toBe('test@example.com');
     expect(primitives.name).toBe('Test');

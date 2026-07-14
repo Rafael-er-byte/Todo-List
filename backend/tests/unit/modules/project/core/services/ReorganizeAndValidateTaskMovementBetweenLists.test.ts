@@ -59,7 +59,7 @@ describe('ReorganizeAndValidateTaskMovementBetweenLists service', () => {
     const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', [
       buildTaskEntry('0843c815-7220-7d64-8c42-6f2af4f9fd37', 1),
     ]);
-    const task = buildTask(movedTaskId, 2, fromList.getID().toString(), true);
+    const task = buildTask(movedTaskId, 2, fromList.getId().toString(), true);
 
     ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task);
 
@@ -84,7 +84,7 @@ describe('ReorganizeAndValidateTaskMovementBetweenLists service', () => {
       buildTaskEntry('0543c815-7220-7d64-8c42-6f2af4f9fd37', 1),
     ]);
     const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', []);
-    const task = buildTask(missingTaskId, 1, fromList.getID().toString());
+    const task = buildTask(missingTaskId, 1, fromList.getId().toString());
 
     expect(() => ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task)).toThrow(ResourceNotFound);
   });
@@ -95,7 +95,7 @@ describe('ReorganizeAndValidateTaskMovementBetweenLists service', () => {
       buildTaskEntry(movedTaskId, 1),
     ]);
     const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', []);
-    const task = buildTask(movedTaskId, 2, fromList.getID().toString());
+    const task = buildTask(movedTaskId, 2, fromList.getId().toString());
 
     expect(() => ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task)).toThrow(InvalidPositionInList);
   });
@@ -111,7 +111,7 @@ describe('ReorganizeAndValidateTaskMovementBetweenLists service', () => {
       buildTaskEntry('3543c815-7220-7d64-8c42-6f2af4f9fd37', 1),
       buildTaskEntry('3643c815-7220-7d64-8c42-6f2af4f9fd37', 2),
     ]);
-    const task = buildTask(movedTaskId, 1, fromList.getID().toString());
+    const task = buildTask(movedTaskId, 1, fromList.getId().toString());
 
     expect(() => ReorganizeAndValidateTaskMovementBetweenLists(fromList, toList, task)).not.toThrow();
 
@@ -138,7 +138,7 @@ describe('ReorganizeAndValidateTaskMovementBetweenLists service', () => {
       buildTaskEntry(movedTaskId, 1),
     ]);
     const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', []);
-    const task = buildTask(movedTaskId, 1, fromList.getID().toString());
+    const task = buildTask(movedTaskId, 1, fromList.getId().toString());
 
     fromList.archive('archive-source-key', actor);
 
@@ -153,7 +153,7 @@ describe('ReorganizeAndValidateTaskMovementBetweenLists service', () => {
       buildTaskEntry('3b43c815-7220-7d64-8c42-6f2af4f9fd37', 2),
     ]);
     const toList = buildList('0743c815-7220-7d64-8c42-6f2af4f9fd37', []);
-    const task = buildTask(movedTaskId, 1, fromList.getID().toString());
+    const task = buildTask(movedTaskId, 1, fromList.getId().toString());
 
     toList.archive('archive-target-key', actor);
 
