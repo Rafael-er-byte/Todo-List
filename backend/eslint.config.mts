@@ -18,7 +18,8 @@ export default defineConfig([
       "jest.config.js",
       "prettier.config.js",
       "eslint.config.mts",
-      "vitest.config.ts"
+      "vitest.config.ts",
+      "drizzle.config.ts"
     ],
   },
 
