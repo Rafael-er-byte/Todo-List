@@ -1,4 +1,4 @@
-import { boolean, pgTable, text, uuid} from "drizzle-orm/pg-core";
+import { boolean, index, pgTable, text, uuid} from "drizzle-orm/pg-core";
 import { User } from "./User";
 
 export const Account = pgTable("Account", {
@@ -12,4 +12,7 @@ export const Account = pgTable("Account", {
     ownerId: uuid("ownerId").notNull().references(() => User.id, {
         onDelete: "cascade"
     })
-});
+},  
+    (table) => ([ 
+        index("provider_subject_idx").on(table.subject, table.provider)
+]));

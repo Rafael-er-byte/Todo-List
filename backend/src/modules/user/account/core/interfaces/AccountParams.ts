@@ -4,11 +4,10 @@ export default interface AccountParams {
   isPrimary: boolean;
   name: string;
   userId: string;
+  sub: string;
   provider: string;
   profileImage: string | null;
   createdAt?: Date;
 }
 
-export interface AccountCreateParams extends Omit<AccountParams, 'id' | 'createdAt'> {
-  accountId: string;
-}
+export interface AccountCreateParams extends Omit<AccountParams, 'id' | 'createdAt'> {}

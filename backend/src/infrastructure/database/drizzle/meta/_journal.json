@@ -15,6 +15,13 @@
       "when": 1783566635172,
       "tag": "0001_wet_zarda",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784176619827,
+      "tag": "0002_wide_silver_surfer",
+      "breakpoints": true
     }
   ]
 }

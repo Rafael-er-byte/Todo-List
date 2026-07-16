@@ -1,13 +1,13 @@
 import type IdEntity from "../objects/IdEntity";
 
-export default class Entity<TID = string | IdEntity>{
-    private id!: TID;
+export default class Entity{
+    private id!: IdEntity;
 
-    constructor(id: TID){
+    constructor(id: IdEntity){
         this.id = id;
     }
 
-    getId(): TID{
+    geIdEntity(): IdEntity{
         return this.id;
     }
 }

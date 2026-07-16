@@ -1,0 +1,1 @@
+CREATE INDEX "provider_subject_idx" ON "Account" USING btree ("sub","provider");
