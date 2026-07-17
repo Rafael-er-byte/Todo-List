@@ -1,13 +1,13 @@
 import { jsonb, pgTable, text, uuid } from "drizzle-orm/pg-core";
-import { User } from "./User";
+import { Users} from "./User";
 
-export const UserSettings = pgTable("UserSettings", {
+export const UsersSettings = pgTable("UserSettings", {
     id: uuid("id").primaryKey(),
     theme: text("theme").notNull(),
     lanuage: text("lang").notNull(),
     timezone: text("timezone").notNull(),
     notificationSettings: jsonb("notificationSettings"),
-    userId: uuid("userId").notNull().references(() => User.id, {
+    userId: uuid("userId").notNull().references(() => Users.id, {
         onDelete: "cascade"
     })
 });

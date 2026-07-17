@@ -12,4 +12,8 @@ export default class ConcreteTransaction implements Transaction<NodePgDatabase>{
     async withTransaction<T>(exec: TransactionExectution<NodePgDatabase, T>):Promise<T>{
         return await this.db.transaction(exec);
     }
+
+    getDb(): NodePgDatabase{
+        return this.db;
+    }
 }

@@ -1,7 +1,7 @@
 import { boolean, index, pgTable, text, uuid} from "drizzle-orm/pg-core";
-import { User } from "./User";
+import { Users } from "./User";
 
-export const Account = pgTable("Account", {
+export const Accounts = pgTable("Account", {
     id: uuid("id").primaryKey(),
     email: text("email").notNull(),
     provider: text("provider").notNull(),
@@ -9,7 +9,7 @@ export const Account = pgTable("Account", {
     urlImageProfile: text("urlImageProfile"),
     subject: text("sub").notNull(),
     isPrimary: boolean("isPrimary").default(false),
-    ownerId: uuid("ownerId").notNull().references(() => User.id, {
+    ownerId: uuid("ownerId").notNull().references(() => Users.id, {
         onDelete: "cascade"
     })
 },  

@@ -8,8 +8,8 @@ import type { NextInChain } from "../../../../interfaces/NextInChain";
 import { HTTPTypes } from "../../../../types/HTTPTypes";
 import { AuthenticateUserSchema } from "../schemas/AuthenticateUser.schema";
 
-export default class AuthentiateUserController {
-    constructor(private service: AuthenticateUser){
+export default class AuthentiateUserController<DB> {
+    constructor(private service: AuthenticateUser<DB>){
         this.run = this.run.bind(this);
     }
 

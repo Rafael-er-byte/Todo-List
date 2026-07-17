@@ -7,7 +7,7 @@ export default class Entity{
         this.id = id;
     }
 
-    geIdEntity(): IdEntity{
+    getId(): IdEntity{
         return this.id;
     }
 }

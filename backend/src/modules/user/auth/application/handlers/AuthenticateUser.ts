@@ -1,6 +1,5 @@
 import Handler from "../../../../shared/core/handler/Handler";
 import Account from "../../../account/core/model/Account";
-import type { AuthProvider } from "../../../user/core/infrastructure/auth/AuthProvider";
 import User from "../../../user/core/model/User";
 import type UserIdentityDto from "../dtos/UserIdentityDto";
 import type AuthenticationDto from "../dtos/AuthenticationDto";
@@ -10,14 +9,15 @@ import type UserRepository from "../../../user/core/repository/UserRepository";
 import type AccountRepository from "../../../account/core/repository/AccountRespository";
 import type UserSetingsRepository from "../../../userSettings/core/repository/UserSettingsRepository";
 import type { Transaction } from "../../../../shared/core/transaction/Transaction";
+import type { AuthProvider } from "../../infrastructure/AuthProvider";
 
-export default class AuthenticateUser extends Handler <AuthenticationDto, UserIdentityDto>{
+export default class AuthenticateUser <T> extends Handler <AuthenticationDto, UserIdentityDto>{
 
     constructor(
         private userRepo: UserRepository,
         private accountRepo: AccountRepository,
         private userSettingsRepo: UserSetingsRepository,
-        private transaction: Transaction, 
+        private transaction: Transaction<T>, 
         private auth: AuthProvider
     ){
         super();
@@ -30,32 +30,32 @@ export default class AuthenticateUser extends Handler <AuthenticationDto, UserId
             return await this.auth.authenticate(data.code);
         }, 'Validate authentication code with provider', data.chronLog);
 
-        return await this.transaction.withTransaction(async (tx: Transaction) => {
-                const exits = await this.metric.withMetric(async () => {
-                    return await this.userRepo.existsUserByAccountIdAndProvider(authenticatedUser.accountId, authenticatedUser.provider);
+        return await this.transaction.withTransaction(async (tx: T) => {
+                const exists = await this.metric.withMetric(async () => {
+                    return await this.userRepo.existsUserByAccountIdAndProvider(authenticatedUser.sub, authenticatedUser.provider);
                 }, 'Check if an user already exists in database', data.chronLog);
                 
-                if(exits){
+                if(exists){
                     return {
                         token: authenticatedUser.token,
                         created: false
                     }
                 }
 
-                  const user = User.fromPrimitives({
-                                            id: ID.generateId().toString(),
-                                            accounts: []
-                                        });
+                const user = User.fromPrimitives({
+                                        id: ID.generateId().toString(),
+                                        accounts: []
+                                    });
                 data.chronLog.info(`User created with id: ${user.getId()}`);
 
                 const account = Account.create({
-                                            accountId: authenticatedUser.accountId,
                                             email: authenticatedUser.email,
                                             isPrimary: true,
                                             name: authenticatedUser.name,
                                             userId: user.getId().toString(),
+                                            sub: authenticatedUser.sub,
                                             provider: authenticatedUser.provider,
-                                            profileImage: authenticatedUser.profileImage !== undefined? authenticatedUser.profileImage: null,
+                                            profileImage: authenticatedUser.profileImage ?? null,
                                         });
 
                 data.chronLog.info(`User account created with id: ${account.getId()}`);

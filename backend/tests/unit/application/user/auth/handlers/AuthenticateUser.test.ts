@@ -3,7 +3,8 @@ import AuthenticateUser from "../../../../../../src/modules/user/auth/applicatio
 import type UserRepository from "../../../../../../src/modules/user/user/core/repository/UserRepository";
 import type AccountRepository from "../../../../../../src/modules/user/account/core/repository/AccountRespository";
 import type UserSetingsRepository from "../../../../../../src/modules/user/userSettings/core/repository/UserSettingsRepository";
-import type { AuthProvider, identity } from "../../../../../../src/modules/user/user/core/infrastructure/auth/AuthProvider";
+import type { AuthProvider } from "../../../../../../src/modules/user/auth/infrastructure/AuthProvider";
+import type { identity } from "../../../../../../src/modules/user/auth/application/dtos/Identity";
 import Logger from "../../../../../../src/modules/shared/core/log/Logger";
 import { LogLevel } from "../../../../../../src/modules/shared/core/log/Log";
 import ID from "../../../../../../src/modules/shared/core/objects/ID";
@@ -41,7 +42,7 @@ type AuthenticateUserDependencies = {
 
 const DEFAULT_AUTH_RESPONSE: identity = {
   token: "jwt-token",
-  accountId: "019df05a-8588-758c-b5e7-92af14bf85c0",
+  sub: "provider-sub-019df05a-8588-758c-b5e7-92af14bf85c0",
   email: "john.doe@mail.com",
   name: "John Doe",
   provider: "google",
@@ -110,11 +111,7 @@ describe("AuthenticateUser", () => {
 
     auth.authenticate.mockResolvedValue(DEFAULT_AUTH_RESPONSE);
     userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(
-      User.fromPrimitives({
-        id: "019df05a-8588-758c-b5e7-92af14bf85cf",
-        accounts: [DEFAULT_AUTH_RESPONSE.accountId],
-        primaryAccount: DEFAULT_AUTH_RESPONSE.accountId,
-      })
+      true,
     );
 
     const result = await handler.execute(dto);
@@ -122,7 +119,7 @@ describe("AuthenticateUser", () => {
     expect(result).toEqual({ created: false, token: DEFAULT_AUTH_RESPONSE.token });
     expect(auth.authenticate).toHaveBeenCalledWith(dto.code);
     expect(userRepo.existsUserByAccountIdAndProvider).toHaveBeenCalledWith(
-      DEFAULT_AUTH_RESPONSE.accountId,
+      DEFAULT_AUTH_RESPONSE.sub,
       DEFAULT_AUTH_RESPONSE.provider,
     );
     expect(transaction.withTransaction).toHaveBeenCalledOnce();
@@ -149,13 +146,15 @@ describe("AuthenticateUser", () => {
 
   it("creates user/account when the account does not exist and logs all creation steps", async () => {
     const generatedUserId = "019df05a-8588-758c-b5e7-92af14bf85cf";
-    const generatedUserSettingsId = "019df05a-8588-758c-b5e7-92af14bf85d0";
+    const generatedAccountId = "019df05a-8588-758c-b5e7-92af14bf85d0";
+    const generatedUserSettingsId = "019df05a-8588-758c-b5e7-92af14bf85d1";
     const { handler, userRepo, accountRepo, userSettingsRepo, transaction, auth } = createDependencies();
     const chronLog = createChronLog();
     const dto = createDto({ chronLog });
 
     vi.spyOn(ID, "generateId")
       .mockReturnValueOnce(ID.fromString(generatedUserId))
+      .mockReturnValueOnce(ID.fromString(generatedAccountId))
       .mockReturnValueOnce(ID.fromString(generatedUserSettingsId));
     auth.authenticate.mockResolvedValue(DEFAULT_AUTH_RESPONSE);
     userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(undefined);
@@ -181,10 +180,11 @@ describe("AuthenticateUser", () => {
     expect(createdUser.getId().toString()).toBe(generatedUserId);
     expect(createdUser.getAccounts()).toHaveLength(0);
     expect(createdAccount.toPrimitives()).toMatchObject({
-      id: DEFAULT_AUTH_RESPONSE.accountId,
+      id: generatedAccountId,
       email: DEFAULT_AUTH_RESPONSE.email,
       isPrimary: true,
       name: DEFAULT_AUTH_RESPONSE.name,
+      sub: DEFAULT_AUTH_RESPONSE.sub,
       provider: DEFAULT_AUTH_RESPONSE.provider,
       profileImage: DEFAULT_AUTH_RESPONSE.profileImage,
       userId: generatedUserId,
@@ -214,7 +214,7 @@ describe("AuthenticateUser", () => {
     });
     expect(chronLog.log.events[4]).toMatchObject({
       type: LogLevel.INFO,
-      message: `User account created with id: ${DEFAULT_AUTH_RESPONSE.accountId}`,
+      message: `User account created with id: ${generatedAccountId}`,
     });
     expect(chronLog.log.events[5]).toMatchObject({
       type: LogLevel.INFO,
@@ -242,11 +242,13 @@ describe("AuthenticateUser", () => {
 
   it("creates account with null profile image when provider response has no image", async () => {
     const generatedUserId = "019df05a-8588-758c-b5e7-92af14bf85cf";
-    const generatedUserSettingsId = "019df05a-8588-758c-b5e7-92af14bf85d0";
+    const generatedAccountId = "019df05a-8588-758c-b5e7-92af14bf85d0";
+    const generatedUserSettingsId = "019df05a-8588-758c-b5e7-92af14bf85d1";
     const { handler, userRepo, accountRepo, auth } = createDependencies();
 
     vi.spyOn(ID, "generateId")
       .mockReturnValueOnce(ID.fromString(generatedUserId))
+      .mockReturnValueOnce(ID.fromString(generatedAccountId))
       .mockReturnValueOnce(ID.fromString(generatedUserSettingsId));
     auth.authenticate.mockResolvedValue({
       ...DEFAULT_AUTH_RESPONSE,

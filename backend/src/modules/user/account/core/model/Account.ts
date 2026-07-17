@@ -99,7 +99,7 @@ export default class Account extends Entity{
 	}
 
 	public getId(): IdAccount {
-		return super.geIdEntity() as IdAccount;
+		return super.getId();
 	}
 
 	public getProfileImage(): Url | None{
