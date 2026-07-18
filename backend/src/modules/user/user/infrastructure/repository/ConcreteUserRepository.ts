@@ -6,6 +6,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Accounts } from "../../../../../infrastructure/database/schema/Account";
 import { and, eq } from "drizzle-orm";
 import { DbTryCatchWrapper } from "../../../../../infrastructure/database/wrapper/DbTryCatchWrapper";
+import type IdEntity from "../../../../shared/core/objects/IdEntity";
 
 export default class ConcreteUserRepository implements UserRepository{
     constructor(private db: NodePgDatabase){}
@@ -35,6 +36,12 @@ export default class ConcreteUserRepository implements UserRepository{
             );
 
             return result[0]!.id !== undefined;
+        });
+    }
+
+    async getUserById(id: IdEntity): Promise<User>{
+        return await DbTryCatchWrapper<User>(async () => {
+            const result await this.db.select({id: Users.id}).from(Users).where(eq(Users.id, id.toString()));
         });
     }
 }

@@ -10,63 +10,74 @@ import AccountDoesntExist from '../../../../../../src/modules/user/user/core/err
 describe('User entity', () => {
 
   const DEFAULT_ID = '0143c815-7220-7d64-8c42-6f2af4f9fd37';
+  const SECOND_ACCOUNT = '019df05a-8588-758c-b5e7-92af14bf85d0';
 
-  const params = {
-      id: DEFAULT_ID,
-      primaryAccount: DEFAULT_ID,
-      accounts: [DEFAULT_ID]
-    };
+  const params: UserParams = {
+    id: DEFAULT_ID,
+    name: 'John Doe',
+    primaryAccount: DEFAULT_ID,
+    accounts: [DEFAULT_ID],
+  };
 
-  it('fromPrimitives and add account sets primary when none', () => {
-    const user = User.fromPrimitives(params as UserParams);
-    console.log(user.getAccounts);
+  it('fromPrimitives maps all expected primitives', () => {
+    const user = User.fromPrimitives(params);
 
     expect(user.getAccounts().length).toBe(1);
     expect(user.getPrimaryAccount().toString()).toBe(DEFAULT_ID);
+    expect(user.getName().getName()).toBe(params.name);
+  });
+
+  it('throws when reading primary account and it does not exist', () => {
+    const user = User.fromPrimitives({
+      ...params,
+      primaryAccount: undefined,
+    });
+
+    expect(() => user.getPrimaryAccount()).toThrow(InvalidOperation);
   });
 
   it('throws when adding duplicate account', () => {
-    const user = User.fromPrimitives(params as UserParams);
+    const user = User.fromPrimitives(params);
     const acc = new IdEntity(DEFAULT_ID);
     
     expect(() => user.addAccount(acc)).toThrow(DuplicateAccount);
   });
 
   it('changePrimaryAccount updates the primary account', () => {
-    const user = User.fromPrimitives(params as UserParams);
-    const newPrimary = new IdEntity(ID.generateId().toString());
+    const user = User.fromPrimitives(params);
+    const newPrimary = new IdEntity(SECOND_ACCOUNT);
     user.addAccount(newPrimary);
     user.changePrimaryAccount(newPrimary);
 
     expect(user.getPrimaryAccount().toString()).toBe(newPrimary.toString());
   });
 
-  it("Should remove an account", () => {
-    const user = User.fromPrimitives(params as UserParams);
+  it('removes an account', () => {
+    const user = User.fromPrimitives(params);
     const acc = new IdEntity(ID.generateId().toString());
     user.addAccount(acc);
   
-    expect(user.getAccounts().length === 2);
+    expect(user.getAccounts().length).toBe(2);
 
     user.removeAccount(acc);
-    expect(user.getAccounts().length === 2);
+    expect(user.getAccounts().length).toBe(1);
     expect(user.getAccounts()[0].toString()).toStrictEqual(DEFAULT_ID);
   });
 
-  it("Should throw if try to remove the last account", () => {
-    const user = User.fromPrimitives(params as UserParams);
+  it('throws if trying to remove the last account', () => {
+    const user = User.fromPrimitives(params);
     expect(() => user.removeAccount(new IdEntity(DEFAULT_ID))).toThrow(InvalidOperation);
   });
 
-  it("Should throw if the account tring to remove doesnt exists", () => {
-    const user = User.fromPrimitives(params as UserParams);
+  it('throws if the account being removed does not exist', () => {
+    const user = User.fromPrimitives(params);
 
-    expect(() => user.removeAccount(new IdEntity(ID.generateId().toString()))).toThrow(AccountDoesntExist)
+    expect(() => user.removeAccount(new IdEntity(ID.generateId().toString()))).toThrow(AccountDoesntExist);
   });
 
-  it("Should take the first account as the primary in case that remove the primary account", () => {
-    const user = User.fromPrimitives(params as UserParams);
-    const newPrimary = new IdEntity(ID.generateId().toString());
+  it('takes the first account as primary when removing the current primary account', () => {
+    const user = User.fromPrimitives(params);
+    const newPrimary = new IdEntity(SECOND_ACCOUNT);
     user.addAccount(newPrimary);
     user.changePrimaryAccount(newPrimary);
 

@@ -94,6 +94,7 @@ function createDto(overrides: Partial<AuthenticationDto> = {}): AuthenticationDt
   return {
     code: "valid-auth-code",
     timezone: "America/New_York",
+    name: DEFAULT_AUTH_RESPONSE.name,
     chronLog: createChronLog(),
     ...overrides,
   };

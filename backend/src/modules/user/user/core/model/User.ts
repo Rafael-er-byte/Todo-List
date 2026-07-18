@@ -5,13 +5,19 @@ import type UserParams from '../interfaces/UserParams';
 import InvalidOperation from '../../../../shared/core/errors/InvalidOperation';
 import None from '../../../../shared/core/objects/None';
 import Entity from '../../../../shared/core/model/Entity';
+import Url from '../../../../shared/core/objects/URL';
+import UserName from '../objects/UserName';
 
 export default class User extends Entity {
   private accounts: IdEntity[] = [];
+  private name!: UserName;
+  private urlImage!: Url | None;
   private primaryAccount!: IdEntity | None;
 
-  private constructor(id: IdEntity, accounts: IdEntity[], primary: IdEntity | None) {
+  private constructor(id: IdEntity, name: UserName, urlImage: Url | None, accounts: IdEntity[], primary: IdEntity | None) {
     super(id);
+    this.name = name;
+    this.urlImage = urlImage;
     this.accounts = accounts;
     this.primaryAccount = primary;
   }
@@ -20,13 +26,23 @@ export default class User extends Entity {
     const id = new IdEntity(params.id);
     const accounts = (params.accounts || []).map((a) => new IdEntity(a));
     const primary = params.primaryAccount? new IdEntity(params.primaryAccount): new None();
-    return new User(id, accounts, primary);
+    const name = new UserName(params.name);
+    const urlImage = params.urlImage? new Url(params.urlImage): new None(); 
+    return new User(id, name, urlImage, accounts, primary);
   }
 
   public addAccount(account: IdEntity): void {
     const exists = this.accounts.find((a) => a.toString() === account.toString());
     if (exists) throw new DuplicateAccount(account.toString());
     this.accounts.push(account);
+  }
+
+  public updateName(newName: UserName): void{
+    this.name = newName;
+  }
+
+  public updateUrlImage(newUrlImage: Url): void{
+    this.urlImage = newUrlImage;
   }
 
   public changePrimaryAccount(newPrimary: IdEntity): void {
@@ -59,10 +75,20 @@ export default class User extends Entity {
     return this.primaryAccount;
   }
 
+  public getName(): UserName{
+    return this.name;
+  }
+
+  public getProfileUrl(): Url | None{
+    return this.urlImage;
+  }
+
   public toPrimitives(): UserParams {
     if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
     return {
       id: super.getId().toString(),
+      name: this.name.getName(),
+      ...(this.urlImage instanceof Url && {urlImage: this.urlImage.getUrl()}),
       primaryAccount:this.primaryAccount.toString(),
       accounts: this.accounts.map((a) => a.toString()),
     };
