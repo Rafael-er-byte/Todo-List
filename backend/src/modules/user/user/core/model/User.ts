@@ -84,12 +84,11 @@ export default class User extends Entity {
   }
 
   public toPrimitives(): UserParams {
-    if(this.primaryAccount instanceof None) throw new InvalidOperation("Primary account doesnt exists");
     return {
       id: super.getId().toString(),
-      name: this.name.getName(),
+      name: this.name.toString(),
       ...(this.urlImage instanceof Url && {urlImage: this.urlImage.getUrl()}),
-      primaryAccount:this.primaryAccount.toString(),
+      ...(this.primaryAccount instanceof IdEntity && {primaryAccount:this.primaryAccount.toString()}),
       accounts: this.accounts.map((a) => a.toString()),
     };
   }

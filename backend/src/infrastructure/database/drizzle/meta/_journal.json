@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1783566485004,
-      "tag": "0000_skinny_frog_thor",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1783566635172,
-      "tag": "0001_wet_zarda",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1784176619827,
-      "tag": "0002_wide_silver_surfer",
+      "when": 1784695692682,
+      "tag": "0000_zippy_robbie_robertson",
       "breakpoints": true
     }
   ]

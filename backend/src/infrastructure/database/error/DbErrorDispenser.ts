@@ -11,7 +11,10 @@ export const DbErrorDispenser: Record<string, ErrorHandler> = {
     '23503': (error: Error) => {
         return new OperationNotAllowed('Foreign key violation', error);
     },
+    '23502': (error: Error) => {
+        return new OperationNotAllowed('Not null violation', error);
+    },
     default: (error: Error) => {
         return new UnknownError('Unknown error', error);
     }
-}
+};

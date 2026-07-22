@@ -1,11 +1,11 @@
 {
-  "id": "04c3f14a-ed98-4ff2-ae77-9959ca74d396",
+  "id": "254ffd9b-8c06-495c-af65-8703968180d3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.Account": {
-      "name": "Account",
+    "public.accounts": {
+      "name": "accounts",
       "schema": "",
       "columns": {
         "id": {
@@ -48,7 +48,7 @@
           "name": "isPrimary",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": false
         },
         "ownerId": {
@@ -58,19 +58,41 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "provider_subject_idx": {
+          "name": "provider_subject_idx",
+          "columns": [
+            {
+              "expression": "sub",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "provider",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "Account_ownerId_User_id_fk": {
-          "name": "Account_ownerId_User_id_fk",
-          "tableFrom": "Account",
-          "tableTo": "User",
+        "accounts_ownerId_users_id_fk": {
+          "name": "accounts_ownerId_users_id_fk",
+          "tableFrom": "accounts",
+          "tableTo": "users",
           "columnsFrom": [
             "ownerId"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -80,8 +102,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.User": {
-      "name": "User",
+    "public.users": {
+      "name": "users",
       "schema": "",
       "columns": {
         "id": {
@@ -90,11 +112,23 @@
           "primaryKey": true,
           "notNull": true
         },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "urlImage": {
+          "name": "urlImage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "now()"
         }
       },
@@ -106,8 +140,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.UserSettings": {
-      "name": "UserSettings",
+    "public.user_settings": {
+      "name": "user_settings",
       "schema": "",
       "columns": {
         "id": {
@@ -149,17 +183,17 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "UserSettings_userId_User_id_fk": {
-          "name": "UserSettings_userId_User_id_fk",
-          "tableFrom": "UserSettings",
-          "tableTo": "User",
+        "user_settings_userId_users_id_fk": {
+          "name": "user_settings_userId_users_id_fk",
+          "tableFrom": "user_settings",
+          "tableTo": "users",
           "columnsFrom": [
             "userId"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

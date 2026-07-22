@@ -9,7 +9,7 @@ export default class UserName extends ValueObject{
         this.name = new Text(name);
     }
 
-    public getName(): string{
+    public toString(): string{
         return this.name.getText();
     }
 }

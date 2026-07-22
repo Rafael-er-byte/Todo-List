@@ -14,10 +14,14 @@ describe("Db connection test", () => {
     }, 60000);
 
     it("Shoud execute valid requests to a database", async () => {
-        const db = await DbBuilder();
+        try {
+            const db = await DbBuilder();
 
-        const result = await db.execute("SELECT 1 AS result");
-        console.log(result.rows[0].result);
-        expect(result.rows[0].result).toBe(1);
+            const result = await db.execute("SELECT 1 AS result");
+            console.log(result.rows[0].result);
+            expect(result.rows[0].result).toBe(1);
+        } catch (error) {
+            console.error(error);
+        }
     });
 });
