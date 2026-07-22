@@ -6,6 +6,9 @@ import UserParams from '../../../../../../src/modules/user/user/core/interfaces/
 import DuplicateAccount from '../../../../../../src/modules/user/user/core/errors/DuplicateAccount';
 import InvalidOperation from '../../../../../../src/modules/shared/core/errors/InvalidOperation';
 import AccountDoesntExist from '../../../../../../src/modules/user/user/core/errors/AccountDoesntExist';
+import None from '../../../../../../src/modules/shared/core/objects/None';
+import UserName from '../../../../../../src/modules/user/user/core/objects/UserName';
+import Url from '../../../../../../src/modules/shared/core/objects/URL';
 
 describe('User entity', () => {
 
@@ -15,6 +18,7 @@ describe('User entity', () => {
   const params: UserParams = {
     id: DEFAULT_ID,
     name: 'John Doe',
+    urlImage: 'https://example.com/avatar.jpg',
     primaryAccount: DEFAULT_ID,
     accounts: [DEFAULT_ID],
   };
@@ -24,7 +28,17 @@ describe('User entity', () => {
 
     expect(user.getAccounts().length).toBe(1);
     expect(user.getPrimaryAccount().toString()).toBe(DEFAULT_ID);
-    expect(user.getName().getName()).toBe(params.name);
+    expect(user.getName().toString()).toBe(params.name);
+    expect((user.getProfileUrl() as Url).getUrl()).toBe(params.urlImage);
+  });
+
+  it('maps profile url as None when url image is not provided', () => {
+    const user = User.fromPrimitives({
+      ...params,
+      urlImage: undefined,
+    });
+
+    expect(user.getProfileUrl()).toBeInstanceOf(None);
   });
 
   it('throws when reading primary account and it does not exist', () => {
@@ -50,6 +64,18 @@ describe('User entity', () => {
     user.changePrimaryAccount(newPrimary);
 
     expect(user.getPrimaryAccount().toString()).toBe(newPrimary.toString());
+  });
+
+  it('updates name and profile url', () => {
+    const user = User.fromPrimitives(params);
+    const newName = new UserName('Jane Doe');
+    const newUrl = new Url('https://cdn.example.com/jane.png');
+
+    user.updateName(newName);
+    user.updateUrlImage(newUrl);
+
+    expect(user.getName().toString()).toBe('Jane Doe');
+    expect((user.getProfileUrl() as Url).getUrl()).toBe('https://cdn.example.com/jane.png');
   });
 
   it('removes an account', () => {
@@ -86,5 +112,11 @@ describe('User entity', () => {
     user.removeAccount(newPrimary);
 
     expect(user.getPrimaryAccount().toString()).toBe(DEFAULT_ID);
+  });
+
+  it('toPrimitives includes optional fields when they exist', () => {
+    const user = User.fromPrimitives(params);
+
+    expect(user.toPrimitives()).toStrictEqual(params);
   });
 });

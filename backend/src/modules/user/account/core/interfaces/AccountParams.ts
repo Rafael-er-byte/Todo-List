@@ -9,5 +9,3 @@ export default interface AccountParams {
   profileImage: string | null;
   createdAt?: Date;
 }
-
-export interface AccountCreateParams extends Omit<AccountParams, 'id' | 'createdAt'> {}
