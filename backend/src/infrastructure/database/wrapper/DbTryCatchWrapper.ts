@@ -17,7 +17,7 @@ export const DbTryCatchWrapper = async <R>(action: Action<R>) => {
             const err = handler!(error);
             throw err;
         }
-        throw new Error(`Un managed error: ${error}`);
+        throw new Error(`Unmanaged error: ${error}`);
     }
 
     return result;

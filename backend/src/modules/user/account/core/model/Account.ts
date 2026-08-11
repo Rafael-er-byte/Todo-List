@@ -2,7 +2,7 @@ import IdEntity from '../../../../shared/core/objects/IdEntity';
 import DateTime from '../../../../shared/core/objects/DateTime';
 import None from '../../../../shared/core/objects/None';
 import type AccountParams from '../interfaces/AccountParams';
-import type { AccountCreateParams } from '../interfaces/AccountParams';
+import type AccountCreateParams from '../interfaces/AccountParams';
 import Email from '../../../../shared/core/objects/Email';
 import AccountName from '../objects/AccountName';
 import Url from '../../../../shared/core/objects/URL';

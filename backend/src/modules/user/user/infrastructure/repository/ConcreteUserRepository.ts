@@ -25,6 +25,17 @@ export default class ConcreteUserRepository implements UserRepository<ConcreteTr
         });
     }
 
+    async updateUser(user: User): Promise<void> {
+            return await DbTryCatchWrapper<void>(async () => {
+                await this.db.update(Users)
+                    .set({
+                    name: user.getName().toString(),
+                    urlImage: user.getProfileUrl() instanceof Url? (user.getProfileUrl() as Url).getUrl(): null 
+                })
+                .where(eq(Users.id, user.getId().toString()));
+        });
+    }
+
     async existsUserByAccountIdAndProvider(sub: string, provider: string): Promise<boolean> {
         return await DbTryCatchWrapper<boolean>(async () => {
             const result = await this.db

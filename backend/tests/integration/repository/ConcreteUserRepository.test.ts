@@ -43,4 +43,13 @@ describe('ConcreteUserRepository tests', () => {
         const result = await repo.getUserById(new IdEntity(DEFAULT_ID));
         expect(result.toPrimitives()).toStrictEqual(defaultUser);
     });
+
+    it('Should update an user from database', async () => {
+        const user = User.fromPrimitives({id: DEFAULT_ID, name: 'Jhon Doe Smith', accounts: []});
+
+        await repo.updateUser(user);
+
+        const result = await repo.getUserById(new IdEntity(DEFAULT_ID));
+        expect(result.toPrimitives()).toStrictEqual({id: DEFAULT_ID, name: 'Jhon Doe Smith', accounts: []});
+    });
 });
