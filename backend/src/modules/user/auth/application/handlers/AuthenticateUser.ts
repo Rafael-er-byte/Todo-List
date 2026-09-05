@@ -16,7 +16,7 @@ export default class AuthenticateUser <DATABASE> extends Handler <Authentication
     constructor(
         private userRepo: UserRepository<DATABASE>,
         private accountRepo: AccountRepository<DATABASE>,
-        private userSettingsRepo: UserSetingsRepository,
+        private userSettingsRepo: UserSetingsRepository<DATABASE>,
         private transaction: Transaction<DATABASE>, 
         private auth: AuthProvider
     ){
