@@ -23,11 +23,11 @@ class TestLogger extends Logger {
 type AuthenticateUserDependencies = {
   handler: AuthenticateUser;
   userRepo: {
-    existsUserByAccountIdAndProvider: ReturnType<typeof vi.fn>;
     createUser: ReturnType<typeof vi.fn>;
   };
   accountRepo: {
     createAccount: ReturnType<typeof vi.fn>;
+    existsAccountOwnerByAccountIdAndProvider: ReturnType<typeof vi.fn>;
   };
   userSettingsRepo: {
     createUserSettings: ReturnType<typeof vi.fn>;
@@ -51,12 +51,12 @@ const DEFAULT_AUTH_RESPONSE: identity = {
 
 function createDependencies(): AuthenticateUserDependencies {
   const userRepo = {
-    existsUserByAccountIdAndProvider: vi.fn(),
     createUser: vi.fn(),
   };
 
   const accountRepo = {
     createAccount: vi.fn(),
+    existsAccountOwnerByAccountIdAndProvider: vi.fn(),
   };
 
   const userSettingsRepo = {
@@ -111,7 +111,7 @@ describe("AuthenticateUser", () => {
     const dto = createDto({ chronLog });
 
     auth.authenticate.mockResolvedValue(DEFAULT_AUTH_RESPONSE);
-    userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(
+    accountRepo.existsAccountOwnerByAccountIdAndProvider.mockResolvedValue(
       true,
     );
 
@@ -119,7 +119,7 @@ describe("AuthenticateUser", () => {
 
     expect(result).toEqual({ created: false, token: DEFAULT_AUTH_RESPONSE.token });
     expect(auth.authenticate).toHaveBeenCalledWith(dto.code);
-    expect(userRepo.existsUserByAccountIdAndProvider).toHaveBeenCalledWith(
+    expect(accountRepo.existsAccountOwnerByAccountIdAndProvider).toHaveBeenCalledWith(
       DEFAULT_AUTH_RESPONSE.sub,
       DEFAULT_AUTH_RESPONSE.provider,
     );
@@ -158,7 +158,7 @@ describe("AuthenticateUser", () => {
       .mockReturnValueOnce(ID.fromString(generatedAccountId))
       .mockReturnValueOnce(ID.fromString(generatedUserSettingsId));
     auth.authenticate.mockResolvedValue(DEFAULT_AUTH_RESPONSE);
-    userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(undefined);
+    accountRepo.existsAccountOwnerByAccountIdAndProvider.mockResolvedValue(undefined);
 
     const result = await handler.execute(dto);
 
@@ -255,7 +255,7 @@ describe("AuthenticateUser", () => {
       ...DEFAULT_AUTH_RESPONSE,
       profileImage: undefined,
     });
-    userRepo.existsUserByAccountIdAndProvider.mockResolvedValue(undefined);
+    accountRepo.existsAccountOwnerByAccountIdAndProvider.mockResolvedValue(undefined);
 
     await handler.execute(createDto());
 
