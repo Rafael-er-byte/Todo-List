@@ -41,6 +41,7 @@ export default abstract class Logger{
                             message: message, 
                             ...(duration !== undefined && {duration})
                         });
+        console.log(this.log.events[this.log.events.length-1]);
     }
 
     warn(message:string, duration?: number){
@@ -50,6 +51,7 @@ export default abstract class Logger{
                             message: message, 
                             ...(duration !== undefined && {duration})
                         });
+        console.warn(this.log.events[this.log.events.length-1]);
     }
 
     error(message:string, duration?: number, info?: unknown){
@@ -59,6 +61,7 @@ export default abstract class Logger{
                             ...(duration !== undefined && {duration}),
                             ...(info !== undefined && {info})
                         });
+        console.error(this.log.events[this.log.events.length-1]);
     }
 
     metric(message:string, duration?: number){
@@ -68,6 +71,7 @@ export default abstract class Logger{
                             message: message, 
                             ...(duration !== undefined && {duration})
                         });
+        console.log(this.log.events[this.log.events.length-1]);
     }
 
     finish(statusCode: number){
