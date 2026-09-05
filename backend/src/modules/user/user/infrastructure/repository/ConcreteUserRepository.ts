@@ -36,27 +36,16 @@ export default class ConcreteUserRepository implements UserRepository<ConcreteTr
         });
     }
 
-    async existsUserByAccountIdAndProvider(sub: string, provider: string): Promise<boolean> {
-        return await DbTryCatchWrapper<boolean>(async () => {
-            const result = await this.db
-            .select(
-                {id: Users.id}
-            )
-            .from(Users)
-            .leftJoin(Accounts, 
-                and(
-                    eq(Accounts.subject, sub), 
-                    eq(Accounts.provider, provider)
-                )
-            );
-
-            return result[0]!.id !== undefined;
+    async deleteUserById(id: IdEntity): Promise<void> {
+        return await DbTryCatchWrapper<void>(async () => {
+            await this.db.delete(Users)
+                .where(eq(Users.id, id.toString()));
         });
     }
 
     async getUserById(id: IdEntity, withAccounts: boolean = false): Promise<User>{
         return await DbTryCatchWrapper<User>(async () => {
-          const userPromise: Promise<{
+            const userPromise: Promise<{
                                 id: string, 
                                 name: string, 
                                 urlImage: string | null

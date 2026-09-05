@@ -15,7 +15,7 @@ export default class AuthenticateUser <DATABASE> extends Handler <Authentication
 
     constructor(
         private userRepo: UserRepository<DATABASE>,
-        private accountRepo: AccountRepository,
+        private accountRepo: AccountRepository<DATABASE>,
         private userSettingsRepo: UserSetingsRepository,
         private transaction: Transaction<DATABASE>, 
         private auth: AuthProvider
@@ -32,7 +32,7 @@ export default class AuthenticateUser <DATABASE> extends Handler <Authentication
 
         return await this.transaction.withTransaction(async (tx) => {
             const exists = await this.metric.withMetric(async () => {
-                return await this.userRepo.existsUserByAccountIdAndProvider(authenticatedUser.sub, authenticatedUser.provider);
+                return await this.accountRepo.existsAccountOwnerByAccountIdAndProvider(authenticatedUser.sub, authenticatedUser.provider);
             }, 'Check if an user already exists in database', data.chronLog);
             
             if(exists){

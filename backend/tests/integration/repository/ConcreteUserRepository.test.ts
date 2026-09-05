@@ -52,4 +52,11 @@ describe('ConcreteUserRepository tests', () => {
         const result = await repo.getUserById(new IdEntity(DEFAULT_ID));
         expect(result.toPrimitives()).toStrictEqual({id: DEFAULT_ID, name: 'Jhon Doe Smith', accounts: []});
     });
+
+    it('Should delete an user from database', async () => {
+        await repo.deleteUserById(new IdEntity(DEFAULT_ID));
+
+        await expect(repo.getUserById(new IdEntity(DEFAULT_ID)))
+            .rejects.toThrow('User doesnt exists');
+    });
 });
